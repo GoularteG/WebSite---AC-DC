@@ -41,3 +41,5 @@ O Challenger não foi recebido; carregamento, escala, orientação, materiais, r
 - Novas capturas: `charger-opening.png`, `charger-rear.png`, `charger-mobile.png`.
 
 Limites: as rodas não giram, pois as peças vêm agrupadas por material. Não foi testado desempenho em celular físico nem medido FPS em GPU real. O GLB original tem 11,27 MB; o bundle 3D passou a aproximadamente 351 KB gzip com GLTFLoader. Os ajustes de material vermelho são compartilhados por detalhes do modelo, não exclusivamente pelas lanternas. A compressão e a separação das rodas devem ser feitas em uma cópia de trabalho. Não houve publicação remota.
+
+A inspeção da primeira captura mobile revelou corte lateral do veículo após redimensionar. Corrigido com enquadramento centralizado abaixo de 761 px, invalidação da cena ao mudar largura e configuração inicial estável da câmera. Novo build aprovado e nova captura mobile inspecionada: carro inteiro no quadro, sem exceções JavaScript. A captura `charger-mobile.png` foi substituída pela versão corrigida.
