@@ -1,9 +1,9 @@
-// Enable only after inspecting the original, user-supplied model. No substitute car.
+// User-supplied GLB, preserved byte-for-byte. See docs/model-inspection.md.
 export const carAsset = {
-  url: null, // e.g. '/models/challenger.glb' (GLB with embedded textures preferred)
-  length: 4.86,
-  rotationY: Math.PI, // source forward direction: +Z; adapt after inspection
-  wheelNames: [], // exact mesh names, filled after inspection
+  url: '/models/charger-1970-original.glb',
+  length: 5.28,
+  rotationY: Math.PI, // source front is +Z after its embedded Sketchfab transform
+  wheelNames: [], // merged by material: no independent wheel assemblies
   wheelAxis: 'x',
   wheelRadius: .36,
 };

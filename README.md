@@ -18,9 +18,11 @@ Vite serve na porta 5173 por padrão. `dist/` contém o build estático. Não h�
 
 Duas áreas: **The Highway** e **The Making Of**. Inicie a estrada e role nos dois sentidos, ou selecione um dos quatro marcos. Page Up/Down, Home e End usam a navegação nativa do navegador. A posição da câmera é derivada da mesma curva que constrói a estrada. O modo leve limita DPR a 1 e desliga sombras; o modo alto limita DPR a 1,5. Movimento reduzido troca a rolagem contínua por navegação pelos marcos, sem interpolação. Ao abrir o livro, a cena desmonta e libera os recursos declarativos do Canvas.
 
-## Modelo do carro: pendente
+## Modelo integrado: Dodge Charger R/T 1970
 
-**O usuário enviou apenas o briefing. O Challenger não está integrado nem visualmente validado.** A prévia mostra o cenário sem um veículo substituto. O carregador GLB já existe, com preservação de materiais, normalização de escala e suporte explícito a rodas independentes. Consulte `public/models/README.md`. Ajustes de eixos, pintura, vidros, lanternas, rodas, qualidade visual e otimização final dependem do arquivo original.
+O modelo GLB fornecido é um **Charger**, diferente do Challenger solicitado no briefing. A versão 0.2 usa o arquivo original, preservado byte a byte em `public/models/charger-1970-original.glb`. Veja `docs/model-inspection.md` para autoria, licença, estrutura e adaptações. As rodas estão mescladas com outras peças por material e permanecem estáticas; separar conjuntos exige edição de uma cópia do modelo.
+
+O carregador normaliza o comprimento para 5,28 m e ajusta a orientação e o contato com o solo. Materiais são clonados antes das alterações de aparência; linhas técnicas de SketchUp são ocultadas apenas na apresentação. O original não é sobrescrito.
 
 ## Organização
 

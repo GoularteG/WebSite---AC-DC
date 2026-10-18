@@ -1,13 +1,9 @@
-# Modelo original pendente
-O briefing foi o único arquivo recebido. Não há veículo substituto.
+# Dodge Charger R/T 1970 — modelo original
 
-Após receber o modelo:
-1. Preservar o original; conferir licença, formato, meshes e texturas.
-2. Se necessário, converter uma cópia para GLB com texturas incorporadas.
-3. Salvar a cópia web aqui e definir `carAsset.url` em `src/data/assets.js`.
-4. Validar `rotationY`, escala (comprimento 4,86 m), contato com asfalto e materiais.
-5. Identificar rodas independentes e preencher `wheelNames` e `wheelAxis`.
-6. Verificar lanternas emissivas, transparência dos vidros, reflexos e sombras.
-7. Só então avaliar compressão/LOD; não alterar o arquivo original.
+`charger-1970-original.glb` é uma cópia byte a byte do arquivo fornecido pelo usuário.
+Não sobrescreva esse arquivo ao editar ou otimizar: gere uma nova cópia e ajuste `src/data/assets.js`.
 
-O carregador não sobrescreve materiais, não inventa meshes de rodas e não altera o arquivo-fonte. Escala/orientação ocorrem em uma cópia da cena. GLTF externo exige preservar a estrutura de recursos; GLB é preferido. FBX/OBJ exigem conversão ou um carregador específico.
+Autoria: Emmanual Robinson, Jr. — CC BY 4.0, conforme os metadados do GLB.
+Fonte, licença, hash e detalhes da integração: `docs/model-inspection.md`.
+
+O modelo é um Charger, não o Challenger inicialmente descrito. Não há conjuntos independentes de rodas nesta exportação; `wheelNames` permanece vazio para evitar girar geometrias que também contêm outras peças.

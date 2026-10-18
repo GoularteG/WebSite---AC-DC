@@ -28,3 +28,16 @@ A renderização por software foi lenta no desktop. Foram reduzidas chamadas de 
 O Vite emite aviso de chunk grande: bundle 3D de aproximadamente 1,17 MB minificado / 330 KB gzip. O carregador da cena usa importação dinâmica, mas a estratégia de chunks pode ser refinada junto à otimização do modelo real.
 
 O Challenger não foi recebido; carregamento, escala, orientação, materiais, reflexos, iluminação e rodas do modelo ainda não foram exercitados. Falha de GLB, perda de contexto WebGL e reprodução de áudio autorizado também não foram testadas. Não foi publicado um endereço remoto. As capturas são prévias locais do cenário, sem carro substituto.
+
+# Atualização — versão 0.2: Charger integrado
+
+- GLB fornecido pelo usuário carregou no Chromium; a interface confirmou o modelo pronto.
+- Hash SHA-256 da cópia no projeto igual ao do anexo original.
+- `npm run build` aprovado; três testes de lógica aprovados.
+- Build de produção inspecionado em Chromium/SwiftShader: abertura e enquadramento traseiro em 1280 × 800; modelo legível após ajuste dos reflexos e do contato vertical.
+- Navegação pelos marcos em movimento reduzido: avanço até 65% e retorno a 0% confirmados com o modelo carregado.
+- Viewport mobile emulado de 390 × 844: modelo carregado, sem overflow horizontal; captura `artifacts/charger-mobile.png`.
+- Nenhuma exceção JavaScript capturada na verificação final.
+- Novas capturas: `charger-opening.png`, `charger-rear.png`, `charger-mobile.png`.
+
+Limites: as rodas não giram, pois as peças vêm agrupadas por material. Não foi testado desempenho em celular físico nem medido FPS em GPU real. O GLB original tem 11,27 MB; o bundle 3D passou a aproximadamente 351 KB gzip com GLTFLoader. Os ajustes de material vermelho são compartilhados por detalhes do modelo, não exclusivamente pelas lanternas. A compressão e a separação das rodas devem ser feitas em uma cópia de trabalho. Não houve publicação remota.
