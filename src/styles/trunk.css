@@ -24,3 +24,16 @@
 @media(max-height:650px) and (min-width:761px){.trunk-heading{top:90px}.trunk-heading h1{font-size:30px}.trunk-return{top:105px}.trunk-canvas{top:150px;bottom:120px}.trunk-object-controls{bottom:35px}.trunk-hint{bottom:3px}}
 @media(prefers-reduced-motion:reduce){.trunk-experience{animation:none}}
 .highway[aria-hidden="true"] > :not(.stage){visibility:hidden}
+.guitar-inspector{background:#151516;padding:22px 30px;text-align:center}
+.guitar-inspector-heading h2{font:38px/1 'Metal Mania',serif;margin:8px 0}.guitar-inspector-heading h2 span{color:#ed6633}
+.guitar-inspector-heading p{font-size:12px;color:#b5aaa0;margin:8px 0}
+.guitar-viewport{position:relative;height:clamp(280px,52svh,560px);outline-offset:-3px;cursor:grab}
+.guitar-viewport:active{cursor:grabbing}.guitar-viewport canvas{touch-action:none}
+.guitar-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.guitar-controls button{min-width:44px;min-height:44px;background:#29221c;border:1px solid #6c5039;color:#f4d8b4;font-size:22px}
+.guitar-controls button:hover{background:#49301e}.guitar-controls .guitar-reset{padding:0 15px;font-size:10px;letter-spacing:1px}
+.guitar-gesture-hint{color:#b7a797;font-size:11px;line-height:1.7}
+.guitar-credit{font-size:10px;color:#9b9084;line-height:1.7;margin:16px auto 0;max-width:700px}
+.guitar-loading{padding:50px 20px}.guitar-loading-note{position:absolute;bottom:10px;left:0;right:0;font-size:12px;pointer-events:none}
+.inspector-opening{position:fixed;z-index:30;top:45%;left:20%;right:20%;background:#211b17;text-align:center;padding:25px}
+@media(max-width:760px){.guitar-inspector{padding:15px 10px}.guitar-inspector-heading h2{font-size:30px}.guitar-viewport{height:42svh}.guitar-controls{gap:6px}.guitar-gesture-hint{font-size:10px}.guitar-credit{font-size:9px}.guitar-controls .guitar-reset{flex-basis:70%}}

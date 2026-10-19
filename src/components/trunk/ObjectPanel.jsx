@@ -6,11 +6,7 @@ const descriptions = {
     'Os estojos e discos são interpretações gráficas originais. Preto, vermelho, metal e contraste ajudam a conectar esta coleção à identidade do projeto.',
     'Esta coleção é visual: os discos não reproduzem gravações comerciais.'
   ]},
-  guitar:{title:'O SOM DA ESTRADA',eyebrow:'INSPIRADA NA SG',paragraphs:[
-    'O corpo de dois recortes e o acabamento vermelho fazem referência às guitarras SG associadas a Angus Young.',
-    'A peça 3D foi desenhada para o projeto, com corpo esculpido, cordas, captadores e tarraxas. Ela também aparece na exposição ao longo da estrada.',
-    'No porta-malas, a guitarra representa a energia de palco que orienta a direção artística desta experiência.'
-  ]},
+
 };
 export function ObjectDialog({title,onClose,children,book=false}) {
   const dialog=useRef(null);

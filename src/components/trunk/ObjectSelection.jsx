@@ -4,7 +4,7 @@ import { useCursor } from '@react-three/drei';
 export const trunkObjects = [
   {id:'book',short:'Livro',title:'The Making Of',label:'Abrir o livro The Making Of'},
   {id:'records',short:'Discos',title:'Discos de estrada',label:'Explorar os discos clássicos'},
-  {id:'guitar',short:'Guitarra',title:'O som da estrada',label:'Explorar a guitarra inspirada na SG'},
+  {id:'guitar',short:'Guitarra',title:'Girar e aproximar',label:'Inspecionar guitarra em 3D'},
 ];
 export function SelectableObject({ id, active, onSelect, children, position, rotation, scale }) {
   const [hover,setHover]=useState(false);

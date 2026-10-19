@@ -10,6 +10,7 @@ import { ParkingCamera } from '../components/trunk/TrunkCamera';
 import Charger from '../components/car/Charger';
 import { carAsset } from '../data/assets';
 import { JOURNEY_LENGTH, roadX } from '../data/journey';
+import { PARKING_ADVANCE } from '../data/parking';
 import { arrivalMix, FINAL_STOP_DISTANCE, infernoMix } from '../data/finale';
 const cameraConfig = { position: [2.5, 4.1, 11], fov: 55, near: .1, far: 1000 };
 class ModelBoundary extends Component {
@@ -36,7 +37,7 @@ function JourneyRig({ phase, onParked, onReturned, distance, progress, targetPro
     if (phase === 'road' && Math.abs(distance.current - progress.current * JOURNEY_LENGTH) <= .001) distance.current = progress.current * JOURNEY_LENGTH;
     if (phase === 'road' && !reduced && Math.abs(distance.current - progress.current * JOURNEY_LENGTH) > .001) invalidate();
     const s = distance.current;
-    turnout.current.position.set(roadX(s) + 9.5, .018, -s);
+    turnout.current.position.set(roadX(s+PARKING_ADVANCE) + 9.5, .018, -s-PARKING_ADVANCE/2);
     const arrival = arrivalMix(s);
     const sweep = reduced ? 0 : Math.sin(s / 80) * 2.4;
     position.current.set(roadX(s - 8) + 4.2 + sweep, 3.3 + Math.sin(s / 120) * .35, -s + 8.5);
@@ -60,9 +61,9 @@ function JourneyRig({ phase, onParked, onReturned, distance, progress, targetPro
   }, -2);
   useEffect(() => { onArrival(false); return () => onArrival(false); }, [onArrival]);
   return <>
-    <mesh ref={turnout} visible={phase !== 'road'} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[9,20]}/><meshStandardMaterial color="#38312b" roughness={1}/></mesh>
-    <ParkingCamera phase={phase} car={car} roadLook={look} reduced={reduced} onParked={onParked} onReturned={onReturned}/>
-    <group ref={car}><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
+    <mesh name="parking-turnout" ref={turnout} visible={phase !== 'road'} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[9,PARKING_ADVANCE+14]}/><meshStandardMaterial color="#38312b" roughness={1}/></mesh>
+    <ParkingCamera distance={distance} fill={fill} phase={phase} car={car} roadLook={look} reduced={reduced} onParked={onParked} onReturned={onReturned}/>
+    <group name="journey-car" ref={car}><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
     <spotLight ref={fill} intensity={220} distance={24} angle={.85} penumbra={.75} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
   </>;
 }

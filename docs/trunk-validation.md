@@ -17,3 +17,19 @@
 - The standalone interior rendered successfully in desktop and mobile viewports
   using SwiftShader. Raycast clicks on the actual 3D book, records and guitar
   each opened their corresponding dialog, with no runtime exceptions.
+
+## Parking and supplied guitar update
+
+- Parking samples cover the beginning, middle and end of the road. Tests verify
+  continuous forward travel, yaw aligned with the path tangent, deceleration and
+  a stationary vehicle before the final rear-camera approach.
+- Browser inspection of the real journey rig and original Charger confirmed
+  forward travel of 28 world units, changing yaw through the turn, the final rear
+  view and entry to the trunk. Driving frame callbacks in batches also confirmed
+  return to the exact initial car transform. Software-rendered frame stepping was
+  used for deterministic measurements; this is not a hardware FPS benchmark.
+- Uploaded guitar rendered successfully in the inspector. Browser inputs verified
+  drag rotation, mouse-wheel zoom, reset, rotation buttons, mobile two-finger
+  pinch zoom, close/focus restoration and no horizontal mobile overflow.
+- No JavaScript runtime exceptions in the guitar interaction test.
+- Source material conversion and attribution are documented in guitar-asset.md.

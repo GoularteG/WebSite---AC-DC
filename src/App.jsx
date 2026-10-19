@@ -41,9 +41,11 @@ export default function App() {
   }, [phase === 'road']);
   useEffect(() => {
     if (phase !== 'parking' && phase !== 'returning') return;
+    // A slow render must not cut a healthy maneuver short. Fallback only for unavailable 3D.
+    if (modelReady && !modelError) return;
     const timer = setTimeout(phase === 'parking' ? onParked : onReturned, 6500);
     return () => clearTimeout(timer);
-  }, [phase,onParked,onReturned]);
+  }, [phase,onParked,onReturned,modelReady,modelError]);
   const navigate = next => {
     if (next === 'making' && phase === 'road') {
       saved.current = scrollY;

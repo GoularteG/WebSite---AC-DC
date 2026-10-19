@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Lightformer, RoundedBox } from '@react-three/drei';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
-import { Guitar } from '../roadside/Scenery';
+import GuitarModel from './GuitarModel';
 import { InteriorCamera } from './TrunkCamera';
 import { SelectableObject } from './ObjectSelection';
 
@@ -90,8 +90,8 @@ function RecordsObject() {
     <mesh position={[.5,.345,-.1]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.075,.11,32]}/><meshStandardMaterial color="#73695d" metalness={.7} roughness={.25}/></mesh>
   </group>;
 }
-export default function TrunkScene({reduced,onSelect,active}) {
-  return <Canvas frameloop="demand" dpr={[1,1.25]} camera={{position:[0,7,9],fov:44,near:.1,far:60}} gl={{antialias:true,powerPreference:'low-power'}}
+export default function TrunkScene({reduced,onSelect,active,paused}) {
+  return <Canvas frameloop={paused?'never':'demand'} dpr={[1,1.25]} camera={{position:[0,7,9],fov:44,near:.1,far:60}} gl={{antialias:true,powerPreference:'low-power'}}
     aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
     <color attach="background" args={['#111112']}/>
     <hemisphereLight args={['#ffe4bf','#2c2423',2.2]}/><directionalLight position={[2,5,5]} intensity={3} color="#ffd2a4"/>
@@ -99,8 +99,8 @@ export default function TrunkScene({reduced,onSelect,active}) {
     <InteriorCamera reduced={reduced}/><TrunkInterior/>
     <SelectableObject id="book" active={active} onSelect={onSelect} position={[-1.65,.03,.55]}><BookObject/></SelectableObject>
     <SelectableObject id="records" active={active} onSelect={onSelect} position={[.1,.03,.55]}><RecordsObject/></SelectableObject>
-    <SelectableObject id="guitar" active={active} onSelect={onSelect} position={[1.8,.32,.65]}>
-      <group rotation={[-Math.PI/2,0,-.12]} scale={.55}><Guitar/></group>
+    <SelectableObject id="guitar" active={active} onSelect={onSelect} position={[1.85,.22,-.05]}>
+      <group rotation={[-Math.PI/2,0,-.1]}><Suspense fallback={null}><GuitarModel height={3.05}/></Suspense></group>
     </SelectableObject>
   </Canvas>;
 }
