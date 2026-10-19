@@ -1,6 +1,6 @@
 import {useMemo} from 'react';
 import {useGLTF} from '@react-three/drei';
-import {Box3,Color,MeshPhysicalMaterial,Vector3} from 'three';
+import {Box3,Color,DoubleSide,MeshPhysicalMaterial,Vector3} from 'three';
 
 export const GUITAR_URL='/models/guitar-electric.glb';
 export default function GuitarModel({height=3.8,finish='cherry',...props}){
@@ -16,8 +16,8 @@ export default function GuitarModel({height=3.8,finish='cherry',...props}){
       if(!source)return;
       if(!materials.has(source.uuid)){
         let next=source.clone();
-        if(finish==='cherry'&&source.name==='lambert5'){
-          next=new MeshPhysicalMaterial({color:new Color('#7f0f16'),metalness:.05,roughness:.18,clearcoat:1,clearcoatRoughness:.12});
+        if(finish==='cherry'&&source.name==='lambert3'){
+          next=new MeshPhysicalMaterial({color:new Color('#a01822'),side:DoubleSide,metalness:.08,roughness:.2,clearcoat:1,clearcoatRoughness:.1});
         }
         materials.set(source.uuid,next);
       }

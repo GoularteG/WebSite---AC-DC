@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox } from '@react-three/drei';
-import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
+import { CanvasTexture, DoubleSide, RepeatWrapping, Shape, SRGBColorSpace } from 'three';
 import BookModel from './BookModel';
 import GuitarModel from './GuitarModel';
 import { InteriorCamera } from './TrunkCamera';
@@ -16,10 +16,10 @@ function useSurface(kind) {
       ctx.strokeText('AC/DC',256,y);ctx.fillText('AC/DC',256,y);ctx.restore();
     };
     if(kind==='carpet'){
-      ctx.fillStyle='#252629';ctx.fillRect(0,0,512,512);
+      ctx.fillStyle='#414246';ctx.fillRect(0,0,512,512);
       for(let i=0;i<22000;i++){
         const x=(i*97)%512,y=(i*173+Math.floor(i/512)*31)%512;
-        ctx.fillStyle=i%5===0?'#4b4c50':i%2?'#303136':'#17181b';
+        ctx.fillStyle=i%5===0?'#66676a':i%2?'#4c4d50':'#313236';
         ctx.fillRect(x,y,i%7===0?2:1,i%3===0?4:2);
       }
     }else if(kind==='rubber'){
@@ -55,6 +55,8 @@ function useSurface(kind) {
         ticket:{bg:'#ba9a68',ink:'#241b13',accent:'#8b1e1f',top:'ACϟDC',main:['WORLD TOUR','ADMIT ONE'],foot:'GENERAL ADMISSION · 1980'},
         setlist:{bg:'#d7d0bd',ink:'#25211d',accent:'#8b1e1f',top:'TONIGHT',main:['HIGHWAY','HELLS BELLS'],foot:'SET LIST · STAGE LEFT'},
         poster:{bg:'#242326',ink:'#d5c5ae',accent:'#9b201d',top:'LIVE',main:['HIGH','VOLTAGE'],foot:'ROCK & ROLL · ALL NIGHT'},
+        pass:{bg:'#c9bd9e',ink:'#191919',accent:'#a1251c',top:'BACKSTAGE',main:['ALL ACCESS','CREW'],foot:'LOAD IN · AFTER SHOW'},
+        flyer:{bg:'#d0b796',ink:'#322019',accent:'#9a3320',top:'TONIGHT ONLY',main:['LET THERE','BE ROCK'],foot:'DOORS 7 PM · ADMIT ONE'},
       }[kind];
       ctx.fillStyle=data.bg;ctx.fillRect(0,0,512,512);
       ctx.strokeStyle=data.accent;ctx.lineWidth=10;ctx.strokeRect(18,18,476,476);
@@ -69,7 +71,7 @@ function useSurface(kind) {
   useEffect(()=>()=>texture.dispose(),[texture]);return texture;
 }
 
-const paint={color:'#07080a',metalness:.78,roughness:.18,clearcoat:1,clearcoatRoughness:.12};
+const paint={color:'#141517',metalness:.72,roughness:.27,clearcoat:.85,clearcoatRoughness:.2};
 function CarPanel({position,args,rotation,radius=.08}) {
   return <RoundedBox position={position} rotation={rotation} args={args} radius={radius} smoothness={4} castShadow receiveShadow>
     <meshPhysicalMaterial {...paint}/>
@@ -99,11 +101,11 @@ function LidArchive() {
 function TrunkInterior() {
   const carpet=useSurface('carpet');
   return <group>
-    <RoundedBox args={[7,.2,4.45]} position={[0,-.12,.1]} radius={.16} smoothness={4} receiveShadow><meshStandardMaterial map={carpet} color="#77787c" roughness={1}/></RoundedBox>
+    <RoundedBox args={[7,.2,4.45]} position={[0,-.12,.1]} radius={.16} smoothness={4} receiveShadow><meshStandardMaterial map={carpet} color="#b5b5b8" roughness={1}/></RoundedBox>
     <CarPanel position={[0,.54,-2.12]} args={[7.15,1.25,.25]}/>
     <CarPanel position={[-3.38,.35,.08]} args={[.42,.95,4.25]} radius={.18}/><CarPanel position={[3.38,.35,.08]} args={[.42,.95,4.25]} radius={.18}/>
     {[-1,1].map(side=><group key={side}>
-      <RoundedBox position={[side*2.83,.25,-.55]} args={[.92,.75,2.45]} radius={.38} smoothness={6} castShadow receiveShadow><meshStandardMaterial map={carpet} color="#505155" roughness={1}/></RoundedBox>
+      <RoundedBox position={[side*2.83,.25,-.55]} args={[.92,.75,2.45]} radius={.38} smoothness={6} castShadow receiveShadow><meshStandardMaterial map={carpet} color="#9b9b9e" roughness={1}/></RoundedBox>
       <MetalBar position={[side*3.5,.45,.1]} args={[.07,.08,4.35]} color="#111317"/>
       <MetalBar position={[side*3.32,.8,-1.55]} rotation={[0,0,side*.22]} args={[.08,1.5,.1]}/>
       <MetalBar position={[side*2.93,1.72,-1.87]} rotation={[0,0,side*.15]} args={[.09,1.1,.12]}/>
@@ -114,7 +116,7 @@ function TrunkInterior() {
     <group position={[0,1.58,-2.08]} rotation={[-.12,0,0]}>
       <CarPanel position={[0,1.03,0]} args={[7.16,2.35,.2]} radius={.18}/>
       {[-2.75,-1.38,0,1.38,2.75].map((x,i)=><group key={x} position={[x,1.05,.12]}>
-        <RoundedBox args={[1.12,1.82,.075]} radius={.18} smoothness={5}><meshPhysicalMaterial color={i===2?'#0d0f12':'#090a0c'} metalness={.72} roughness={.24} clearcoat={.8}/></RoundedBox>
+        <RoundedBox args={[1.12,1.82,.075]} radius={.18} smoothness={5}><meshPhysicalMaterial color={i===2?'#17191c':'#121416'} metalness={.72} roughness={.28} clearcoat={.8}/></RoundedBox>
         <MetalBar position={[0,0,.07]} args={[.055,1.42,.04]} color="#303337"/>
       </group>)}
       <MetalBar position={[0,.02,.12]} args={[6.78,.12,.09]} color="#111317"/>
@@ -139,9 +141,9 @@ function AlbumCase({kind,position,rotation}) {
 }
 function AlbumsObject() {
   return <group>
-    <AlbumCase kind="black" position={[-.52,.03,.12]} rotation={[0,-.12,0]}/>
-    <AlbumCase kind="hell" position={[0,.075,0]} rotation={[0,.04,0]}/>
-    <AlbumCase kind="razor" position={[.52,.12,-.08]} rotation={[0,.16,0]}/>
+    <AlbumCase kind="black" position={[-.39,.03,.04]} rotation={[0,-.2,0]}/>
+    <AlbumCase kind="hell" position={[.2,.1,-.28]} rotation={[0,.17,0]}/>
+    <AlbumCase kind="razor" position={[.47,.18,.25]} rotation={[0,-.1,0]}/>
   </group>;
 }
 function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
@@ -153,49 +155,59 @@ function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
   </group>;
 }
 function Picks() {
+  const pick=useMemo(()=>{
+    const shape=new Shape();
+    shape.moveTo(0,-.2);
+    shape.bezierCurveTo(-.12,-.1,-.18,.13,-.11,.18);
+    shape.bezierCurveTo(-.04,.23,.04,.23,.11,.18);
+    shape.bezierCurveTo(.18,.13,.12,-.1,0,-.2);
+    return shape;
+  },[]);
   return <group>
     {[
-      [-.22,.03,-.08,'#a92320'],[.04,.04,.04,'#d7b05c'],[.25,.03,-.1,'#17191b'],
-    ].map(([x,y,z,color],i)=><mesh key={i} position={[x,y,z]} rotation={[-Math.PI/2,0,i*.45]} scale={[.17,.22,1]} castShadow>
-      <circleGeometry args={[1,3]}/><meshPhysicalMaterial color={color} roughness={.35} clearcoat={.65}/>
+      [-.24,.03,-.09,'#9e2924'],[.05,.035,.05,'#d7b05c'],[.28,.03,-.1,'#252428'],
+    ].map(([x,y,z,color],i)=><mesh key={i} position={[x,y,z]} rotation={[-Math.PI/2,0,i*.45]} scale={.55} castShadow>
+      <shapeGeometry args={[pick,12]}/><meshPhysicalMaterial color={color} roughness={.35} clearcoat={.65} side={DoubleSide}/>
     </mesh>)}
   </group>;
 }
 function Memorabilia() {
   return <group>
-    <PaperCard kind="setlist" position={[-2.35,.06,-.62]} rotation={[0,-.18,0]} size={[.68,1.02]}/>
-    <PaperCard kind="ticket" position={[1.68,.07,-.7]} rotation={[0,.22,0]} size={[.48,.92]}/>
-    <PaperCard kind="ticket" position={[1.98,.08,-.58]} rotation={[0,-.08,0]} size={[.48,.92]}/>
-    <PaperCard kind="poster" position={[-2.48,.055,.92]} rotation={[0,.12,0]} size={[.82,1.16]}/>
-    <group position={[-1.08,.08,1.38]}><Picks/></group>
-    <mesh position={[2.72,.08,-.34]} rotation={[Math.PI/2,0,0]} castShadow><torusGeometry args={[.28,.055,12,42]}/><meshStandardMaterial color="#161719" roughness={.78}/></mesh>
-    <mesh position={[2.72,.085,-.34]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[.11,.035,10,32]}/><meshStandardMaterial color="#b6aa8f" roughness={.7}/></mesh>
+    <PaperCard kind="poster" position={[-1.93,.037,-.58]} rotation={[0,-.25,0]} size={[.9,1.25]}/>
+    <PaperCard kind="setlist" position={[-1.13,.065,-.7]} rotation={[0,.18,0]} size={[.7,1.03]}/>
+    <PaperCard kind="pass" position={[1.2,.055,-.65]} rotation={[0,-.18,0]} size={[.66,.96]}/>
+    <PaperCard kind="ticket" position={[1.57,.08,-.54]} rotation={[0,.28,0]} size={[.45,.73]}/>
+    <PaperCard kind="flyer" position={[2.19,.045,-1.12]} rotation={[0,.24,0]} size={[.72,.95]}/>
+    <group position={[-1.12,.025,1.48]}><Picks/></group>
+    <mesh position={[-2.16,.07,-1.07]} rotation={[Math.PI/2,0,0]} castShadow><torusGeometry args={[.26,.033,8,42]}/><meshStandardMaterial color="#1a1b1c" roughness={.76}/></mesh>
+    <mesh position={[-2.12,.08,-1.06]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[.19,.027,8,42]}/><meshStandardMaterial color="#292a2b" roughness={.73}/></mesh>
+    <mesh position={[-2.36,.085,-1.25]} rotation={[0,.65,0]} castShadow><cylinderGeometry args={[.055,.055,.23,10]}/><meshStandardMaterial color="#b5aca0" metalness={.7} roughness={.3}/></mesh>
   </group>;
 }
 function ProjectBook() {
   const label=useSurface('archive');
-  return <group rotation={[0,-.04,0]}>
-    <BookModel length={2.02}/>
-    <mesh position={[0,.335,0]} rotation={[-Math.PI/2,0,0]} castShadow>
-      <planeGeometry args={[.72,.96]}/><meshStandardMaterial map={label} roughness={.48}/>
+  return <group rotation={[0,-.08,0]}>
+    <BookModel length={2.5}/>
+    <mesh position={[0,.405,0]} rotation={[-Math.PI/2,0,0]} castShadow>
+      <planeGeometry args={[.98,1.32]}/><meshStandardMaterial map={label} roughness={.48}/>
     </mesh>
-    <mesh position={[-.495,.19,0]}><boxGeometry args={[.045,.18,1.93]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
+    <mesh position={[-.62,.22,0]}><boxGeometry args={[.045,.2,2.43]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
   </group>;
 }
 export default function TrunkScene({reduced,onSelect,active,paused}) {
   return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance'}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
     <color attach="background" args={['#090a0c']}/><fog attach="fog" args={['#090a0c',13,23]}/>
-    <hemisphereLight args={['#e7eef7','#16100d',1.35]}/>
-    <directionalLight castShadow position={[-3,7,6]} intensity={3.2} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
-    <directionalLight position={[5,2,-3]} intensity={1.5} color="#7c9abe"/>
-    <pointLight position={[0,2.8,2.7]} intensity={12} distance={9} color="#e7a36e" decay={2}/>
-    <spotLight castShadow position={[0,5,3]} intensity={32} distance={10} angle={.46} penumbra={.8} color="#ffd6a7" shadow-mapSize={[512,512]}/>
+    <hemisphereLight args={['#e7eef7','#24201c',2.1]}/>
+    <directionalLight castShadow position={[-3,7,6]} intensity={3} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
+    <directionalLight position={[5,3,-2]} intensity={2} color="#a5b4c2"/>
+    <pointLight position={[0,2.8,2.7]} intensity={8} distance={9} color="#e7a36e" decay={2}/>
+    <spotLight castShadow position={[0,5,3]} intensity={24} distance={10} angle={.53} penumbra={.85} color="#ffd6a7" shadow-mapSize={[512,512]}/>
     <Suspense fallback={null}><Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment></Suspense>
     <InteriorCamera reduced={reduced}/><TrunkInterior/>
-    <group position={[2.14,.07,.82]} scale={.82}><AlbumsObject/></group>
-    <group position={[-2.35,.17,.08]} rotation={[-Math.PI/2,0,.48]}><Suspense fallback={null}><GuitarModel height={3.18} finish="cherry"/></Suspense></group>
+    <group position={[2.08,.02,.92]} scale={.84}><AlbumsObject/></group>
+    <group position={[-2.3,.19,-.04]} rotation={[-Math.PI/2,0,.43]}><Suspense fallback={null}><GuitarModel height={3.38} finish="cherry"/></Suspense></group>
     <Memorabilia/>
-    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.18,.035,.82]} highlight={[1.02,1.06]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
-    <ContactShadows position={[0,.01,.1]} opacity={.55} scale={7.2} blur={2.5} far={4}/>
+    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.1,.045,.62]} highlight={[1.28,1.31]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
+    <ContactShadows position={[0,.01,.1]} opacity={.45} scale={7.2} blur={2.5} far={4}/>
   </Canvas>;
 }
