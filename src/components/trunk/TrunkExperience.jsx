@@ -15,7 +15,7 @@ export default function TrunkExperience({reduced,onReturn}) {
   const [selected,setSelected]=useState(null),[active,setActive]=useState(null);
   const select=id=>{document.querySelector(`[data-object="${id}"]`)?.focus({preventScroll:true});setSelected(id);};
   return <section className="trunk-experience" id="main-content" role="main" aria-label="Porta-malas interativo">
-    <div className="trunk-heading"><span className="eyebrow">UMA PAUSA NA ESTRADA</span><h1>THE BACKSTAGE<span>.</span></h1><p>Três objetos. Outras histórias. Escolha o seu.</p></div>
+    <div className="trunk-heading"><span className="eyebrow">UMA PAUSA NA ESTRADA</span><h1>THE BACKSTAGE<span>.</span></h1><p>Arquivo, álbuns e seis cordas. Escolha o seu.</p></div>
     <button ref={returnButton} className="trunk-return" onClick={onReturn}>↶ VOLTAR À ESTRADA</button>
     <div className="trunk-canvas"><TrunkSceneBoundary><Suspense fallback={<p className="trunk-webgl-fallback">ABRINDO O PORTA-MALAS…</p>}><TrunkScene paused={!!selected} reduced={reduced} onSelect={select} active={active}/></Suspense></TrunkSceneBoundary></div>
     <ObjectSelection onSelect={select} onFocus={setActive}/>

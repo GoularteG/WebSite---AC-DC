@@ -1,13 +1,28 @@
 import {useMemo} from 'react';
 import {useGLTF} from '@react-three/drei';
-import {Box3,Vector3} from 'three';
+import {Box3,Color,MeshPhysicalMaterial,Vector3} from 'three';
 
 export const GUITAR_URL='/models/guitar-electric.glb';
-export default function GuitarModel({height=3.8,...props}){
+export default function GuitarModel({height=3.8,finish='cherry',...props}){
   const {scene}=useGLTF(GUITAR_URL);
   const model=useMemo(()=>{
     const root=scene.clone(true);
-    // Preserve the supplied front-facing orientation and all mesh transforms.
+    // Preserve every supplied mesh and transform. Only the finish is adapted.
+    const materials=new Map();
+    root.traverse(child=>{
+      if(!child.isMesh)return;
+      child.castShadow=true;child.receiveShadow=true;
+      const source=child.material;
+      if(!source)return;
+      if(!materials.has(source.uuid)){
+        let next=source.clone();
+        if(finish==='cherry'&&source.name==='lambert5'){
+          next=new MeshPhysicalMaterial({color:new Color('#7f0f16'),metalness:.05,roughness:.18,clearcoat:1,clearcoatRoughness:.12});
+        }
+        materials.set(source.uuid,next);
+      }
+      child.material=materials.get(source.uuid);
+    });
     root.updateMatrixWorld(true);
     const bounds=new Box3().setFromObject(root);
     root.scale.setScalar(height/bounds.getSize(new Vector3()).y);
@@ -15,6 +30,6 @@ export default function GuitarModel({height=3.8,...props}){
     const center=new Box3().setFromObject(root).getCenter(new Vector3());
     root.position.sub(center);
     return root;
-  },[scene,height]);
+  },[scene,height,finish]);
   return <group name="uploaded-guitar" {...props}><primitive object={model} dispose={null}/></group>;
 }

@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useCursor } from '@react-three/drei';
 
 export const trunkObjects = [
-  {id:'book',short:'Livro',title:'The Making Of',label:'Abrir o livro The Making Of'},
-  {id:'records',short:'Discos',title:'Discos de estrada',label:'Explorar os discos clássicos'},
-  {id:'guitar',short:'Guitarra',title:'Girar e aproximar',label:'Inspecionar guitarra em 3D'},
+  {id:'book',short:'Arquivo',title:'The Making Of',label:'Abrir o arquivo The Making Of'},
+  {id:'records',short:'Álbuns',title:'Três clássicos',label:'Explorar os três álbuns clássicos'},
+  {id:'guitar',short:'Guitarra',title:'Cherry red em 3D',label:'Inspecionar guitarra em 3D'},
 ];
-export function SelectableObject({ id, active, onSelect, children, position, rotation, scale }) {
+export function SelectableObject({ id, active, onSelect, children, position, rotation, scale, highlight=[.8,.83] }) {
   const [hover,setHover]=useState(false);
   useCursor(hover);
   return <group name={`trunk-object-${id}`} position={position} rotation={rotation} scale={scale}
@@ -14,8 +14,8 @@ export function SelectableObject({ id, active, onSelect, children, position, rot
     onPointerOut={()=>setHover(false)}
     onClick={e=>{e.stopPropagation();if(e.delta<10)onSelect(id);}}>
     {children}
-    {(hover||active===id)&&<mesh position={[0,-.015,0]} rotation={[-Math.PI/2,0,0]}>
-      <ringGeometry args={[.8,.83,48]} /><meshBasicMaterial color="#f6b643" depthWrite={false} />
+    {(hover||active===id)&&<mesh position={[0,.015,0]} rotation={[-Math.PI/2,0,0]}>
+      <ringGeometry args={[highlight[0],highlight[1],64]} /><meshBasicMaterial color="#f0a047" transparent opacity={.9} depthWrite={false} />
     </mesh>}
   </group>;
 }
