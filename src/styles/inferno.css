@@ -1,0 +1,24 @@
+.inferno-approach {opacity:.9}
+.inferno-approach h1 {font-size:clamp(30px,4vw,58px);color:#eea66c}
+.inferno-arrival {position:fixed;z-index:4;left:6%;top:24%;max-width:350px;text-shadow:0 2px 16px #160909;animation:arrival-reveal .7s ease-out both}
+.inferno-arrival .eyebrow {font-size:8px;letter-spacing:2px;color:#e4a15e}
+.inferno-arrival h1 {font:400 clamp(34px,4.1vw,62px)/.98 'Metal Mania',Impact,serif;letter-spacing:.3px;margin:17px 0 15px;color:#f3dfb8;transform:skew(-4deg)}
+.inferno-arrival h1 span {color:#f48846}
+.inferno-arrival p {font-size:11px;letter-spacing:1px;line-height:1.8}
+.inferno-arrival button {display:block;margin-top:23px;padding:14px 18px;border:1px solid #e69c6277;background:#1b1010ba;color:#f2d2a0;font-size:9px;letter-spacing:1.7px;transition:background .2s,border-color .2s}
+.inferno-arrival button:hover {background:#5e2118;border-color:#f1b67e}
+.inferno-arrival small {display:block;margin-top:12px;font-size:8px;letter-spacing:.5px;color:#d2ab8c}
+.has-arrived .chapter-nav {opacity:.7}
+@keyframes arrival-reveal {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){
+  .inferno-arrival {left:7%;right:7%;top:105px;max-width:none}
+  .inferno-arrival h1 {font-size:34px;line-height:1;margin:9px 0 8px}
+  .inferno-arrival .eyebrow {font-size:7px;letter-spacing:1.5px}
+  .inferno-arrival p {font-size:10px;margin:6px 0}
+  .inferno-arrival button {position:fixed;bottom:215px;left:7%;margin:0;padding:12px 15px}
+  .inferno-arrival small {display:none}
+  .inferno-approach {top:110px}
+  .inferno-approach h1 {font-size:30px;margin:10px 0}
+  .has-arrived .prototype-note {left:auto;right:7%;max-width:135px;bottom:100px;font-size:6px;letter-spacing:.4px;padding:7px}
+}
+@media(max-height:650px){.inferno-arrival{top:105px}.inferno-arrival h1{font-size:33px;margin:8px 0}.inferno-arrival button{margin-top:12px}.inferno-arrival small{display:none}}
