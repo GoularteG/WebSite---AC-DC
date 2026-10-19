@@ -1,0 +1,259 @@
+/* Keep page turns from selecting copy while preserving the book's text semantics. */
+.physical-book,
+.physical-book *,
+.book-gesture-hint,
+.book-controls,
+.book-controls * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.folio-host .stf__block {
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.folio-host .stf__block:active {
+  cursor: grabbing;
+}
+
+.book-gesture-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  max-width: max-content;
+  margin: 0 auto 14px;
+  padding: 8px 14px;
+  border: 1px solid #b99b6740;
+  border-radius: 999px;
+  background: #17140f88;
+  color: #c3ae86;
+  font-size: 10px;
+  letter-spacing: .45px;
+}
+
+.book-gesture-hint > span {
+  color: #edbd63;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.archive-room .book-controls {
+  display: grid;
+  grid-template-columns: minmax(110px,1fr) minmax(170px,1.25fr) minmax(110px,1fr);
+  align-items: stretch;
+  gap: 12px;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.archive-room .book-controls .book-control {
+  min-height: 54px;
+  border: 1px solid #8f744c88;
+  border-radius: 3px;
+  background: linear-gradient(180deg,#34291c,#1c1914);
+  color: #ecd9b4;
+  font: 16px 'Metal Mania',Georgia,serif;
+  letter-spacing: .5px;
+  cursor: pointer;
+  transition: border-color .18s,background .18s,transform .18s,box-shadow .18s;
+}
+
+.archive-room .book-controls .book-control:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: #d2aa63;
+  background: linear-gradient(180deg,#49351e,#282016);
+  box-shadow: 0 6px 16px #0005,inset 0 0 0 1px #e8bd6a22;
+}
+
+.archive-room .book-controls .book-control:focus-visible,
+.archive-room .contents button:focus-visible,
+.archive-room .close-book:focus-visible {
+  outline: 2px solid #f2c56e;
+  outline-offset: 3px;
+}
+
+.archive-room .book-controls .book-control:disabled {
+  opacity: .38;
+  cursor: default;
+  box-shadow: inset 0 1px 4px #0008;
+}
+
+.archive-room .book-control--previous {
+  justify-self: stretch;
+}
+
+.archive-room .book-control--next {
+  justify-self: stretch;
+}
+
+.archive-room .book-controls .book-control--contents {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  background: linear-gradient(180deg,#4a3820,#292016);
+  border-color: #b8995f;
+  line-height: 1.2;
+}
+
+.book-page-count {
+  font: 8px Arial,sans-serif;
+  letter-spacing: 1.7px;
+  color: #b9a781;
+}
+
+.book-page-count strong {
+  margin-left: 4px;
+  color: #f0cf8c;
+  font: 13px 'Metal Mania',Georgia,serif;
+}
+
+.book-toc-label {
+  font: 11px Arial,sans-serif;
+  letter-spacing: .5px;
+}
+
+.book-toc-label > span {
+  margin-left: 3px;
+  color: #edbd63;
+}
+
+.book-reading-progress {
+  height: 2px;
+  width: min(850px,100%);
+  margin: 9px auto 0;
+  overflow: hidden;
+  background: #c8a97624;
+}
+
+.book-reading-progress > span {
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg,#a94d2c,#efbd65);
+  transition: transform .35s ease;
+}
+
+.archive-room .close-book {
+  margin-top: 13px;
+  padding: 10px 16px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: color .18s,background .18s;
+}
+
+.archive-room .close-book:hover {
+  color: #f1d6a3;
+  background: #d6b36c13;
+}
+
+.embedded.archive-room {
+  background:
+    radial-gradient(ellipse at 50% 43%,#53412866 0,transparent 58%),
+    repeating-linear-gradient(0deg,#ffffff03 0 1px,transparent 1px 3px),
+    #111310;
+  padding-top: 26px;
+}
+
+.embedded .book-heading {
+  margin-bottom: 20px;
+}
+
+.embedded .book-heading h1 {
+  font-size: clamp(28px,4vw,42px);
+  text-shadow: 0 3px 16px #d4a95630;
+}
+
+.embedded .book-heading p {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.embedded .book-table {
+  max-width: 920px;
+  margin-bottom: 12px;
+  padding: 13px 19px 24px;
+  border: 1px solid #9b79453d;
+  border-radius: 5px;
+  background: linear-gradient(145deg,#241c1455,#0d0f0f80);
+  box-shadow: 0 16px 38px #0007,inset 0 1px #ddbd8040;
+}
+
+.embedded .paper-content {
+  cursor: default;
+}
+
+.embedded .book-gesture-hint {
+  margin-bottom: 11px;
+}
+
+.embedded.archive-room .book-controls {
+  margin-top: 0;
+}
+
+@media (max-width:760px) {
+  .embedded.archive-room {
+    padding: 22px 12px 24px;
+  }
+
+  .embedded .book-heading {
+    margin-bottom: 13px;
+  }
+
+  .embedded .book-heading h1 {
+    margin: 5px 0;
+    font-size: 29px;
+  }
+
+  .embedded .book-heading p {
+    font-size: 10px;
+  }
+
+  .embedded .book-table {
+    margin-bottom: 10px;
+    padding: 10px 8px 16px;
+  }
+
+  .archive-room .book-controls {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .archive-room .book-controls .book-control {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .archive-room .book-controls .book-control--contents {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    min-height: 48px;
+  }
+
+  .archive-room .book-control--previous {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .archive-room .book-control--next {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .book-gesture-hint {
+    max-width: 100%;
+    padding: 7px 10px;
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .archive-room .book-controls .book-control,
+  .book-reading-progress > span {
+    transition: none;
+  }
+}
