@@ -11,6 +11,10 @@ function useSurface(kind) {
   const texture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
     const ctx=canvas.getContext('2d');
+    const logo=(y,size,fill='#d22126',stroke='#e8ddd0')=>{
+      ctx.save();ctx.textAlign='center';ctx.font=`italic 900 ${size}px Arial Black`;ctx.lineWidth=5;ctx.strokeStyle=stroke;ctx.fillStyle=fill;
+      ctx.strokeText('AC/DC',256,y);ctx.fillText('AC/DC',256,y);ctx.restore();
+    };
     if(kind==='carpet'){
       ctx.fillStyle='#252629';ctx.fillRect(0,0,512,512);
       for(let i=0;i<22000;i++){
@@ -22,22 +26,38 @@ function useSurface(kind) {
       ctx.fillStyle='#111214';ctx.fillRect(0,0,512,512);
       ctx.strokeStyle='#292b2e';ctx.lineWidth=18;
       for(let x=-512;x<1024;x+=46){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x-180,512);ctx.stroke();}
+    }else if(kind==='black'){
+      const glow=ctx.createRadialGradient(256,220,20,256,256,340);glow.addColorStop(0,'#222326');glow.addColorStop(1,'#020203');
+      ctx.fillStyle=glow;ctx.fillRect(0,0,512,512);
+      ctx.strokeStyle='#35363a';ctx.lineWidth=12;ctx.strokeRect(20,20,472,472);
+      logo(238,100,'#161719','#56585b');
+      ctx.textAlign='center';ctx.fillStyle='#c5c6c8';ctx.font='700 42px Georgia';ctx.fillText('BACK IN BLACK',256,330);
+      ctx.fillStyle='#6f7074';ctx.font='18px Arial';ctx.fillText('1980',256,385);
+    }else if(kind==='hell'){
+      const fire=ctx.createLinearGradient(0,0,0,512);fire.addColorStop(0,'#171315');fire.addColorStop(.48,'#5e1717');fire.addColorStop(1,'#db6a27');
+      ctx.fillStyle=fire;ctx.fillRect(0,0,512,512);
+      ctx.strokeStyle='#e2c39b';ctx.lineWidth=8;ctx.strokeRect(18,18,476,476);
+      logo(120,82);
+      [-120,-60,0,60,120].forEach((x,i)=>{ctx.fillStyle=i===2?'#d7b080':'#171315';ctx.beginPath();ctx.arc(256+x,238+(i%2)*10,32,0,Math.PI*2);ctx.fill();ctx.fillRect(230+x,270+(i%2)*10,52,85);});
+      ctx.fillStyle='#f2d3ad';ctx.textAlign='center';ctx.font='700 42px Georgia';ctx.fillText('HIGHWAY TO HELL',256,425);
+      ctx.font='17px Arial';ctx.fillText('1979',256,462);
+    }else if(kind==='razor'){
+      const steel=ctx.createLinearGradient(0,0,512,512);steel.addColorStop(0,'#e6eaec');steel.addColorStop(.32,'#617080');steel.addColorStop(.64,'#d9dfe1');steel.addColorStop(1,'#778590');
+      ctx.fillStyle=steel;ctx.fillRect(0,0,512,512);
+      ctx.strokeStyle='#922126';ctx.lineWidth=9;ctx.strokeRect(18,18,476,476);
+      logo(115,78,'#a91f25','#ebe6dc');
+      ctx.fillStyle='#dfe5e7';ctx.strokeStyle='#334351';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(66,230);ctx.lineTo(446,165);ctx.lineTo(424,325);ctx.lineTo(86,370);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle='#8d1f24';ctx.textAlign='center';ctx.font='700 45px Georgia';ctx.fillText('THE RAZORS EDGE',256,430);
+      ctx.fillStyle='#394650';ctx.font='17px Arial';ctx.fillText('1990',256,465);
     }else{
       const data={
         archive:{bg:'#ded8c9',ink:'#29231e',accent:'#9b251f',top:'HIGHWAY ARCHIVES',main:['THE MAKING','OF'],foot:'DEVELOPMENT FILE · 1973—2026'},
-        black:{bg:'#08090a',ink:'#aeb0b2',accent:'#771b20',top:'ACϟDC',main:['BACK','IN BLACK'],foot:'1980 · ARCHIVE EDITION'},
-        hell:{bg:'#161011',ink:'#e2cab1',accent:'#a72e20',top:'ACϟDC',main:['HIGHWAY','TO HELL'],foot:'1979 · ARCHIVE EDITION'},
-        razor:{bg:'#bcc2c5',ink:'#34404a',accent:'#8e1f23',top:'ACϟDC',main:['THE RAZORS','EDGE'],foot:'1990 · ARCHIVE EDITION'},
         ticket:{bg:'#ba9a68',ink:'#241b13',accent:'#8b1e1f',top:'ACϟDC',main:['WORLD TOUR','ADMIT ONE'],foot:'GENERAL ADMISSION · 1980'},
         setlist:{bg:'#d7d0bd',ink:'#25211d',accent:'#8b1e1f',top:'TONIGHT',main:['HIGHWAY','HELLS BELLS'],foot:'SET LIST · STAGE LEFT'},
         poster:{bg:'#242326',ink:'#d5c5ae',accent:'#9b201d',top:'LIVE',main:['HIGH','VOLTAGE'],foot:'ROCK & ROLL · ALL NIGHT'},
       }[kind];
       ctx.fillStyle=data.bg;ctx.fillRect(0,0,512,512);
       ctx.strokeStyle=data.accent;ctx.lineWidth=10;ctx.strokeRect(18,18,476,476);
-      if(kind==='razor'){
-        const gradient=ctx.createLinearGradient(0,0,512,512);gradient.addColorStop(0,'#edf1f2');gradient.addColorStop(.5,'#667785');gradient.addColorStop(1,'#dce1e2');
-        ctx.fillStyle=gradient;ctx.fillRect(35,140,442,190);ctx.strokeStyle='#912027';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(35,330);ctx.lineTo(477,140);ctx.stroke();
-      }
       ctx.textAlign='center';ctx.fillStyle=data.accent;ctx.font='700 50px Georgia';ctx.fillText(data.top,256,100);
       ctx.fillStyle=data.ink;ctx.font='700 58px Georgia';data.main.forEach((line,i)=>ctx.fillText(line,256,225+i*70));
       ctx.font='18px Arial';ctx.fillText(data.foot,256,453);
@@ -119,9 +139,9 @@ function AlbumCase({kind,position,rotation}) {
 }
 function AlbumsObject() {
   return <group>
-    <AlbumCase kind="black" position={[-.34,.03,.08]} rotation={[0,-.08,0]}/>
-    <AlbumCase kind="hell" position={[.05,.095,-.04]} rotation={[0,.09,0]}/>
-    <AlbumCase kind="razor" position={[.45,.16,-.12]} rotation={[0,.22,0]}/>
+    <AlbumCase kind="black" position={[-.52,.03,.12]} rotation={[0,-.12,0]}/>
+    <AlbumCase kind="hell" position={[0,.075,0]} rotation={[0,.04,0]}/>
+    <AlbumCase kind="razor" position={[.52,.12,-.08]} rotation={[0,.16,0]}/>
   </group>;
 }
 function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
@@ -154,12 +174,12 @@ function Memorabilia() {
 }
 function ProjectBook() {
   const label=useSurface('archive');
-  return <group rotation={[0,-.08,0]}>
-    <BookModel length={2.65}/>
-    <mesh position={[0,.43,0]} rotation={[-Math.PI/2,0,0]} castShadow>
-      <planeGeometry args={[1.16,1.55]}/><meshStandardMaterial map={label} roughness={.48}/>
+  return <group rotation={[0,-.04,0]}>
+    <BookModel length={2.02}/>
+    <mesh position={[0,.335,0]} rotation={[-Math.PI/2,0,0]} castShadow>
+      <planeGeometry args={[.72,.96]}/><meshStandardMaterial map={label} roughness={.48}/>
     </mesh>
-    <mesh position={[-.65,.25,0]}><boxGeometry args={[.055,.24,2.54]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
+    <mesh position={[-.495,.19,0]}><boxGeometry args={[.045,.18,1.93]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
   </group>;
 }
 export default function TrunkScene({reduced,onSelect,active,paused}) {
@@ -172,10 +192,10 @@ export default function TrunkScene({reduced,onSelect,active,paused}) {
     <spotLight castShadow position={[0,5,3]} intensity={32} distance={10} angle={.46} penumbra={.8} color="#ffd6a7" shadow-mapSize={[512,512]}/>
     <Suspense fallback={null}><Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment></Suspense>
     <InteriorCamera reduced={reduced}/><TrunkInterior/>
-    <group position={[2.28,.07,.83]} scale={.78}><AlbumsObject/></group>
-    <group position={[-1.55,.17,.2]} rotation={[-Math.PI/2,0,.72]}><Suspense fallback={null}><GuitarModel height={3.55} finish="cherry"/></Suspense></group>
+    <group position={[2.14,.07,.82]} scale={.82}><AlbumsObject/></group>
+    <group position={[-2.35,.17,.08]} rotation={[-Math.PI/2,0,.48]}><Suspense fallback={null}><GuitarModel height={3.18} finish="cherry"/></Suspense></group>
     <Memorabilia/>
-    <SelectableObject id="book" active={active} onSelect={onSelect} position={[0,.035,.7]} highlight={[1.3,1.34]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
+    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.18,.035,.82]} highlight={[1.02,1.06]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
     <ContactShadows position={[0,.01,.1]} opacity={.55} scale={7.2} blur={2.5} far={4}/>
   </Canvas>;
 }
