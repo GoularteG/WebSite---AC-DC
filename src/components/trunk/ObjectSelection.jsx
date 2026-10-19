@@ -18,7 +18,7 @@ export function SelectableObject({ id, active, onSelect, children, position, rot
   </group>;
 }
 export function ObjectSelection({onSelect,onFocus}) {
-  return <nav className="trunk-object-controls" aria-label="Objetos do porta-malas">
+  return <nav className="trunk-object-controls trunk-object-controls--assistive" aria-label="Objetos do porta-malas">
     {trunkObjects.map(item=><button key={item.id} data-object={item.id} aria-label={item.label}
       onFocus={()=>onFocus(item.id)} onBlur={()=>onFocus(null)} onClick={()=>onSelect(item.id)}>
       <span aria-hidden="true">↗</span><strong>{item.short}</strong><small>{item.title}</small>

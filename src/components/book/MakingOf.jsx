@@ -32,7 +32,8 @@ export default function MakingOf({ reduced, embedded=false, initialOpen=false, o
       <span className="cover-edition">THE HIGHWAY ARCHIVES / VOL. 01</span><span className="cover-bolt">ϟ</span>
       <strong>THE<br/>MAKING<br/>OF</strong><span className="cover-bottom">AC/DC — HIGHWAY TO HELL<br/><small>ABRIR O LIVRO ↗</small></span>
     </button></div> : <>
-      <div className="book-table"><PaperBook ref={book} reduced={reduced} onPage={onPage} onTurning={onTurning}/></div>
+      <div className="book-table" tabIndex={embedded ? 0 : undefined} role={embedded ? 'region' : undefined} aria-label={embedded ? 'Livro aberto. Arraste as páginas ou use as setas do teclado para folhear.' : undefined}><PaperBook ref={book} reduced={reduced} onPage={onPage} onTurning={onTurning}/></div>
+      {!embedded && <>
       <p className="book-gesture-hint"><span aria-hidden="true">↔</span> {reduced ? 'Use os controles abaixo ou as setas do teclado' : 'Arraste a página para folhear · Os botões também navegam'}</p>
       <nav className="book-controls" aria-label="Páginas do livro">
         <button className="book-control book-control--previous" disabled={page === 0 || turning} onClick={() => navigate('previous')} aria-label="Voltar uma página">← <span>Anterior</span></button>
@@ -45,9 +46,10 @@ export default function MakingOf({ reduced, embedded=false, initialOpen=false, o
       <div className="book-reading-progress" role="progressbar" aria-label="Progresso da leitura" aria-valuemin={1} aria-valuemax={entries.length} aria-valuenow={page+1}>
         <span style={{transform:`scaleX(${(page+1)/entries.length})`}}/>
       </div>
+      </>}
       <span className="book-announcement" role="status" aria-live="polite">Página {page + 1} de {entries.length}</span>
-      {toc && <ol className="contents" id="book-contents">{entries.map((entry, index) => <li key={entry.id}><button disabled={turning} onClick={() => { book.current?.go(index); setToc(false); }}>{String(index + 1).padStart(2, '0')} — {entry.title}</button></li>)}</ol>}
-      <button className="close-book" onClick={() => { if(onExit){onExit();return;} setOpen(false); setToc(false); setPage(0); }}>Fechar livro</button>
+      {!embedded && toc && <ol className="contents" id="book-contents">{entries.map((entry, index) => <li key={entry.id}><button disabled={turning} onClick={() => { book.current?.go(index); setToc(false); }}>{String(index + 1).padStart(2, '0')} — {entry.title}</button></li>)}</ol>}
+      {!embedded && <button className="close-book" onClick={() => { if(onExit){onExit();return;} setOpen(false); setToc(false); setPage(0); }}>Fechar livro</button>}
     </>}
     </section>{!embedded && <AlbumShelf/>}</div>
   </Container>;

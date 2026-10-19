@@ -84,7 +84,7 @@ export default function App() {
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
       {audio.error && <p className="audio-error" role="alert">{audio.error}</p>}
     </main>
-    {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span><button onClick={phase==='zooming'?onZoomed:onReturned}>Pular transição →</button></div>}
+    {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
     {phase==='trunk'&&<TrunkExperience reduced={reduced} onReturn={()=>navigate('highway')}/>}
   </>;
