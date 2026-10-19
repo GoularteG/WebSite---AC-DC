@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ManagedPageFlip } from './ManagedPageFlip';
+import { bindBookDrag } from './bookDrag';
 import { entries } from '../../data/book';
 
 function createPage(entry, index) {
@@ -30,6 +31,12 @@ function createPage(entry, index) {
 const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning }, ref) {
   const host = useRef(null), engine = useRef(null), current = useRef(0);
   const [availableWidth, setAvailableWidth] = useState(0);
+  const [fontsReady, setFontsReady] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    document.fonts.load('34px "Metal Mania"').then(() => { if (mounted) setFontsReady(true); });
+    return () => { mounted = false; };
+  }, []);
   const [portrait, setPortrait] = useState(() => matchMedia('(max-width: 760px)').matches);
   useEffect(() => {
     const media = matchMedia('(max-width: 760px)');
@@ -48,7 +55,7 @@ const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning }, 
     go(index) { if (!engine.current) return; reduced ? engine.current.turnToPage(index) : engine.current.flip(index, 'bottom'); },
   }), [reduced]);
   useEffect(() => {
-    if (!availableWidth) return;
+    if (!availableWidth || !fontsReady) return;
     const mount = document.createElement('div'); mount.className = 'folio-engine';
     host.current.append(mount);
     const nodes = entries.map(createPage); nodes.forEach(node => mount.append(node));
@@ -64,17 +71,18 @@ const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning }, 
       minHeight: 430, maxHeight: Math.max(950, pageHeight + 20), startPage: current.current,
       drawShadow: !reduced, maxShadowOpacity: .5, flippingTime: 1050,
       showCover: false, usePortrait: portrait, autoSize: true,
-      mobileScrollSupport: true, useMouseEvents: !reduced, showPageCorners: !reduced,
-      disableFlipByClick: reduced, swipeDistance: 35,
+      mobileScrollSupport: true, useMouseEvents: false, showPageCorners: false,
+      disableFlipByClick: true, swipeDistance: 35,
     });
     engine.current = flip;
     flip.on('flip', event => { current.current = event.data; onPage(event.data, portrait); });
     flip.on('changeState', event => onTurning(event.data !== 'read'));
     flip.loadFromHTML(nodes);
+    const unbindDrag = reduced ? () => {} : bindBookDrag(flip);
     onPage(flip.getCurrentPageIndex(), portrait);
     onTurning(false);
-    return () => { engine.current = null; flip.destroy(); mount.remove(); };
-  }, [portrait, availableWidth, reduced, onPage, onTurning]);
+    return () => { engine.current = null; unbindDrag(); flip.destroy(); mount.remove(); };
+  }, [portrait, availableWidth, fontsReady, reduced, onPage, onTurning]);
   return <div className={`physical-book ${portrait ? 'is-portrait' : ''}`}>
     <div className="leather-board" aria-hidden="true"><i/><i/><i/><i/></div>
     <div className="page-block" aria-hidden="true"/>

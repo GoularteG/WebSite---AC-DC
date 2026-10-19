@@ -39,3 +39,21 @@ Executadas em cópia da cena, nunca nos bytes do arquivo:
 ## Próximas otimizações
 
 Separar rodas, seus pivôs e materiais das lanternas em uma cópia de trabalho. Avaliar compressão Meshopt/Draco, texturas KTX2 e LOD após comparação visual. Nesta versão priorizamos preservar o original; o download do GLB ainda tem 11,27 MB e pode ser lento em conexões móveis.
+
+
+## Interactive trunk inspection
+The original charger-1970-original.glb remains unchanged (SHA-256:
+6c6da4443bd30e3979b5a4dd8c8f4c918666a4bd651ef15381ff852421c1f51e).
+Its 78 nodes contain 73 meshes, no animations and no skins. Material-named
+body meshes span almost the entire vehicle; there is no identifiable independent
+lid, hinge and interior assembly suitable for safe animation. The small rear
+Color_A16 mesh is an emblem-sized part, not a lid.
+
+The interaction therefore preserves all original geometry. ParkingCamera moves
+the complete vehicle to a turnout and approaches its rear. TrunkScene then
+presents a separate interior with orange pressed-metal panels, carpet, spare
+wheel, book, discs and the existing procedural SG-inspired guitar. It does not
+rebuild the car. All new textures are generated locally; no third-party assets
+were downloaded. The existing MakingOf component supplies the same page content
+and navigation through TrunkBook. Native modal dialogs handle Escape/focus;
+HTML object buttons provide keyboard and WebGL-fallback access.

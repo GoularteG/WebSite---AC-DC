@@ -12,7 +12,7 @@ function Cylinder({ position, rotation, args, color = darkMetal, metalness = .35
 }
 
 // Original, detailed double-cut guitar silhouette inspired by classic SG instruments.
-function Guitar({ finish = '#a10f19', style = 'sg' }) {
+export function Guitar({ finish = '#a10f19', style = 'sg' }) {
   const body = useMemo(() => {
     const s = new Shape();
     if (style === 'sg') {
