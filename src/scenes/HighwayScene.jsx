@@ -6,11 +6,10 @@ import Road from '../components/environment/Road';
 import Atmosphere from '../components/environment/Atmosphere';
 import InfernoFinale from '../components/environment/InfernoFinale';
 import Scenery from '../components/roadside/Scenery';
-import { ParkingCamera } from '../components/trunk/TrunkCamera';
+import { TrunkCamera } from '../components/trunk/TrunkCamera';
 import Charger from '../components/car/Charger';
 import { carAsset } from '../data/assets';
 import { JOURNEY_LENGTH, roadX } from '../data/journey';
-import { PARKING_ADVANCE } from '../data/parking';
 import { arrivalMix, FINAL_STOP_DISTANCE, infernoMix } from '../data/finale';
 const cameraConfig = { position: [2.5, 4.1, 11], fov: 55, near: .1, far: 1000 };
 class ModelBoundary extends Component {
@@ -24,11 +23,10 @@ export class SceneBoundary extends Component {
   static getDerivedStateFromError() { return { error: true }; }
   render() { return this.state.error ? <div className="scene-fallback"><span>O horizonte continua aqui.</span><p>Não foi possível iniciar a cena 3D. Tente um navegador com WebGL habilitado ou explore The Making Of.</p></div> : this.props.children; }
 }
-function JourneyRig({ phase, onParked, onReturned, distance, progress, targetProgress, reduced, onModelError, onModelReady, onArrival, quality }) {
+function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetProgress, reduced, onModelError, onModelReady, onArrival, quality }) {
   const invalidate = useThree(state => state.invalidate);
   const width = useThree(state => state.size.width);
   useEffect(() => { invalidate(); }, [phase, targetProgress, reduced, quality, width, invalidate]);
-  const turnout = useRef();
   const car = useRef(), fill = useRef(), arrived = useRef(false);
   const look = useRef(new Vector3()), position = useRef(new Vector3()), finalPosition = useRef(new Vector3());
   useFrame(({ camera }, dt) => {
@@ -37,7 +35,6 @@ function JourneyRig({ phase, onParked, onReturned, distance, progress, targetPro
     if (phase === 'road' && Math.abs(distance.current - progress.current * JOURNEY_LENGTH) <= .001) distance.current = progress.current * JOURNEY_LENGTH;
     if (phase === 'road' && !reduced && Math.abs(distance.current - progress.current * JOURNEY_LENGTH) > .001) invalidate();
     const s = distance.current;
-    turnout.current.position.set(roadX(s+PARKING_ADVANCE) + 9.5, .018, -s-PARKING_ADVANCE/2);
     const arrival = arrivalMix(s);
     const sweep = reduced ? 0 : Math.sin(s / 80) * 2.4;
     position.current.set(roadX(s - 8) + 4.2 + sweep, 3.3 + Math.sin(s / 120) * .35, -s + 8.5);
@@ -61,18 +58,17 @@ function JourneyRig({ phase, onParked, onReturned, distance, progress, targetPro
   }, -2);
   useEffect(() => { onArrival(false); return () => onArrival(false); }, [onArrival]);
   return <>
-    <mesh name="parking-turnout" ref={turnout} visible={phase !== 'road'} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[9,PARKING_ADVANCE+14]}/><meshStandardMaterial color="#38312b" roughness={1}/></mesh>
-    <ParkingCamera distance={distance} fill={fill} phase={phase} car={car} roadLook={look} reduced={reduced} onParked={onParked} onReturned={onReturned}/>
+    <TrunkCamera phase={phase} car={car} roadLook={look} reduced={reduced} onZoomed={onZoomed} onReturned={onReturned}/>
     <group name="journey-car" ref={car}><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
     <spotLight ref={fill} intensity={220} distance={24} angle={.85} penumbra={.75} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
   </>;
 }
-export default function HighwayScene({ phase, onParked, onReturned, progress, targetProgress, reduced, quality, onModelError, onModelReady, onArrival }) {
+export default function HighwayScene({ phase, onZoomed, onReturned, progress, targetProgress, reduced, quality, onModelError, onModelReady, onArrival }) {
   const distance = useRef(0);
   return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={quality === 'high' ? [1, 1.5] : 1} camera={cameraConfig} gl={{ antialias: quality === 'high', powerPreference: 'high-performance' }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
     <Atmosphere distance={distance} /><Road distance={distance} /><Scenery />
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} />
     <Environment resolution={64}><color attach="background" args={['#625853']} /><Lightformer intensity={2.5} color="#f6e6d4" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={3} color="#ffe4bf" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>
-    <JourneyRig phase={phase} onParked={onParked} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} />
+    <JourneyRig phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} />
   </Canvas></SceneBoundary>;
 }

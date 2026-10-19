@@ -33,3 +33,13 @@
   pinch zoom, close/focus restoration and no horizontal mobile overflow.
 - No JavaScript runtime exceptions in the guitar interaction test.
 - Source material conversion and attribution are documented in guitar-asset.md.
+
+
+## Current navigation: camera zoom only
+
+The parking maneuver and its turnout have been removed, along with the separate
+Explore trunk button. The Making Of navigation freezes journey progress and
+moves only the camera toward the rear over 1.5 seconds. Returning reverses the
+camera transition and restores the saved scroll. The original vehicle transform,
+book, record panels and guitar inspector are retained. Earlier parking checks
+above describe the superseded implementation.

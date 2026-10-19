@@ -49,8 +49,8 @@ body meshes span almost the entire vehicle; there is no identifiable independent
 lid, hinge and interior assembly suitable for safe animation. The small rear
 Color_A16 mesh is an emblem-sized part, not a lid.
 
-The interaction therefore preserves all original geometry. ParkingCamera moves
-the complete vehicle to a turnout and approaches its rear. TrunkScene then
+The interaction therefore preserves all original geometry. TrunkCamera approaches the rear while the complete vehicle stays at its
+original road position. TrunkScene then
 presents a separate interior with orange pressed-metal panels, carpet, spare
 wheel, book, discs and the existing procedural SG-inspired guitar. It does not
 rebuild the car. All new textures are generated locally; no third-party assets
