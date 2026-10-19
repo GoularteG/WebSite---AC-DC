@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Instance, Instances } from '@react-three/drei';
 import { BufferGeometry, CatmullRomCurve3, Float32BufferAttribute, Shape, Vector3 } from 'three';
+import HellLandscape from './HellLandscape';
 import { roadX } from '../../data/journey';
 import { FINAL_GATE_DISTANCE, FINAL_STOP_DISTANCE, infernoMix } from '../../data/finale';
 
@@ -127,7 +128,7 @@ export default function InfernoFinale({ distance, quality, reduced }) {
     lava.current.emissiveIntensity=.45+mix*1.35;
   });
   return <group ref={world}>
-    <BasaltCliffs /><LavaChannels material={lava} /><Monument molten={molten} />
+    <HellLandscape distance={distance} reduced={reduced}/><BasaltCliffs /><LavaChannels material={lava} /><Monument molten={molten} />
     <Atmospherics distance={distance} quality={quality} reduced={reduced} />
   </group>;
 }

@@ -40,7 +40,9 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
     position.current.set(roadX(s - 8) + 4.2 + sweep, 3.3 + Math.sin(s / 120) * .35, -s + 8.5);
     if (width < 761) position.current.set(roadX(s) + 2.5, 3.6, -s + 10.5);
     // Open the frame at arrival, keeping the original lane/vehicle transform.
-    finalPosition.current.set(roadX(s) + (width < 761 ? 3.4 : -1.8), width < 761 ? 5.5 : 6.2, -s + 16);
+    finalPosition.current.set(roadX(s) + (width < 761 ? -2 : -1.8), width < 761 ? 8.5 : 7.4, -s + (width < 761 ? 32 : 22));
+    const fov=MathUtils.lerp(55,width<761?65:55,arrival);
+    if(Math.abs(camera.fov-fov)>.001){camera.fov=fov;camera.updateProjectionMatrix();}
     position.current.lerp(finalPosition.current, arrival);
     camera.position.copy(position.current);
     look.current.set(roadX(s + 10) + 2.5, 1.2, -s - 10);

@@ -5,7 +5,7 @@ import { infernoMix } from '../../data/finale';
 export default function Atmosphere({ distance }) {
   const sky = useRef(), skyMaterial = useRef(), fog = useRef(), sun = useRef(), ambient = useRef();
   const uniforms = useMemo(() => ({ inferno: { value: 0 } }), []);
-  const colors = useMemo(() => ['#b45a38','#731910','#ffab64','#ff6a2d','#ffc58f','#f79150','#594347','#351522'].map(c=>new Color(c)), []);
+  const colors = useMemo(() => ['#b45a38','#82130b','#ffab64','#ff4b16','#ffc58f','#f79150','#594347','#351522'].map(c=>new Color(c)), []);
   useFrame(({ camera }) => {
     const mix = infernoMix(distance.current);
     sky.current.position.copy(camera.position);
@@ -19,7 +19,7 @@ export default function Atmosphere({ distance }) {
   return <>
     <mesh ref={sky} renderOrder={-1}>
       <sphereGeometry args={[700, 24, 16]} />
-      <shaderMaterial ref={skyMaterial} side={BackSide} depthWrite={false} uniforms={uniforms} vertexShader={'varying vec3 vPosition; void main(){vPosition=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}'} fragmentShader={'varying vec3 vPosition; uniform float inferno; void main(){vec3 dir=normalize(vPosition);float h=dir.y; vec3 horizon=mix(vec3(.96,.30,.085),vec3(.78,.025,.018),inferno); vec3 top=mix(vec3(.065,.035,.065),vec3(.065,.008,.018),inferno); vec3 c=mix(horizon,top,smoothstep(-.04,.65,h)); float sun=pow(max(0.,dot(dir,normalize(vec3(-.23,.11,-1.)))),620.); c+=mix(vec3(1.,.65,.25),vec3(1.,.16,.025),inferno)*sun; c+=vec3(.3,.025,.006)*inferno*exp(-abs(h-.035)*12.); gl_FragColor=vec4(c,1.);}'} />
+      <shaderMaterial ref={skyMaterial} side={BackSide} depthWrite={false} uniforms={uniforms} vertexShader={'varying vec3 vPosition; void main(){vPosition=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}'} fragmentShader={'varying vec3 vPosition; uniform float inferno; void main(){vec3 dir=normalize(vPosition);float h=dir.y; vec3 horizon=mix(vec3(.96,.30,.085),vec3(1.,.018,.006),inferno); vec3 top=mix(vec3(.065,.035,.065),vec3(.12,.002,.012),inferno); vec3 c=mix(horizon,top,smoothstep(-.04,.65,h)); float sun=pow(max(0.,dot(dir,normalize(vec3(-.23,.11,-1.)))),620.); c+=mix(vec3(1.,.65,.25),vec3(1.,.16,.025),inferno)*sun; c+=vec3(.3,.025,.006)*inferno*exp(-abs(h-.035)*12.); gl_FragColor=vec4(c,1.);}'} />
     </mesh>
     <fog ref={fog} attach="fog" args={['#b45a38', 70, 255]} />
     <hemisphereLight ref={ambient} args={['#ffc58f', '#594347', 2.1]} />

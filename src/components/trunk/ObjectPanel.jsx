@@ -8,7 +8,7 @@ const descriptions = {
   ]},
 
 };
-export function ObjectDialog({title,onClose,children,book=false}) {
+export function ObjectDialog({title,onClose,children,book=false,closeLabel="Voltar ao porta-malas"}) {
   const dialog=useRef(null);
   useEffect(()=>{
     const previous=document.activeElement, node=dialog.current;
@@ -17,7 +17,7 @@ export function ObjectDialog({title,onClose,children,book=false}) {
   },[]);
   return <dialog ref={dialog} aria-label={title} className={`trunk-dialog ${book?'trunk-book-dialog':''}`}
     onCancel={e=>{e.preventDefault();onClose();}}>
-    <button className="trunk-panel-close" autoFocus onClick={onClose} aria-label="Fechar e voltar ao porta-malas">← VOLTAR AO PORTA-MALAS <span aria-hidden="true">×</span></button>
+    <button className="trunk-panel-close" autoFocus onClick={onClose} aria-label={closeLabel}>← {closeLabel.toUpperCase()} <span aria-hidden="true">×</span></button>
     {children}
   </dialog>;
 }

@@ -22,3 +22,5 @@
   .has-arrived .prototype-note {left:auto;right:7%;max-width:135px;bottom:100px;font-size:6px;letter-spacing:.4px;padding:7px}
 }
 @media(max-height:650px){.inferno-arrival{top:105px}.inferno-arrival h1{font-size:33px;margin:8px 0}.inferno-arrival button{margin-top:12px}.inferno-arrival small{display:none}}
+
+.band-photo-fallback{display:block;width:300px;padding:40px 15px;text-align:center;color:#e7c494;background:#171313;font:40px "Metal Mania",serif;text-decoration:none}.band-photo-fallback small{font:16px Arial,sans-serif}

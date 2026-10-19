@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
+import Credits from './components/Credits';
 import TrunkExperience from './components/trunk/TrunkExperience';
 import { useReducedMotion } from './hooks/usePreferences';
 import { useAudio } from './hooks/useAudio';
@@ -11,9 +12,10 @@ export default function App() {
   const onReturned = useCallback(() => { setPhase('road'); requestAnimationFrame(() => document.querySelector('.site-header nav button')?.focus({preventScroll:true})); }, []);
   const [started, setStarted] = useState(false);
   const [value, setValue] = useState(0);
-  const [quality, setQuality] = useState(() => innerWidth < 768 ? 'low' : 'high');
+  const [quality] = useState(() => innerWidth < 768 ? 'low' : 'high');
   const [modelError, setModelError] = useState('');
   const [modelReady, setModelReady] = useState(false);
+  const [credits,setCredits] = useState(false);
   const [arrived, setArrived] = useState(false);
   const onModelReady = useCallback(() => setModelReady(true), []);
   const progress = useRef(0), saved = useRef(0);
@@ -77,12 +79,13 @@ export default function App() {
           <small>Role para cima para refazer o caminho.</small>
         </section>}
       </>}
-      <div className="prototype-note" role="status">{modelError || (modelReady ? <><span>DODGE CHARGER R/T 1970</span><br/><a href="https://sketchfab.com/3d-models/dominic-torettos-1970-dodge-charger-rt-fast-x-0e2c80e2928d4b76b49914db5bbb47ca" target="_blank" rel="noreferrer">Modelo: Emmanual Robinson, Jr.</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a></> : 'CARREGANDO O CHARGER ORIGINAL…')}</div>
-      <footer className="highway-footer"><div className="route-label"><span className="route-shield">H<span>01</span></span><div>THE OPEN ROAD<small>{started?`${Math.round(value*100).toString().padStart(2,'0')}% DO PERCURSO`:'O HORIZONTE É SÓ O COMEÇO'}</small></div></div><div className="footer-controls"><button onClick={()=>setQuality(quality==='high'?'low':'high')} aria-label={`Qualidade ${quality==='high'?'alta':'leve'}. Alternar qualidade.`}>VISUAL: {quality==='high'?'ALTO':'LEVE'}</button><button disabled={!audio.available} onClick={audio.toggle} aria-pressed={audio.playing} title={audio.available?'Ativar ou desativar áudio':'Aguardando um arquivo de áudio autorizado'}>♫ {audio.available?(audio.playing?'SOM LIGADO':'SOM DESLIGADO'):'ÁUDIO EM BREVE'}</button></div></footer>
+      {modelError && <p className="audio-error" role="alert">{modelError}</p>}
+      <footer className="highway-footer"><div className="route-label"><span className="route-shield">H<span>01</span></span><div>THE OPEN ROAD<small>{started?`${Math.round(value*100).toString().padStart(2,'0')}% DO PERCURSO`:'O HORIZONTE É SÓ O COMEÇO'}</small></div></div><div className="footer-controls"><button onClick={()=>setCredits(true)}>CRÉDITOS</button><button disabled={!audio.available} onClick={audio.toggle} aria-pressed={audio.playing} title={audio.available?'Ativar ou desativar áudio':'Aguardando um arquivo de áudio autorizado'}>♫ {audio.available?(audio.playing?'SOM LIGADO':'SOM DESLIGADO'):'ÁUDIO EM BREVE'}</button></div></footer>
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
       {audio.error && <p className="audio-error" role="alert">{audio.error}</p>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span><button onClick={phase==='zooming'?onZoomed:onReturned}>Pular transição →</button></div>}
+    {credits&&<Credits onClose={()=>setCredits(false)}/>}
     {phase==='trunk'&&<TrunkExperience reduced={reduced} onReturn={()=>navigate('highway')}/>}
   </>;
 }
