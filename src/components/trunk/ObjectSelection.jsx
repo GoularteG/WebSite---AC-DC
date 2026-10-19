@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { useCursor } from '@react-three/drei';
 
 export const trunkObjects = [
-  {id:'book',short:'Arquivo',title:'The Making Of',label:'Abrir o arquivo The Making Of'},
-  {id:'records',short:'Álbuns',title:'Três clássicos',label:'Explorar os três álbuns clássicos'},
-  {id:'guitar',short:'Guitarra',title:'Cherry red em 3D',label:'Inspecionar guitarra em 3D'},
+  {id:'book',short:'Abrir o livro',title:'The Making Of',label:'Abrir o livro The Making Of'},
 ];
 export function SelectableObject({ id, active, onSelect, children, position, rotation, scale, highlight=[.8,.83] }) {
   const [hover,setHover]=useState(false);
@@ -21,9 +19,9 @@ export function SelectableObject({ id, active, onSelect, children, position, rot
 }
 export function ObjectSelection({onSelect,onFocus}) {
   return <nav className="trunk-object-controls" aria-label="Objetos do porta-malas">
-    {trunkObjects.map((item,i)=><button key={item.id} data-object={item.id} aria-label={item.label}
+    {trunkObjects.map(item=><button key={item.id} data-object={item.id} aria-label={item.label}
       onFocus={()=>onFocus(item.id)} onBlur={()=>onFocus(null)} onClick={()=>onSelect(item.id)}>
-      <span>0{i+1}</span><strong>{item.short}</strong><small>{item.title}</small>
+      <span aria-hidden="true">↗</span><strong>{item.short}</strong><small>{item.title}</small>
     </button>)}
   </nav>;
 }

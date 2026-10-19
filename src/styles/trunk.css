@@ -9,7 +9,7 @@
 .trunk-return{position:absolute;right:5%;top:116px;z-index:4;padding:13px 18px;background:#151515d9;border:1px solid #6c513d;color:#f4d2ae;font-size:11px;letter-spacing:1px;backdrop-filter:blur(8px)}
 .trunk-canvas{position:absolute;inset:155px 0 105px;z-index:0}
 .trunk-canvas:after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 80px #06070899}
-.trunk-object-controls{position:absolute;z-index:3;bottom:27px;left:50%;transform:translateX(-50%);width:min(850px,90%);display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.trunk-object-controls{position:absolute;z-index:3;bottom:27px;left:50%;transform:translateX(-50%);width:min(360px,84%);display:grid;grid-template-columns:1fr;gap:10px}
 .trunk-object-controls button{color:#f2dcc4;text-align:left;background:#111315e8;border:1px solid #3e4247;padding:11px 16px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center;cursor:pointer;backdrop-filter:blur(8px)}
 .trunk-object-controls button:hover,.trunk-object-controls button:focus-visible{border-color:#ec8e4f;background:#231d19}
 .trunk-object-controls button span{color:#ce7a45;font-size:10px;grid-row:1/3}.trunk-object-controls button strong{font:20px 'Metal Mania',serif}.trunk-object-controls button small{font-size:10px;color:#b9ada0}

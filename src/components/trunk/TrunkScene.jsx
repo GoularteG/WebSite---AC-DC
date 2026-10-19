@@ -1,7 +1,8 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { ContactShadows, Environment, Lightformer, RoundedBox, useCursor } from '@react-three/drei';
+import { ContactShadows, Environment, Lightformer, RoundedBox } from '@react-three/drei';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
+import BookModel from './BookModel';
 import GuitarModel from './GuitarModel';
 import { InteriorCamera } from './TrunkCamera';
 import { SelectableObject } from './ObjectSelection';
@@ -27,6 +28,9 @@ function useSurface(kind) {
         black:{bg:'#08090a',ink:'#aeb0b2',accent:'#771b20',top:'ACϟDC',main:['BACK','IN BLACK'],foot:'1980 · ARCHIVE EDITION'},
         hell:{bg:'#161011',ink:'#e2cab1',accent:'#a72e20',top:'ACϟDC',main:['HIGHWAY','TO HELL'],foot:'1979 · ARCHIVE EDITION'},
         razor:{bg:'#bcc2c5',ink:'#34404a',accent:'#8e1f23',top:'ACϟDC',main:['THE RAZORS','EDGE'],foot:'1990 · ARCHIVE EDITION'},
+        ticket:{bg:'#ba9a68',ink:'#241b13',accent:'#8b1e1f',top:'ACϟDC',main:['WORLD TOUR','ADMIT ONE'],foot:'GENERAL ADMISSION · 1980'},
+        setlist:{bg:'#d7d0bd',ink:'#25211d',accent:'#8b1e1f',top:'TONIGHT',main:['HIGHWAY','HELLS BELLS'],foot:'SET LIST · STAGE LEFT'},
+        poster:{bg:'#242326',ink:'#d5c5ae',accent:'#9b201d',top:'LIVE',main:['HIGH','VOLTAGE'],foot:'ROCK & ROLL · ALL NIGHT'},
       }[kind];
       ctx.fillStyle=data.bg;ctx.fillRect(0,0,512,512);
       ctx.strokeStyle=data.accent;ctx.lineWidth=10;ctx.strokeRect(18,18,476,476);
@@ -66,15 +70,13 @@ function SpareTire() {
     {Array.from({length:5},(_,i)=>{const a=i*Math.PI*.4;return <mesh key={i} position={[Math.cos(a)*.26,Math.sin(a)*.26,.18]} rotation={[Math.PI/2,0,0]}><cylinderGeometry args={[.045,.045,.1,10]}/><meshStandardMaterial color="#2d3034" metalness={.8}/></mesh>;})}
   </group>;
 }
-function LidArchive({active,onSelect}) {
-  const [hover,setHover]=useState(false);useCursor(hover);
+function LidArchive() {
   const label=useSurface('archive');
-  return <group position={[0,.98,.18]} onPointerOver={e=>{e.stopPropagation();setHover(true);}} onPointerOut={()=>setHover(false)} onClick={e=>{e.stopPropagation();onSelect('book');}}>
-    <mesh castShadow><boxGeometry args={[1.25,.76,.035]}/><meshStandardMaterial map={label} roughness={.72}/></mesh>
-    {(hover||active==='book')&&<mesh position={[0,0,-.025]}><planeGeometry args={[1.38,.89]}/><meshBasicMaterial color="#f0a047" transparent opacity={.75}/></mesh>}
+  return <group position={[0,.98,.18]}>
+    <mesh castShadow><boxGeometry args={[.84,.5,.025]}/><meshStandardMaterial map={label} color="#746e65" roughness={.82}/></mesh>
   </group>;
 }
-function TrunkInterior({active,onSelect}) {
+function TrunkInterior() {
   const carpet=useSurface('carpet');
   return <group>
     <RoundedBox args={[7,.2,4.45]} position={[0,-.12,.1]} radius={.16} smoothness={4} receiveShadow><meshStandardMaterial map={carpet} color="#77787c" roughness={1}/></RoundedBox>
@@ -97,7 +99,7 @@ function TrunkInterior({active,onSelect}) {
       </group>)}
       <MetalBar position={[0,.02,.12]} args={[6.78,.12,.09]} color="#111317"/>
       <MetalBar position={[0,2.07,.12]} args={[6.72,.1,.08]} color="#25282b"/>
-      <LidArchive active={active} onSelect={onSelect}/>
+      <LidArchive/>
     </group>
     <SpareTire/>
     <group position={[0,-.12,2.53]}>
@@ -122,6 +124,44 @@ function AlbumsObject() {
     <AlbumCase kind="razor" position={[.45,.16,-.12]} rotation={[0,.22,0]}/>
   </group>;
 }
+function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
+  const texture=useSurface(kind);
+  return <group position={position} rotation={rotation}>
+    <mesh castShadow><boxGeometry args={[size[0],.025,size[1]]}/><meshStandardMaterial color="#a89d88" roughness={.9}/></mesh>
+    <mesh position={[0,.014,0]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[size[0]*.96,size[1]*.96]}/><meshStandardMaterial map={texture} roughness={.82}/></mesh>
+    <mesh position={[0,.02,0]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.012,size[1]*.94]}/><meshBasicMaterial color="#766c5c" transparent opacity={.45}/></mesh>
+  </group>;
+}
+function Picks() {
+  return <group>
+    {[
+      [-.22,.03,-.08,'#a92320'],[.04,.04,.04,'#d7b05c'],[.25,.03,-.1,'#17191b'],
+    ].map(([x,y,z,color],i)=><mesh key={i} position={[x,y,z]} rotation={[-Math.PI/2,0,i*.45]} scale={[.17,.22,1]} castShadow>
+      <circleGeometry args={[1,3]}/><meshPhysicalMaterial color={color} roughness={.35} clearcoat={.65}/>
+    </mesh>)}
+  </group>;
+}
+function Memorabilia() {
+  return <group>
+    <PaperCard kind="setlist" position={[-2.35,.06,-.62]} rotation={[0,-.18,0]} size={[.68,1.02]}/>
+    <PaperCard kind="ticket" position={[1.68,.07,-.7]} rotation={[0,.22,0]} size={[.48,.92]}/>
+    <PaperCard kind="ticket" position={[1.98,.08,-.58]} rotation={[0,-.08,0]} size={[.48,.92]}/>
+    <PaperCard kind="poster" position={[-2.48,.055,.92]} rotation={[0,.12,0]} size={[.82,1.16]}/>
+    <group position={[-1.08,.08,1.38]}><Picks/></group>
+    <mesh position={[2.72,.08,-.34]} rotation={[Math.PI/2,0,0]} castShadow><torusGeometry args={[.28,.055,12,42]}/><meshStandardMaterial color="#161719" roughness={.78}/></mesh>
+    <mesh position={[2.72,.085,-.34]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[.11,.035,10,32]}/><meshStandardMaterial color="#b6aa8f" roughness={.7}/></mesh>
+  </group>;
+}
+function ProjectBook() {
+  const label=useSurface('archive');
+  return <group rotation={[0,-.08,0]}>
+    <BookModel length={2.65}/>
+    <mesh position={[0,.43,0]} rotation={[-Math.PI/2,0,0]} castShadow>
+      <planeGeometry args={[1.16,1.55]}/><meshStandardMaterial map={label} roughness={.48}/>
+    </mesh>
+    <mesh position={[-.65,.25,0]}><boxGeometry args={[.055,.24,2.54]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
+  </group>;
+}
 export default function TrunkScene({reduced,onSelect,active,paused}) {
   return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance'}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
     <color attach="background" args={['#090a0c']}/><fog attach="fog" args={['#090a0c',13,23]}/>
@@ -129,12 +169,13 @@ export default function TrunkScene({reduced,onSelect,active,paused}) {
     <directionalLight castShadow position={[-3,7,6]} intensity={3.2} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
     <directionalLight position={[5,2,-3]} intensity={1.5} color="#7c9abe"/>
     <pointLight position={[0,2.8,2.7]} intensity={12} distance={9} color="#e7a36e" decay={2}/>
+    <spotLight castShadow position={[0,5,3]} intensity={32} distance={10} angle={.46} penumbra={.8} color="#ffd6a7" shadow-mapSize={[512,512]}/>
     <Suspense fallback={null}><Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment></Suspense>
-    <InteriorCamera reduced={reduced}/><TrunkInterior active={active} onSelect={onSelect}/>
-    <SelectableObject id="records" active={active} onSelect={onSelect} position={[2.05,.08,.93]} highlight={[1.05,1.09]}><AlbumsObject/></SelectableObject>
-    <SelectableObject id="guitar" active={active} onSelect={onSelect} position={[-.35,.22,.35]} highlight={[1.15,1.19]}>
-      <group rotation={[-Math.PI/2,0,1.03]}><Suspense fallback={null}><GuitarModel height={4.45} finish="cherry"/></Suspense></group>
-    </SelectableObject>
+    <InteriorCamera reduced={reduced}/><TrunkInterior/>
+    <group position={[2.28,.07,.83]} scale={.78}><AlbumsObject/></group>
+    <group position={[-1.55,.17,.2]} rotation={[-Math.PI/2,0,.72]}><Suspense fallback={null}><GuitarModel height={3.55} finish="cherry"/></Suspense></group>
+    <Memorabilia/>
+    <SelectableObject id="book" active={active} onSelect={onSelect} position={[0,.035,.7]} highlight={[1.3,1.34]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
     <ContactShadows position={[0,.01,.1]} opacity={.55} scale={7.2} blur={2.5} far={4}/>
   </Canvas>;
 }
