@@ -43,3 +43,13 @@ O Challenger não foi recebido; carregamento, escala, orientação, materiais, r
 Limites: as rodas não giram, pois as peças vêm agrupadas por material. Não foi testado desempenho em celular físico nem medido FPS em GPU real. O GLB original tem 11,27 MB; o bundle 3D passou a aproximadamente 351 KB gzip com GLTFLoader. Os ajustes de material vermelho são compartilhados por detalhes do modelo, não exclusivamente pelas lanternas. A compressão e a separação das rodas devem ser feitas em uma cópia de trabalho. Não houve publicação remota.
 
 A inspeção da primeira captura mobile revelou corte lateral do veículo após redimensionar. Corrigido com enquadramento centralizado abaixo de 761 px, invalidação da cena ao mudar largura e configuração inicial estável da câmera. Novo build aprovado e nova captura mobile inspecionada: carro inteiro no quadro, sem exceções JavaScript. A captura `charger-mobile.png` foi substituída pela versão corrigida.
+
+# Atualização visual do livro — 19 de outubro de 2026
+
+- `npm run build` aprovado; os três testes de lógica existentes passaram.
+- `git diff --exit-code HEAD -- src/data/book.js src/scenes/HighwayScene.jsx`: textos do livro e cena da estrada sem alterações nesta atualização.
+- Chromium: estado de animação confirmado durante a virada; avanço de 1–2 para 3–4 e retorno validados.
+- Todas as dez páginas verificadas nas larguras de 320, 390, 900 e 1440 px: conteúdo dentro da altura das folhas e sem overflow horizontal.
+- Sumário, navegação com movimento reduzido, fechamento/reabertura e troca de abas passaram; nenhuma exceção JavaScript na verificação final.
+- O teste final do livro foi isolado com WebGL desativado no navegador de teste. O ambiente com renderização 3D por software causava atrasos de composição e timeouts; isso não altera a configuração da aplicação publicada.
+- Captura final `artifacts/book-aged-desktop.png` inspecionada. Desempenho e gestos em dispositivos físicos não foram medidos.
