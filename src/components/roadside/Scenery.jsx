@@ -101,6 +101,8 @@ function Bell() {
 function Helmet() {
   return <group>
     <mesh position={[0, .72, 0]} rotation={[0, 0, -.05]} castShadow><sphereGeometry args={[.95, 28, 20, 0, Math.PI * 2, 0, Math.PI * .57]} /><meshStandardMaterial color="#292827" metalness={.62} roughness={.28} side={2} /></mesh>
+    <Cylinder position={[0, .5, 0]} args={[.93, .89, .24, 28]} color="#222224" metalness={.55} />
+    <mesh position={[0, .59, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow><torusGeometry args={[.92, .055, 8, 28]} /><meshStandardMaterial color="#171718" metalness={.45} roughness={.44} /></mesh>
     <Box position={[0, .53, .73]} scale={[1.18, .16, .3]} color="#8f1b18" metalness={.58} />
     <Box position={[0, .36, .72]} scale={[1.12, .08, .26]} color="#d6bc82" metalness={.65} />
     <Box position={[0, .18, .86]} scale={[1.25, .13, .43]} color="#161719" metalness={.4} />
@@ -123,13 +125,13 @@ function Sign({ wide = 4.2 }) {
 function RockFigure({ pose = 0 }) {
   return <group>
     <Box position={[0, .28, 0]} scale={[1.65, .5, 1.1]} color="#262321" />
-    <mesh position={[0, 2.62, 0]} castShadow><sphereGeometry args={[.34, 18, 14]} /><meshStandardMaterial color="#b58a69" roughness={.85} /></mesh>
-    <mesh position={[0, 1.62, 0]} rotation={[0, 0, pose ? -.16 : .12]} castShadow><capsuleGeometry args={[.48, 1.4, 5, 12]} /><meshStandardMaterial color={pose ? '#21191a' : '#761b1c'} roughness={.8} /></mesh>
-    <Cylinder position={[-.5, 1.95, 0]} rotation={[0, 0, -.75]} args={[.13, .12, 1.1, 10]} color="#b58a69" />
-    <Cylinder position={[.5, 1.9, 0]} rotation={[0, 0, .75]} args={[.13, .12, 1.1, 10]} color="#b58a69" />
+    <mesh position={[0, 2.8, 0]} castShadow><sphereGeometry args={[.34, 18, 14]} /><meshStandardMaterial color="#b58a69" roughness={.85} /></mesh>
+    <mesh position={[0, 1.67, 0]} rotation={[0, 0, pose ? -.12 : .09]} castShadow><capsuleGeometry args={[.44, .85, 5, 12]} /><meshStandardMaterial color={pose ? '#21191a' : '#761b1c'} roughness={.8} /></mesh>
+    <Cylinder position={[-.5, 1.88, .16]} rotation={[0, 0, -.65]} args={[.13, .12, 1.05, 10]} color="#b58a69" />
+    <Cylinder position={[.5, 1.88, .16]} rotation={[0, 0, .65]} args={[.13, .12, 1.05, 10]} color="#b58a69" />
     <Cylinder position={[-.21, .76, 0]} rotation={[0, 0, -.08]} args={[.16, .13, 1.25, 10]} color="#21191a" />
     <Cylinder position={[.23, .76, 0]} rotation={[0, 0, .08]} args={[.16, .13, 1.25, 10]} color="#21191a" />
-    <group position={[.6, 1.55, .42]} rotation={[0, 0, -.55]} scale={[.38, .55, .3]}><Guitar finish="#a20e18" /></group>
+    <group position={[-.05, 1.27, .64]} rotation={[0, 0, -.72]} scale={[.3, .34, .3]}><Guitar finish="#a20e18" /></group>
   </group>;
 }
 function LightingTower() {

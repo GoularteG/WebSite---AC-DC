@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { BackSide, Color } from 'three';
 import { infernoMix } from '../../data/finale';
+import { roadX } from '../../data/journey';
 export default function Atmosphere({ distance, ghostActive = false }) {
   const sky = useRef(), skyMaterial = useRef(), fog = useRef(), sun = useRef(), ambient = useRef();
   const uniforms = useMemo(() => ({ inferno: { value: 0 } }), []);
@@ -27,7 +28,7 @@ export default function Atmosphere({ distance, ghostActive = false }) {
     {Array.from({ length: 46 }, (_, i) => {
       const s = i * 25 - 60; const side = i % 2 ? 1 : -1;
       const height = 12 + (Math.sin(i * 13.7) + 1) * 18;
-      return <mesh key={i} position={[side * (90 + Math.sin(i) * 30), height / 2 - 4, -s]} rotation={[0, i * .7, .12]}><coneGeometry args={[30 + i % 5 * 5, height, 5]} /><meshStandardMaterial color={i % 3 ? '#624039' : '#81503a'} flatShading /></mesh>;
+      return <mesh key={i} position={[roadX(s) + side * (95 + Math.sin(i) * 12), height / 2 - 4, -s]} rotation={[0, i * .7, .12]}><coneGeometry args={[30 + i % 5 * 5, height, 5]} /><meshStandardMaterial color={i % 3 ? '#624039' : '#81503a'} flatShading /></mesh>;
     })}
   </>;
 }
