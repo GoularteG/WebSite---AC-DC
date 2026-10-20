@@ -6,6 +6,7 @@ import './styles/global.css';
 import './styles/book.css';
 import './styles/book-usability.css';
 import './styles/inferno.css';
+import './styles/history.css';
 createRoot(document.getElementById('root')).render(<React.StrictMode><App/></React.StrictMode>);
 
 import './styles/trunk.css';

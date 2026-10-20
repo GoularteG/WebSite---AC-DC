@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import Credits from './components/Credits';
 import TrunkExperience from './components/trunk/TrunkExperience';
+import HistoryChapter from './components/history/HistoryChapter';
 import { useReducedMotion } from './hooks/usePreferences';
 import { useAudio } from './hooks/useAudio';
-import { chapters, chapterAt, clamp } from './data/journey';
+import { chapters, chapterAt, chapterVisibility, clamp } from './data/journey';
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
 export default function App() {
   const [phase, setPhase] = useState('road');
@@ -22,6 +23,7 @@ export default function App() {
   const reduced = useReducedMotion();
   const audio = useAudio();
   const chapter = chapterAt(value);
+  const storyVisibility = chapterVisibility(value, chapter);
   const atDestination = started && arrived && value > .97;
   useEffect(() => {
     if (phase !== 'road' || !started) return;
@@ -66,11 +68,12 @@ export default function App() {
       <nav aria-label="Áreas principais"><button className={tab==='highway'?'active':''} aria-current={tab==='highway'?'page':undefined} onClick={()=>navigate('highway')}><small>01</small> THE HIGHWAY</button><button className={tab==='making'?'active':''} aria-current={tab==='making'?'page':undefined} onClick={()=>navigate('making')}><small>02</small> THE MAKING OF</button></nav>
       <span className="edition">AN EXPERIMENTAL ROCK EXPERIENCE<span>VOL. 01 — THE OPEN ROAD</span></span>
     </header>
-    <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''}`} style={{height:started?'650vh':'100svh'}}>
+    <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''}`} style={{height:started?'950vh':'100svh'}}>
       <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}><HighwayScene phase={phase} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived}/></Suspense><div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening"><span className="eyebrow"><i/> NO TURNING BACK. JUST ROCK ’N’ ROLL.</span><h1>HIGHWAY<br/><span className="title-second"><em>TO</em> HELL</span><b aria-hidden="true">ϟ</b></h1><p>Uma estrada. Mil volts.<br/>O próximo capítulo começa com você.</p><button className="start-button" onClick={()=>{setStarted(true);go(.015);}}>ENTRAR NA ESTRADA <span>↗</span></button><span className="start-note">{reduced?'Explore pelos marcos do percurso':'Role para avançar. Volte para redescobrir.'}</span></section> : <>
-        {!atDestination && <section className={`chapter-caption ${value>.78?'inferno-approach':''}`} aria-live="polite"><span className="eyebrow">{value>.78?'HIGHWAY TO HELL / O ÚLTIMO DESTINO':`MARCO EXPERIMENTAL / ${chapter.marker}`}</span><h1>{value>.78?'INTO THE FIRE.':chapter.title}</h1><p>{value>.78?'O horizonte já não é o mesmo.':chapter.subtitle}</p></section>}
-        <nav className="chapter-nav" aria-label="Marcos do percurso">{chapters.map(item=><button key={item.id} aria-label={`Ir para ${item.title}`} aria-current={chapter.id===item.id?'step':undefined} className={chapter.id===item.id?'selected':''} onClick={()=>go(item.progress)}><span>{item.marker}</span><i/><strong>{item.title}</strong></button>)}</nav>
+        {!atDestination && chapter.id !== 'hell-gate' && <HistoryChapter key={chapter.id} chapter={chapter} visibility={storyVisibility} reduced={reduced}/>}
+        {!atDestination && chapter.id === 'hell-gate' && <section className="chapter-caption inferno-approach"><span className="eyebrow">09 / HIGHWAY TO HELL</span><h1>THE GATES OF HELL.</h1><p>O horizonte já não é o mesmo.</p></section>}
+        <nav className="history-timeline" aria-label="Linha do tempo da estrada">{chapters.map(item=><button key={item.id} aria-label={`Ir para ${item.period}: ${item.title}`} aria-current={chapter.id===item.id?'step':undefined} className={chapter.id===item.id?'selected':''} onClick={()=>go(item.id === 'hell-gate' ? 1 : item.progress)} title={`${item.period} — ${item.title}`}><span className="timeline-number">{item.marker}</span><span className="timeline-period">{item.id==='hell-gate'?'INFERNO':item.period}</span></button>)}</nav>
         {atDestination && <section className="inferno-arrival" aria-labelledby="arrival-title">
           <span className="eyebrow">HIGHWAY TO HELL / DESTINO FINAL</span>
           <h1 id="arrival-title">ATÉ O FIM.<br/><span>ATÉ O FOGO.</span></h1>

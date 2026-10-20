@@ -1,0 +1,275 @@
+{
+  "locale": "pt-BR",
+  "editorialStatus": "research-ready-not-published",
+  "photographyPolicy": "A foto principal de cada capítulo tem licença aberta verificada na página do arquivo. Nos capítulos 1 a 3, ela é contextual: não mostra o AC/DC. As candidatas com direitos pendentes não devem ser exibidas sem autorização. Créditos e condições de cada licença devem acompanhar a futura publicação.",
+  "chapters": [
+    {
+      "id": "birth-of-acdc",
+      "period": "1973",
+      "title": "The First Spark",
+      "narrative": "Antes de se tornar um nome mundial, o AC/DC era uma aposta de dois irmãos em Sydney. Malcolm Young reuniu a banda em 1973 e Angus logo trouxe sua guitarra e uma presença de palco impossível de ignorar. A formação inicial ainda tinha Dave Evans nos vocais e passaria por mudanças, mas a direção já estava clara: riffs diretos, volume alto e a energia do rock and roll. Na noite de 31 de dezembro, o grupo fez sua primeira apresentação oficial no clube Chequers. Era um começo modesto, distante dos estádios que viriam depois. Ali nasceu uma identidade construída menos em efeitos e mais no encontro entre ritmo, guitarra e público.",
+      "events": [
+        { "date": "1973", "text": "Malcolm e Angus Young formam o AC/DC em Sydney." },
+        { "date": "1973", "text": "Dave Evans canta na primeira formação." },
+        { "date": "31 dez. 1973", "text": "Primeira apresentação oficial no Chequers, em Sydney." }
+      ],
+      "curiosity": "A estreia oficial aconteceu na véspera do Ano-Novo, data que a banda voltou a celebrar cinquenta anos depois.",
+      "image": {
+        "kind": "contextual-period-photograph",
+        "description": "Balsa Kosciusko diante da recém-inaugurada Ópera de Sydney, fotografada em 25 de outubro de 1973.",
+        "caption": "Sydney em 1973, a cidade onde o AC/DC começou; a foto não mostra a banda nem o Chequers.",
+        "source": "City of Sydney Archives / Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sydney_Ferry_KOSCIUSKO_passing_the_newly_opened_Opera_House_in_Sydney_Cove_Circular_Quay_25_Oct_1973.jpg",
+        "creator": "John Ward",
+        "captured": "1973-10-25",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "John Ward / City of Sydney Archives, CC BY 4.0",
+        "candidate": {
+          "description": "Fotografia de arquivo de Philip Morris exibida na notícia oficial sobre a primeira apresentação.",
+          "sourceUrl": "https://www.acdc.com/on-this-day-1973/",
+          "creator": "Philip Morris",
+          "usageStatus": "permission-required",
+          "note": "A publicação oficial não concede licença de reprodução e não comprova a data exata de captura da fotografia; confirmar ambos antes de usá-la como registro da estreia."
+        }
+      },
+      "references": [
+        { "title": "AC/DC — estreia no Chequers", "url": "https://www.acdc.com/ac-dc-made-live-debut-50-years-ago-today/" },
+        { "title": "Associated Press — formação inicial", "url": "https://apnews.com/article/6881f8f56c82e6d9f51a9727a5141e66" }
+      ]
+    },
+    {
+      "id": "bon-scott-era",
+      "period": "1974–1976",
+      "title": "The Voice That Lit the Fuse",
+      "narrative": "Quando Bon Scott se juntou ao AC/DC em 1974, a banda ganhou uma voz que parecia viver cada história que cantava. Ele havia participado de uma jam com o grupo no Pooraka Hotel, em Adelaide, dias antes da entrada oficial. O repertório tomou forma nos palcos e nos primeiros discos australianos, entre eles High Voltage e T.N.T. A mistura de humor malicioso, pulso firme e guitarras econômicas ajudou a conquistar o público local. Em 1976, uma edição internacional de High Voltage reuniu músicas dos lançamentos australianos e levou aquele som a novos ouvintes. A formação ainda evoluía, mas Bon, Malcolm e Angus já haviam encontrado uma química decisiva.",
+      "events": [
+        { "date": "set. 1974", "text": "Bon Scott canta com o grupo no Pooraka Hotel e se torna o vocalista." },
+        { "date": "1975", "text": "High Voltage e T.N.T. estabelecem o repertório australiano." },
+        { "date": "1976", "text": "High Voltage chega ao mercado internacional em versão compilada." }
+      ],
+      "curiosity": "O High Voltage internacional de 1976 não é o mesmo disco australiano lançado em 1975: reúne faixas de dois álbuns locais.",
+      "image": {
+        "kind": "contextual-period-photograph",
+        "description": "Ópera de Sydney e a baía fotografadas em 1976.",
+        "caption": "Sydney em 1976, quando o som da banda começava a atravessar fronteiras; a imagem não registra o AC/DC.",
+        "source": "Wikimedia Commons / Flickr",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:187_Sydney_Opera_House,_July_1976_(51748617959).jpg",
+        "creator": "Wilford Peloquin",
+        "captured": "1976-08-02",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "Wilford Peloquin, CC BY 2.0",
+        "candidate": {
+          "description": "Bon Scott, Angus Young e Mark Evans no palco do Nashville Rooms, Londres, em 27 de maio de 1976.",
+          "sourceUrl": "https://www.gettyimages.com.au/detail/news-photo/bon-scott-angus-young-and-mark-evans-of-ac-dc-performing-on-news-photo/800471778",
+          "creator": "Arquivo fotográfico licenciado por Getty Images",
+          "usageStatus": "permission-required",
+          "note": "Fotografia de época identificada pelo arquivo; requer compra de licença adequada ao uso no site."
+        }
+      },
+      "references": [
+        { "title": "AC/DC — jam de Bon Scott em 1974", "url": "https://www.acdc.com/september-1974-bon-scott-jams-with-ac-dc/" },
+        { "title": "AC/DC — High Voltage (edição internacional)", "url": "https://www.acdc.com/music/high-voltage/" },
+        { "title": "AC/DC — T.N.T. na Austrália", "url": "https://www.acdc.com/40-years-ago-ac-dc-release-i%C2%BDt-n-t-i%C2%BD-in-australia-setting-stage-for-things-to-come/" }
+      ]
+    },
+    {
+      "id": "let-there-be-rock",
+      "period": "1977–1978",
+      "title": "Riffs Across the World",
+      "narrative": "O AC/DC deixou de ser apenas uma sensação australiana e intensificou sua vida na estrada. Let There Be Rock, de 1977, colocou os riffs em primeiro plano, com faixas que se tornariam indispensáveis nos shows. No ano seguinte, Powerage mostrou composições mais amadurecidas e marcou a estreia de Cliff Williams no baixo. O palco continuava sendo o teste definitivo: apresentações em diferentes países ampliaram a reputação da banda, enquanto o álbum ao vivo If You Want Blood (You’ve Got It) preservou a força dos concertos gravados em Glasgow, em abril de 1978. O grupo ainda não havia alcançado o grande público norte-americano, mas seu som e sua postura já eram reconhecíveis em qualquer lugar.",
+      "events": [
+        { "date": "1977", "text": "Lançamento de Let There Be Rock." },
+        { "date": "1978", "text": "Powerage apresenta Cliff Williams no baixo." },
+        { "date": "abr. 1978", "text": "Shows em Glasgow são registrados para If You Want Blood (You’ve Got It)." }
+      ],
+      "curiosity": "O disco ao vivo de 1978 registra apresentações no Apollo Theatre, em Glasgow, cidade escocesa ligada às origens da família Young e de Bon Scott.",
+      "image": {
+        "kind": "contextual-period-photograph",
+        "description": "Fachada da Glasgow School of Art fotografada em 1978.",
+        "caption": "Glasgow em 1978, cidade dos shows gravados para o primeiro disco ao vivo do AC/DC; a foto não mostra a banda nem o Apollo Theatre.",
+        "source": "Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Art-School-North-06.jpg",
+        "creator": "Gillfoto",
+        "captured": "1978",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "Gillfoto, CC BY-SA 3.0",
+        "candidate": {
+          "description": "Retrato de Angus Young feito em Los Angeles em 1978 por Rennie Ellis.",
+          "sourceUrl": "https://www.portrait.gov.au/portraits/2006.69/angus-young-acdc-la",
+          "creator": "Rennie Ellis / Rennie Ellis Photographic Archive",
+          "usageStatus": "permission-required",
+          "note": "A National Portrait Gallery identifica 1978 e indica direitos do arquivo; solicitar licença de reprodução à instituição ou ao titular."
+        }
+      },
+      "references": [
+        { "title": "AC/DC — Let There Be Rock", "url": "https://www.acdc.com/music/let-there-be-rock/" },
+        { "title": "AC/DC — Powerage", "url": "https://www.acdc.com/music/powerage/" },
+        { "title": "AC/DC — If You Want Blood", "url": "https://www.acdc.com/music/if-you-want-blood-youve-got-it/" }
+      ]
+    },
+    {
+      "id": "highway-to-hell",
+      "period": "1979",
+      "title": "No Speed Limit",
+      "narrative": "Em 1979, a estrada que o AC/DC percorria havia anos ganhou um nome definitivo: Highway to Hell. Sob a produção de Robert “Mutt” Lange, a banda manteve o peso dos riffs, mas deu às músicas refrões mais precisos e um acabamento capaz de atravessar o rádio sem perder a aspereza. A faixa-título virou uma porta de entrada para novos públicos; “Girls Got Rhythm” e “Touch Too Much” ampliaram o alcance do álbum. Bon Scott continuava a conduzir os shows com ironia e presença magnética. O reconhecimento internacional, porém, veio às vésperas de uma perda irreparável. Highway to Hell seria o último álbum de estúdio lançado com ele em vida.",
+      "events": [
+        { "date": "1979", "text": "Lançamento de Highway to Hell." },
+        { "date": "1979", "text": "Robert “Mutt” Lange assume a produção do álbum." },
+        { "date": "1979", "text": "A faixa-título expande a projeção internacional do AC/DC." }
+      ],
+      "curiosity": "A produção de Lange trouxe refrões mais definidos sem retirar a base crua de guitarra e bateria que distinguia a banda.",
+      "image": {
+        "kind": "band-period-photograph",
+        "description": "Bon Scott durante um concerto do AC/DC em Grenoble, França, em 10 de dezembro de 1979.",
+        "caption": "Bon Scott no palco em Grenoble, dezembro de 1979, no ano de Highway to Hell.",
+        "source": "Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grenoble79_01.jpg",
+        "creator": "Elfast",
+        "captured": "1979-12-10",
+        "license": "Dedicação ao domínio público pelo autor",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:Grenoble79_01.jpg#Licensing",
+        "usageStatus": "open-license-verified",
+        "credit": "Foto: Elfast / Wikimedia Commons; domínio público por declaração do autor"
+      },
+      "references": [
+        { "title": "AC/DC — Highway to Hell", "url": "https://www.acdc.com/music/highway-to-hell/" }
+      ]
+    },
+    {
+      "id": "darkest-hour",
+      "period": "1980",
+      "title": "When the Road Went Silent",
+      "narrative": "O impulso de Highway to Hell foi interrompido em 19 de fevereiro de 1980, quando Bon Scott morreu em Londres. A notícia atingiu uma banda que finalmente havia conquistado atenção internacional e deixou em aberto uma pergunta difícil: seria possível continuar sem a voz que ajudara a defini-la? O luto não apagou o trabalho construído ao lado de Bon, nem tornou simples a decisão de seguir. Malcolm e Angus Young decidiram procurar um novo vocalista, preservando o núcleo musical do AC/DC. Naquele intervalo, cada passo carregava o peso da ausência. O futuro ainda era incerto; a reação viria nos meses seguintes, com uma nova formação e uma homenagem transformada em disco.",
+      "events": [
+        { "date": "19 fev. 1980", "text": "Bon Scott morre em Londres." },
+        { "date": "1980", "text": "A continuidade da banda é colocada em dúvida." },
+        { "date": "1980", "text": "Malcolm e Angus Young iniciam a busca por um novo vocalista." }
+      ],
+      "curiosity": "A última apresentação de Bon com o AC/DC ocorreu em Southampton, em 27 de janeiro de 1980, menos de um mês antes de sua morte.",
+      "image": {
+        "kind": "band-period-photograph",
+        "description": "Angus Young em Leicester, Inglaterra, durante a turnê Back in Black, em 20 de outubro de 1980.",
+        "caption": "Angus Young em outubro de 1980, meses depois da morte de Bon Scott; a imagem registra a retomada, não o momento da perda.",
+        "source": "Steve Knight / Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:DC_Angus_Young.jpg",
+        "creator": "Steve Knight (kitmasterbloke)",
+        "captured": "1980-10-20",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "Steve Knight (kitmasterbloke), CC BY 2.0",
+        "candidate": {
+          "description": "Retrato de Bon Scott usado na homenagem oficial publicada em 19 de fevereiro.",
+          "sourceUrl": "https://www.acdc.com/on-this-day-1980-8/",
+          "creator": "Eric Mistler / DALLE",
+          "usageStatus": "permission-required",
+          "note": "A página credita o fotógrafo, mas não informa a data de captura nem concede direito de reprodução."
+        }
+      },
+      "references": [
+        { "title": "AC/DC — homenagem a Bon Scott", "url": "https://www.acdc.com/on-this-day-1980-8/" },
+        { "title": "AC/DC — último show com Bon Scott", "url": "https://www.acdc.com/on-this-day-1980-7/" },
+        { "title": "AC/DC — anúncio da chegada de Brian Johnson", "url": "https://www.acdc.com/on-this-day-1980/" }
+      ]
+    },
+    {
+      "id": "back-in-black",
+      "period": "1980–1988",
+      "title": "The Return in Black",
+      "narrative": "Brian Johnson chegou ao AC/DC em 1980 diante de uma tarefa que ninguém poderia cumprir imitando Bon Scott. Sua voz áspera abriu uma fase própria, e Back in Black transformou a reação da banda ao luto em um retorno de alcance extraordinário. O disco, lançado em julho, trouxe “Hells Bells”, “You Shook Me All Night Long” e a faixa-título para um público muito maior. Em 1981, For Those About to Rock (We Salute You) reforçou a escala dos shows e inaugurou um encerramento que se tornaria tradicional. Ao longo da década, a banda seguiu gravando e atravessando mudanças de formação, chegando a Blow Up Your Video em 1988 sem abandonar a linguagem de riffs construída por Malcolm e Angus.",
+      "events": [
+        { "date": "abr. 1980", "text": "Brian Johnson é anunciado como novo vocalista." },
+        { "date": "25 jul. 1980", "text": "Lançamento de Back in Black." },
+        { "date": "1981–1988", "text": "For Those About to Rock amplia os shows; a década segue até Blow Up Your Video." }
+      ],
+      "curiosity": "A faixa “For Those About to Rock (We Salute You)” passou a encerrar muitos concertos da banda, acompanhada dos famosos canhões de palco.",
+      "image": {
+        "kind": "band-period-photograph",
+        "description": "O AC/DC se apresentando no NEC de Birmingham, em 1981.",
+        "caption": "AC/DC ao vivo em Birmingham, 1981, já na fase de Brian Johnson.",
+        "source": "Andrew King / Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AC_DC_Nec_Birmingham_1981.jpg",
+        "creator": "Andrew King",
+        "captured": "1981 (conforme descrição do fotógrafo)",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "Andrew King, CC BY-SA 2.0"
+      },
+      "references": [
+        { "title": "AC/DC — chegada de Brian Johnson", "url": "https://www.acdc.com/on-this-day-1980/" },
+        { "title": "AC/DC — lançamento de Back in Black", "url": "https://www.acdc.com/otd-1980-back-in-black-released/" },
+        { "title": "AC/DC — For Those About to Rock", "url": "https://www.acdc.com/music/for-those-about-to-rock/" },
+        { "title": "AC/DC — Blow Up Your Video", "url": "https://www.acdc.com/ac-dcs-blow-up-your-video-released-in-1988/" }
+      ]
+    },
+    {
+      "id": "thunderstruck",
+      "period": "1990–2008",
+      "title": "Thunder Across Generations",
+      "narrative": "O início dos anos 1990 trouxe outra explosão. The Razors Edge apresentou “Thunderstruck”, cuja abertura de guitarra virou um dos momentos mais esperados dos concertos, e impulsionou uma nova sequência de turnês. Em 2003, a entrada no Rock and Roll Hall of Fame reconheceu a influência acumulada em três décadas de estrada. A banda continuou a gravar e a reunir plateias de diferentes gerações, sem depender apenas da memória dos discos clássicos. Black Ice, lançado em 2008, marcou uma nova fase de atividade intensa e levou o AC/DC de volta aos grandes palcos. A mesma estrutura rítmica que havia sustentado os primeiros álbuns ainda movia a multidão, agora em escala mundial.",
+      "events": [
+        { "date": "1990", "text": "The Razors Edge lança “Thunderstruck”." },
+        { "date": "2003", "text": "AC/DC entra no Rock and Roll Hall of Fame." },
+        { "date": "2008", "text": "Black Ice inicia outra fase de grandes turnês." }
+      ],
+      "curiosity": "“Thunderstruck” abriu caminho para uma nova geração de fãs e permaneceu como peça central dos shows muito depois da turnê original.",
+      "image": {
+        "kind": "band-period-photograph",
+        "description": "Angus Young no palco com o AC/DC em St. Paul, Minnesota, em 23 de novembro de 2008.",
+        "caption": "Angus Young durante a fase de Black Ice, em St. Paul, novembro de 2008.",
+        "source": "Matt Becker / Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AngusYoung.JPG",
+        "creator": "Matt Becker",
+        "captured": "2008-11-23",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "Matt Becker, CC BY-SA 3.0"
+      },
+      "references": [
+        { "title": "AC/DC — The Razors Edge", "url": "https://www.acdc.com/music/the-razors-edge/" },
+        { "title": "Rock and Roll Hall of Fame — AC/DC", "url": "https://rockhall.com/inductees/acdc/" },
+        { "title": "AC/DC — Black Ice", "url": "https://www.acdc.com/music/black-ice/" }
+      ]
+    },
+    {
+      "id": "legacy-lives-on",
+      "period": "2014–2026",
+      "title": "The Legacy Lives On",
+      "narrative": "A história recente do AC/DC tem sido uma prova de continuidade diante de mudanças profundas. Em 2014, Rock or Bust chegou com Stevie Young na guitarra base, ocupando o lugar de Malcolm, afastado por problemas de saúde. Malcolm morreu em 2017, mas sua maneira de tocar e compor permaneceu no centro da identidade do grupo. Power Up, lançado em 2020, retomou essa herança em músicas novas. A banda voltou aos grandes palcos com a turnê de mesmo nome e seguiu em atividade em 2026, inclusive na América do Sul. Mais de cinco décadas depois do primeiro show em Sydney, o AC/DC segue encontrando novas plateias. O legado não é apenas uma lembrança: ainda soa alto, ao vivo.",
+      "events": [
+        { "date": "2014", "text": "Rock or Bust apresenta Stevie Young na guitarra base." },
+        { "date": "2017–2020", "text": "Malcolm Young morre em 2017; Power Up chega em 2020." },
+        { "date": "2025–2026", "text": "A turnê Power Up prossegue e passa pela América do Sul em 2026." }
+      ],
+      "curiosity": "Stevie Young, que assumiu a guitarra base, é sobrinho de Malcolm e Angus; Power Up preservou a marca musical construída em família.",
+      "image": {
+        "kind": "band-period-photograph",
+        "description": "Registro da Power Up Tour em Brisbane, Austrália, em 14 de dezembro de 2025.",
+        "caption": "AC/DC na Power Up Tour, Brisbane, dezembro de 2025.",
+        "source": "Wikimedia Commons",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:ACDC_Power_Up_Tour,_Brisbane,_14_December_2025_09.jpg",
+        "creator": "Aliceinthealice",
+        "captured": "2025-12-14",
+        "license": "CC0 1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "usageStatus": "open-license-verified",
+        "credit": "Foto: Aliceinthealice / Wikimedia Commons, CC0 1.0 (crédito recomendado)"
+      },
+      "references": [
+        { "title": "AC/DC — Rock or Bust", "url": "https://www.acdc.com/music/rock-or-bust/" },
+        { "title": "AC/DC — homenagem a Malcolm Young", "url": "https://www.acdc.com/malcolm/" },
+        { "title": "AC/DC — Power Up", "url": "https://www.acdc.com/music/power-up/" },
+        { "title": "AC/DC — continuidade da turnê em 2026", "url": "https://www.acdc.com/ac-dc-power-up-tour-continues/" },
+        { "title": "Associated Press — passagem da turnê pela América do Sul em 2026", "url": "https://apnews.com/article/eac77597a8e4ba12ad35474e6df32b60" }
+      ]
+    }
+  ]
+}

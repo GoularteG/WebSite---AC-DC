@@ -9,7 +9,7 @@ import Scenery from '../components/roadside/Scenery';
 import { TrunkCamera } from '../components/trunk/TrunkCamera';
 import Charger from '../components/car/Charger';
 import { carAsset } from '../data/assets';
-import { JOURNEY_LENGTH, roadX } from '../data/journey';
+import { distanceAtProgress, roadX } from '../data/journey';
 import { arrivalMix, FINAL_STOP_DISTANCE, infernoMix } from '../data/finale';
 const cameraConfig = { position: [2.5, 4.1, 11], fov: 55, near: .1, far: 1000 };
 class ModelBoundary extends Component {
@@ -31,9 +31,10 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
   const look = useRef(new Vector3()), position = useRef(new Vector3()), finalPosition = useRef(new Vector3());
   useFrame(({ camera }, dt) => {
     const amount = reduced ? 1 : 1 - Math.exp(-Math.min(dt, .05) * 5);
-    if (phase === 'road') distance.current = MathUtils.lerp(distance.current, progress.current * JOURNEY_LENGTH, amount);
-    if (phase === 'road' && Math.abs(distance.current - progress.current * JOURNEY_LENGTH) <= .001) distance.current = progress.current * JOURNEY_LENGTH;
-    if (phase === 'road' && !reduced && Math.abs(distance.current - progress.current * JOURNEY_LENGTH) > .001) invalidate();
+    const targetDistance = distanceAtProgress(progress.current);
+    if (phase === 'road') distance.current = MathUtils.lerp(distance.current, targetDistance, amount);
+    if (phase === 'road' && Math.abs(distance.current - targetDistance) <= .001) distance.current = targetDistance;
+    if (phase === 'road' && !reduced && Math.abs(distance.current - targetDistance) > .001) invalidate();
     const s = distance.current;
     const arrival = arrivalMix(s);
     const sweep = reduced ? 0 : Math.sin(s / 80) * 2.4;
