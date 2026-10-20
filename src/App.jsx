@@ -4,7 +4,7 @@ import TrunkExperience from './components/trunk/TrunkExperience';
 import HistoryChapter from './components/history/HistoryChapter';
 import { useReducedMotion } from './hooks/usePreferences';
 import { useAudio } from './hooks/useAudio';
-import { chapters, chapterAt, chapterVisibility, clamp } from './data/journey';
+import { chapters, chapterAt, clamp } from './data/journey';
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
 export default function App() {
   const [phase, setPhase] = useState('road');
@@ -18,6 +18,7 @@ export default function App() {
   const [modelReady, setModelReady] = useState(false);
   const [credits,setCredits] = useState(false);
   const [arrived, setArrived] = useState(false);
+  const [selectedChapter, setSelectedChapter] = useState(null);
   const onModelReady = useCallback(() => setModelReady(true), []);
   const progress = useRef(0), saved = useRef(0);
   const reduced = useReducedMotion();
@@ -50,6 +51,7 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [phase,onZoomed,onReturned,modelReady,modelError]);
   const navigate = next => {
+    setSelectedChapter(null);
     if (next === 'making' && phase === 'road') {
       saved.current = scrollY;
       scrollTo({top:saved.current,behavior:'instant'});
@@ -68,12 +70,9 @@ export default function App() {
       <span className="edition">AN EXPERIMENTAL ROCK EXPERIENCE<span>VOL. 01 — THE OPEN ROAD</span></span>
     </header>
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''}`} style={{height:started?'950vh':'100svh'}}>
-      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}><HighwayScene phase={phase} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived}/></Suspense><div className="vignette"/><div className="film-grain"/></div>
+      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}><HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter}/></Suspense><div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening"><span className="eyebrow"><i/> NO TURNING BACK. JUST ROCK ’N’ ROLL.</span><h1>HIGHWAY<br/><span className="title-second"><em>TO</em> HELL</span><b aria-hidden="true">ϟ</b></h1><p>Uma estrada. Mil volts.<br/>O próximo capítulo começa com você.</p><button className="start-button" onClick={()=>{setStarted(true);go(.015);}}>ENTRAR NA ESTRADA <span>↗</span></button><span className="start-note">{reduced?'Explore pelos marcos do percurso':'Role para avançar. Volte para redescobrir.'}</span></section> : <>
-        {!atDestination && chapters.slice(0, 8).map(item => {
-          const visibility = chapterVisibility(value, item);
-          return visibility > 0 && <HistoryChapter key={item.id} chapter={item} visibility={visibility} reduced={reduced}/>;
-        })}
+        {!atDestination && value >= .02 && value < chapters.at(-1).progress && <button className="history-open" onClick={() => setSelectedChapter(chapter)} aria-label={`Ler capítulo ${chapter.marker}: ${chapter.title}`}><span>OUTDOOR {chapter.marker} / 08</span><strong>{chapter.period} · {chapter.title}</strong><b aria-hidden="true">↗</b></button>}
         {!atDestination && value > chapters.at(-1).progress - .006 && <section className="chapter-caption inferno-approach" style={{opacity:clamp((value - chapters.at(-1).progress + .006) / .006)}}><span className="eyebrow">09 / HIGHWAY TO HELL</span><h1>THE GATES OF HELL.</h1><p>O horizonte já não é o mesmo.</p></section>}
         <nav className="history-timeline" aria-label="Linha do tempo da estrada">{chapters.map(item=><button key={item.id} aria-label={`Ir para ${item.period}: ${item.title}`} aria-current={chapter.id===item.id?'step':undefined} className={chapter.id===item.id?'selected':''} onClick={()=>go(item.id === 'hell-gate' ? 1 : item.progress)} title={`${item.period} — ${item.title}`}><span className="timeline-number">{item.marker}</span><span className="timeline-period">{item.id==='hell-gate'?'INFERNO':item.period}</span></button>)}</nav>
         {atDestination && <section className="inferno-arrival" aria-labelledby="arrival-title">
@@ -88,6 +87,7 @@ export default function App() {
       <footer className="highway-footer"><div className="route-label"><span className="route-shield">H<span>01</span></span><div>THE OPEN ROAD<small>{started?`${Math.round(value*100).toString().padStart(2,'0')}% DO PERCURSO`:'O HORIZONTE É SÓ O COMEÇO'}</small></div></div><div className="footer-controls"><button onClick={()=>setCredits(true)}>CRÉDITOS</button><button disabled={!audio.available} onClick={audio.toggle} aria-pressed={audio.playing} title={audio.available?'Ativar ou desativar áudio':'Aguardando um arquivo de áudio autorizado'}>♫ {audio.available?(audio.playing?'SOM LIGADO':'SOM DESLIGADO'):'ÁUDIO EM BREVE'}</button></div></footer>
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
       {audio.error && <p className="audio-error" role="alert">{audio.error}</p>}
+      {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
     {credits&&<Credits onClose={()=>setCredits(false)}/>}

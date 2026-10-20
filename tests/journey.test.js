@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chapters, chapterAt, chapterVisibility, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH } from '../src/data/journey.js';
+import { chapters, chapterAt, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH } from '../src/data/journey.js';
 import { entries } from '../src/data/book.js';
 test('chapter boundaries and end are reachable in both directions', () => {
   assert.equal(chapters.length, 9);
@@ -9,7 +9,7 @@ test('chapter boundaries and end are reachable in both directions', () => {
   for (const chapter of [...chapters, ...chapters.toReversed()]) assert.equal(chapterAt(chapter.progress).id, chapter.id);
   assert.equal(clamp(-1),0); assert.equal(clamp(2),1);
 });
-test('story panels appear near their markers and road motion stays continuous in both directions', () => {
+test('billboard chapters remain spaced before the final gate and road motion is reversible', () => {
   assert.equal(distanceAtProgress(0), 0);
   assert.equal(distanceAtProgress(1), JOURNEY_LENGTH);
   let previous = 0;
@@ -18,17 +18,9 @@ test('story panels appear near their markers and road motion stays continuous in
     assert.ok(distance >= previous && distance - previous < 2);
     previous = distance;
   }
-  assert.equal(chapterVisibility(chapters[0].progress, chapters[0]), 1);
-  for (let index = 1; index < 8; index++) {
-    const boundary = chapters[index].progress;
-    assert.equal(chapterVisibility(boundary, chapters[index - 1]), 0);
-    assert.equal(chapterVisibility(boundary, chapters[index]), 1);
-    assert.ok(Math.abs(chapterVisibility(boundary - .009, chapters[index - 1]) - .5) < 1e-9);
-    assert.ok(Math.abs(chapterVisibility(boundary - .003, chapters[index]) - .5) < 1e-9);
-    assert.equal(chapterVisibility(boundary - .003, chapters[index - 1]), 0);
-  }
-  assert.equal(chapterVisibility(.8, chapters[7]), 1);
-  assert.equal(chapterVisibility(chapters.at(-1).progress, chapters.at(-1)), 0);
+  const markers = chapters.slice(0, 8).map(chapter => distanceAtProgress(chapter.progress));
+  assert.ok(markers.every((distance, index) => index === 0 || distance - markers[index - 1] > 40));
+  assert.ok(markers.at(-1) + 26 < distanceAtProgress(chapters.at(-1).progress));
 });
 test('road is continuous with gentle bends across the full playable route', () => {
   for(let s=0;s<JOURNEY_LENGTH;s+=.5) { assert.ok(Number.isFinite(roadX(s))); assert.ok(Math.abs(roadX(s+.5)-roadX(s))<.12); }

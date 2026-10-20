@@ -1,128 +1,25 @@
-.history-chapter {
+.history-open {
   position: fixed;
-  z-index: 4;
-  top: 98px;
-  bottom: 132px;
-  width: min(46vw, 650px);
+  z-index: 7;
+  right: 5%;
+  bottom: 140px;
   display: flex;
   align-items: center;
-  color: #f5e9d8;
-  pointer-events: none;
-}
-.history-chapter--left {
-  left: 0;
-  padding-left: clamp(24px, 4.6vw, 82px);
-  background: linear-gradient(90deg, #0b0d11db, #0b0d11b8 58%, #0b0d115c 82%, transparent);
-}
-.history-chapter--right {
-  right: 0;
-  justify-content: flex-end;
-  padding-right: clamp(24px, 4.6vw, 82px);
-  background: linear-gradient(270deg, #0b0d11db, #0b0d11b8 58%, #0b0d115c 82%, transparent);
-}
-.history-chapter-inner {
-  position: relative;
-  width: min(390px, 100%);
-  max-height: 100%;
-  overflow: auto;
-  overscroll-behavior: contain;
-  padding: 3px 12px 6px 20px;
-  border-left: 2px solid #d9663c;
-  scrollbar-width: thin;
-  scrollbar-color: #ad714b #171516;
-  pointer-events: auto;
-}
-.history-chapter--right .history-chapter-inner {
-  padding: 3px 20px 6px 12px;
-  border-left: 0;
-  border-right: 2px solid #d9663c;
-}
-.history-chapter-heading {margin-bottom: 18px}
-.history-kicker {
-  display: block;
-  color: #e0ae80;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-}
-.history-year {
-  display: block;
-  margin-top: 8px;
-  color: #f8a663;
-  font: 400 clamp(23px, 2.4vw, 38px)/1 'Metal Mania', Impact, sans-serif;
-  text-shadow: 0 2px 14px #110a08;
-}
-.history-chapter h2 {
-  margin: 6px 0 0;
-  color: #fff0db;
-  font: 400 clamp(30px, 3.1vw, 50px)/.95 'Metal Mania', Impact, sans-serif;
-  text-shadow: 0 3px 15px #000c;
-}
-.history-chapter h2 span {color:#ec6735}
-.history-chapter-body {display: grid; gap: 16px}
-.history-photo {min-width: 0; margin: 0}
-.history-photo img, .history-photo-placeholder {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: contain;
-  background: #0d0c0e;
-  border-left: 3px solid #c76539;
-  border-bottom: 1px solid #c3a17b8c;
-  box-shadow: 0 15px 28px #0008;
-}
-.history-photo-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  color: #d1ae8e;
-  text-align: center;
-  aspect-ratio: 2.2;
-  background: linear-gradient(110deg, #2b1b1ac9 0%, #121416d9 75%), repeating-linear-gradient(115deg, transparent 0 18px, #b3774324 19px 20px);
-}
-.history-photo-placeholder span {font: 400 31px/1 'Metal Mania', Impact, sans-serif; color: #dfa16c}
-.history-photo-placeholder small {font-size: 9px; letter-spacing: .7px}
-.history-photo figcaption {
-  display: grid;
-  gap: 3px;
-  padding: 7px 0 0;
-  color: #ead9c4;
-  font-size: 9px;
-  line-height: 1.4;
-  text-shadow: 0 1px 5px #000;
-}
-.history-photo figcaption small {color:#c6a98d; font-size: 8px; line-height: 1.4}
-.history-photo figcaption a {text-decoration: underline; text-underline-offset: 2px}
-.history-copy p {
-  margin: 0;
-  color: #fff1df;
-  font-size: 14px;
-  line-height: 1.58;
-  text-shadow: 0 1px 7px #000, 0 2px 12px #000;
-}
-.history-read-more {
-  margin-top: 10px;
-  padding: 8px 0;
-  background: none;
-  color: #ffbc83;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.1px;
+  gap: 20px;
+  max-width: min(390px, 90vw);
+  min-height: 53px;
+  padding: 10px 16px;
+  border: 1px solid #c38e60;
+  background: #171314ed;
+  color: #fff0d8;
+  box-shadow: 0 10px 30px #0009, inset 3px 0 #e56838;
   text-align: left;
-  text-transform: uppercase;
-  border-bottom: 1px solid #de7044;
+  transition: transform .2s, background .2s;
 }
-.history-read-more:hover {color: #fff4e6}
-.history-read-more span {margin-left: 8px; font-size: 15px}
-.history-details {margin-top: 11px; padding-top: 12px; border-top: 1px solid #c0815e77}
-.history-details ol {display: grid; gap: 8px; margin: 14px 0; padding-left: 20px; color: #ecd8c0; font-size: 12px; line-height: 1.5}
-.history-details li strong {color: #ffc186}
-.history-details .history-curiosity {margin-top: 14px; color: #ebceb0; font-size: 12px}
-.history-details .history-curiosity strong {color: #ffc186}
-.history-context-note {display: block; margin-top: 9px; color: #d4b89d; font-size: 9px; line-height: 1.4}
+.history-open:hover {transform: translateY(-3px); background: #30201b}
+.history-open span {font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: #e9a778}
+.history-open strong {font: 22px/1 'Metal Mania', Impact, sans-serif; font-weight: 400}
+.history-open b {font-size: 23px; color: #f5ae77}
 .history-timeline {
   position: fixed;
   z-index: 6;
@@ -171,58 +68,55 @@
 .history-timeline button.selected::before {background: #f48b48; box-shadow: 0 0 13px #f37034, 0 0 0 3px #1d1110}
 .timeline-number {font: 400 15px/1 'Metal Mania', Impact, sans-serif}
 .timeline-period {overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; letter-spacing: .5px}
-@media(max-width: 1050px) and (min-width: 761px) {
-  .history-chapter {width: 47vw}
-  .history-chapter--left {padding-left: 25px}
-  .history-chapter--right {padding-right: 25px}
-  .history-chapter-inner {width: min(330px, 100%)}
-  .history-chapter h2 {font-size: 32px}
-  .history-copy p {font-size: 12px}
+.history-archive {
+  position: fixed;
+  inset: 0;
+  width: min(1100px, calc(100vw - 40px));
+  max-height: min(840px, calc(100svh - 40px));
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid #a57754;
+  background: radial-gradient(circle at 10% 0%, #39241f, #181516 62%);
+  color: #f4e6d2;
+  box-shadow: 0 30px 100px #000e;
 }
+.history-archive::backdrop {background: #080809cc; backdrop-filter: blur(6px)}
+.history-archive-header {position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px clamp(20px, 4vw, 48px); border-bottom: 1px solid #b27d563e; background: #181516f2; color: #e2ac83; font-size: 10px; font-weight: 800; letter-spacing: 1.8px}
+.history-archive-header button {flex-shrink: 0; min-height: 44px; padding: 0 12px; border: 1px solid #a57754; background: #30231f; color: #fff2db; font-size: 10px; font-weight: 800; letter-spacing: 1px}
+.history-archive-heading {padding: 28px clamp(20px, 4vw, 48px) 18px}
+.history-archive-heading > span {color: #efa06a; font: 34px/1 'Metal Mania', Impact, sans-serif}
+.history-archive-heading h2 {margin: 8px 0 0; font: clamp(35px, 5vw, 62px)/.95 'Metal Mania', Impact, sans-serif}
+.history-archive-grid {display: grid; grid-template-columns: minmax(0, 47%) minmax(0, 53%); gap: 34px; padding: 0 clamp(20px, 4vw, 48px) 42px}
+.history-archive-photo {min-width: 0; margin: 0}
+.history-archive-photo img, .history-photo-placeholder {display: block; width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #0d0c0e; border: 1px solid #9f765a; box-shadow: 0 20px 40px #0008}
+.history-photo-placeholder {display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; background: repeating-linear-gradient(110deg, #282020, #282020 14px, #211a1a 15px)}
+.history-photo-placeholder strong {font: 45px/1 'Metal Mania', Impact, sans-serif; color: #e9a778}
+.history-photo-placeholder small {font-size: 11px; letter-spacing: 1px}
+.history-archive-photo figcaption {margin-top: 12px; color: #d6c2ad; font-size: 12px; line-height: 1.5}
+.history-archive-photo figcaption small {display: block; margin-top: 6px; color: #bb9f89; font-size: 11px}
+.history-archive-photo a {text-decoration: underline; text-underline-offset: 3px}
+.history-archive-story p {margin: 0 0 22px; color: #f1e4d0; font-size: 16px; line-height: 1.7}
+.history-archive-story h3 {margin: 26px 0 12px; color: #e9a778; font-size: 11px; letter-spacing: 2px}
+.history-archive-story ol {display: grid; gap: 10px; margin: 0 0 24px; padding-left: 21px; color: #e8d3bc; font-size: 14px; line-height: 1.55}
+.history-archive-story li strong, .history-archive-story .history-curiosity strong {color: #ffc186}
+.history-archive-story .history-curiosity {padding: 14px 18px; border-left: 2px solid #e06d3d; background: #e06d3d10; font-size: 14px}
+.history-archive-story .history-context-note {font-size: 12px; color: #c6a995}
 @media(max-width: 760px) {
-  .history-chapter, .history-chapter--right, .history-chapter--left {
-    top: 76px;
-    bottom: auto;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-height: min(39svh, 310px);
-    align-items: flex-start;
-    padding: 12px 20px 27px;
-    background: linear-gradient(180deg, #0b0d11e6, #0b0d11d4 65%, transparent);
-  }
-  .history-chapter-inner, .history-chapter--right .history-chapter-inner {
-    width: 100%;
-    max-height: min(33svh, 265px);
-    padding: 0 0 4px 13px;
-    border-right: 0;
-    border-left: 2px solid #d9663c;
-  }
-  .history-chapter-heading {margin-bottom: 10px}
-  .history-kicker {font-size: 8px; letter-spacing: 1.8px}
-  .history-year {display: inline-block; margin: 5px 9px 0 0; font-size: 20px}
-  .history-chapter h2 {display: inline; font-size: 25px; line-height: 1.05}
-  .history-chapter-body {grid-template-columns: minmax(0, 40%) minmax(0, 60%); gap: 10px}
-  .history-photo figcaption {font-size: 7px}
-  .history-photo-placeholder span {font-size: 19px}
-  .history-photo-placeholder small {font-size: 7px}
-  .history-photo figcaption small {font-size: 6px; overflow-wrap: anywhere}
-  .history-copy p {display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 5; font-size: 10px; line-height: 1.4}
-  .history-read-more {margin-top: 4px; padding: 3px 0; font-size: 8px; letter-spacing: .6px}
-  .history-context-note {font-size: 7px}
-  .history-chapter--expanded {max-height: min(68svh, 530px)}
-  .history-chapter--expanded .history-chapter-inner {max-height: min(61svh, 480px)}
-  .history-chapter--expanded .history-chapter-body {grid-template-columns: 1fr}
-  .history-chapter--expanded .history-copy p {display: block; overflow: visible; font-size: 12px; line-height: 1.55}
+  .history-open {left: 7%; right: 7%; bottom: 143px; max-width: none; justify-content: space-between; min-height: 52px}
+  .history-open strong {font-size: 20px}
   .history-timeline {left: 5%; right: 5%; bottom: 82px}
-  .history-timeline button {min-height: 38px; gap: 0; padding: 12px 1px 0}
+  .history-timeline button {min-height: 44px; gap: 0; padding: 12px 1px 0}
   .history-timeline::before {top: 7px}
   .timeline-number {font-size: 13px}
   .timeline-period {display: none}
+  .history-archive {width: calc(100vw - 20px); max-height: calc(100svh - 20px)}
+  .history-archive-header {padding: 10px 16px; font-size: 8px; letter-spacing: .8px}
+  .history-archive-header button span {display: none}
+  .history-archive-heading {padding: 18px 18px 14px}
+  .history-archive-heading > span {font-size: 27px}
+  .history-archive-heading h2 {font-size: 36px}
+  .history-archive-grid {grid-template-columns: 1fr; gap: 20px; padding: 0 18px 28px}
+  .history-archive-photo img, .history-photo-placeholder {aspect-ratio: 16/9}
+  .history-archive-story p {font-size: 15px}
 }
-@media(max-height: 660px) and (min-width: 761px) {
-  .history-chapter {top: 85px; bottom: 115px}
-  .history-chapter h2 {font-size: 30px}
-  .history-copy p {font-size: 12px}
-}
-@media(prefers-reduced-motion: reduce) {.history-chapter {transform: none !important}}

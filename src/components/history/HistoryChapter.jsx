@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function licensedPhotoUrl(image) {
   if (image.usageStatus !== 'open-license-verified') return null;
@@ -6,54 +6,33 @@ function licensedPhotoUrl(image) {
   return filename ? `https://commons.wikimedia.org/wiki/Special:Redirect/file/${filename}?width=960` : null;
 }
 
-export default function HistoryChapter({ chapter, visibility, reduced }) {
+export default function HistoryChapter({ chapter, onClose }) {
+  const dialog = useRef(null);
   const [failed, setFailed] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  if (!chapter?.narrative) return null;
+  useEffect(() => {
+    const element = dialog.current;
+    element.showModal();
+    const oldOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      element.close();
+      document.documentElement.style.overflow = oldOverflow;
+    };
+  }, []);
   const image = chapter.image;
   const photoUrl = licensedPhotoUrl(image);
-  const showPhoto = photoUrl && !failed;
-  const side = Number(chapter.marker) % 2 ? 'left' : 'right';
-  const summary = chapter.narrative.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
-  const detailId = `history-detail-${chapter.id}`;
-  return <section
-    className={`history-chapter history-chapter--${side} ${expanded ? 'history-chapter--expanded' : ''}`}
-    aria-label={`Capítulo ${chapter.marker} de 8: ${chapter.title}`}
-    aria-hidden={visibility <= .01}
-    inert={visibility <= .01 ? true : undefined}
-    style={{ opacity: visibility, transform: reduced ? undefined : `translateX(${Math.round((1 - visibility) * (side === 'left' ? -18 : 18))}px)` }}
-  >
-    <div className="history-chapter-inner">
-    <div className="history-chapter-heading">
-      <span className="history-kicker">{chapter.marker} / 08 · NA ESTRADA</span>
-      <span className="history-year">{chapter.period}</span>
-      <h2>{chapter.title}<span>.</span></h2>
-    </div>
-    <div className="history-chapter-body">
-      <figure className="history-photo">
-        {showPhoto ? <img
-          src={photoUrl}
-          alt={image.description}
-          loading="eager"
-          decoding="async"
-          onError={() => setFailed(true)}
-        /> : <div className="history-photo-placeholder" role="img" aria-label="Fotografia histórica temporariamente indisponível"><span>{chapter.period}</span><small>Registro fotográfico indisponível</small></div>}
-        <figcaption>
-          <span>{image.caption}</span>
-          <small><a href={image.sourceUrl} target="_blank" rel="noopener noreferrer">{image.credit}</a> · <a href={image.licenseUrl} target="_blank" rel="noopener noreferrer">{image.license}</a></small>
-        </figcaption>
+  return <dialog ref={dialog} className="history-archive" onClose={onClose} aria-labelledby="history-archive-title">
+    <header className="history-archive-header">
+      <span>AC/DC · ARQUIVO DA ESTRADA · {chapter.marker} / 08</span>
+      <button type="button" onClick={() => dialog.current.close()} aria-label="Fechar capítulo e voltar à estrada">✕ <span>VOLTAR À ESTRADA</span></button>
+    </header>
+    <div className="history-archive-heading"><span>{chapter.period}</span><h2 id="history-archive-title">{chapter.title}</h2></div>
+    <div className="history-archive-grid">
+      <figure className="history-archive-photo">
+        {photoUrl && !failed ? <img src={photoUrl} alt={image.description} decoding="async" onError={() => setFailed(true)} /> : <div className="history-photo-placeholder" role="img" aria-label="Fotografia histórica indisponível"><strong>{chapter.period}</strong><small>REGISTRO FOTOGRÁFICO INDISPONÍVEL</small></div>}
+        <figcaption>{image.caption}<small><a href={image.sourceUrl} target="_blank" rel="noopener noreferrer">{image.credit}</a> · <a href={image.licenseUrl} target="_blank" rel="noopener noreferrer">{image.license}</a></small></figcaption>
       </figure>
-      <div className="history-copy">
-        {!expanded && <p>{summary}</p>}
-        <button className="history-read-more" aria-expanded={expanded} aria-controls={detailId} onClick={() => setExpanded(value => !value)}>{expanded ? 'Recolher história' : 'Conhecer a história'} <span aria-hidden="true">{expanded ? '↑' : '↗'}</span></button>
-        {expanded && <div className="history-details" id={detailId}>
-          <p>{chapter.narrative}</p>
-          <ol>{chapter.events.map(event => <li key={`${event.date}-${event.text}`}><strong>{event.date}</strong> {event.text}</li>)}</ol>
-          {chapter.curiosity && <p className="history-curiosity"><strong>Você sabia?</strong> {chapter.curiosity}</p>}
-        </div>}
-        {image.kind === 'contextual-period-photograph' && <span className="history-context-note">Imagem contextual de época; fotografia da banda ainda depende de licença.</span>}
-      </div>
+      <div className="history-archive-story"><p>{chapter.narrative}</p><h3>NA LINHA DO TEMPO</h3><ol>{chapter.events.map(event => <li key={`${event.date}-${event.text}`}><strong>{event.date}</strong> {event.text}</li>)}</ol>{chapter.curiosity && <p className="history-curiosity"><strong>VOCÊ SABIA?</strong> {chapter.curiosity}</p>}{image.kind === 'contextual-period-photograph' && <p className="history-context-note">Imagem contextual de época; fotografia da banda ainda depende de licença.</p>}</div>
     </div>
-    </div>
-  </section>;
+  </dialog>;
 }
