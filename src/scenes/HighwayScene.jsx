@@ -18,7 +18,7 @@ const GhostFinale = lazy(() => import('../components/ghost/GhostFinale'));
 class ModelBoundary extends Component {
   state = { error: false };
   static getDerivedStateFromError() { return { error: true }; }
-  componentDidCatch() { this.props.onError('Não foi possível abrir o modelo. A estrada continua disponível.'); }
+  componentDidCatch() { this.props.onError?.('Não foi possível abrir o modelo. A estrada continua disponível.'); }
   render() { return this.state.error ? null : this.props.children; }
 }
 export class SceneBoundary extends Component {
@@ -76,7 +76,7 @@ export default function HighwayScene({ phase, started, onZoomed, onReturned, pro
   return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={ghostActive ? 1 : quality === 'high' ? [1, 1.5] : 1} camera={cameraConfig} gl={{ antialias: quality === 'high', powerPreference: 'high-performance' }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
     <Atmosphere distance={distance} ghostActive={ghostActive} /><Road distance={distance} ghostActive={ghostActive} /><Scenery />{started && <HistoryBillboards onSelect={ghostActive ? null : onSelectChapter} />}
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
-    {ghostActive && <Suspense fallback={null}><GhostFinale /></Suspense>}
+    {ghostActive && <ModelBoundary><Suspense fallback={null}><GhostFinale /></Suspense></ModelBoundary>}
     <Environment resolution={64}><color attach="background" args={['#625853']} /><Lightformer intensity={2.5} color="#f6e6d4" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={3} color="#ffe4bf" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>
     <JourneyRig phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} ghostActive={ghostActive} />
     {ghostActive && <GhostCamera controls={ghostControls} onExit={onGhostExit} reduced={reduced} />}
