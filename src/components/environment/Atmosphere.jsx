@@ -28,7 +28,8 @@ export default function Atmosphere({ distance, ghostActive = false }) {
     {Array.from({ length: 46 }, (_, i) => {
       const s = i * 25 - 60; const side = i % 2 ? 1 : -1;
       const height = 12 + (Math.sin(i * 13.7) + 1) * 18;
-      return <mesh key={i} position={[roadX(s) + side * (95 + Math.sin(i) * 12), height / 2 - 4, -s]} rotation={[0, i * .7, .12]}><coneGeometry args={[30 + i % 5 * 5, height, 5]} /><meshStandardMaterial color={i % 3 ? '#624039' : '#81503a'} flatShading /></mesh>;
+      const radius = 30 + i % 5 * 5;
+      return <mesh key={i} position={[roadX(s) + side * (radius + 26 + Math.sin(i) * 3), height / 2 - 4, -s]} rotation={[0, i * .7, .12]}><coneGeometry args={[radius, height, 5]} /><meshStandardMaterial color={i % 3 ? '#624039' : '#81503a'} flatShading /></mesh>;
     })}
   </>;
 }

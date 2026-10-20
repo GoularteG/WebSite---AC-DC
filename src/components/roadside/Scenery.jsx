@@ -98,15 +98,17 @@ function Bell() {
     <Cylinder position={[0, .12, 0]} args={[.17, .17, .2, 16]} color="#43372a" metalness={.55} />
   </group>;
 }
-function Helmet() {
+function RoadVinyl() {
   return <group>
-    <mesh position={[0, .72, 0]} rotation={[0, 0, -.05]} castShadow><sphereGeometry args={[.95, 28, 20, 0, Math.PI * 2, 0, Math.PI * .57]} /><meshStandardMaterial color="#292827" metalness={.62} roughness={.28} side={2} /></mesh>
-    <Cylinder position={[0, .5, 0]} args={[.93, .89, .24, 28]} color="#222224" metalness={.55} />
-    <mesh position={[0, .59, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow><torusGeometry args={[.92, .055, 8, 28]} /><meshStandardMaterial color="#171718" metalness={.45} roughness={.44} /></mesh>
-    <Box position={[0, .53, .73]} scale={[1.18, .16, .3]} color="#8f1b18" metalness={.58} />
-    <Box position={[0, .36, .72]} scale={[1.12, .08, .26]} color="#d6bc82" metalness={.65} />
-    <Box position={[0, .18, .86]} scale={[1.25, .13, .43]} color="#161719" metalness={.4} />
-    <Box position={[0, .95, .87]} scale={[.17, .55, .06]} color="#d9c79f" metalness={.45} />
+    <Box position={[0, 1.53, 0]} scale={[3.1, 2.85, .38]} color="#1b1a1c" metalness={.25} />
+    <Box position={[0, .17, .14]} scale={[3.35, .34, .68]} color="#282428" metalness={.42} />
+    {[-1.46, 1.46].map(x => <Box key={x} position={[x, 1.55, .22]} scale={[.085, 2.72, .08]} color="#9b8b71" metalness={.78} />)}
+    {[.31, 2.83].map(y => <Box key={y} position={[0, y, .22]} scale={[3, .085, .08]} color="#9b8b71" metalness={.78} />)}
+    <Cylinder position={[.18, 1.55, .35]} rotation={[Math.PI / 2, 0, 0]} args={[1.08, 1.08, .1, 40]} color="#111114" metalness={.22} />
+    {[.47, .7, .89, 1.01].map(radius => <mesh key={radius} position={[.18, 1.55, .41]}><torusGeometry args={[radius, .009, 4, 48]} /><meshStandardMaterial color="#777071" metalness={.5} roughness={.35} /></mesh>)}
+    <Cylinder position={[.18, 1.55, .43]} rotation={[Math.PI / 2, 0, 0]} args={[.31, .31, .012, 32]} color="#a32622" metalness={.35} />
+    <group position={[.18, 1.55, .45]} scale={.08}><Bolt /></group>
+    {[-1.32, 1.32].flatMap(x => [.36, 2.68].map(y => <Cylinder key={`${x}-${y}`} position={[x, y, .29]} rotation={[Math.PI / 2, 0, 0]} args={[.055, .055, .025, 10]} color="#c2b18e" metalness={.8} />))}
   </group>;
 }
 function Sign({ wide = 4.2 }) {
@@ -149,18 +151,18 @@ const STATIONS = [
   { s: 36, side: -1, kind: 'sg' }, { s: 92, side: 1, kind: 'stage' },
   { s: 152, side: -1, kind: 'bell' }, { s: 211, side: 1, kind: 'amps' },
   { s: 272, side: -1, kind: 'figure' }, { s: 329, side: 1, kind: 'sign' },
-  { s: 388, side: -1, kind: 'helmet' }, { s: 447, side: 1, kind: 'guitars' },
+  { s: 388, side: -1, kind: 'vinyl' }, { s: 447, side: 1, kind: 'guitars' },
   { s: 506, side: -1, kind: 'amps' }, { s: 565, side: 1, kind: 'mic' },
   { s: 623, side: -1, kind: 'figure' }, { s: 681, side: 1, kind: 'finale' },
 ];
 function Exhibit({ kind }) {
-  if (kind === 'sg') return <group><Guitar /><group position={[-2.2, 0, -1]} scale={.55}><AmpStack /></group><group position={[2, 0, 1]} scale={.78}><Helmet /></group></group>;
+  if (kind === 'sg') return <group><Guitar /><group position={[-2.2, 0, -1]} scale={.55}><AmpStack /></group><group position={[2, 0, 1]} scale={.78}><RoadVinyl /></group></group>;
   if (kind === 'stage') return <group><LightingTower /><group position={[-3.1, 0, 1]} scale={.76}><AmpStack /></group><group position={[3.1, 0, 1]} scale={.76}><AmpStack /></group></group>;
   if (kind === 'bell') return <group><Box position={[0, 4.9, 0]} scale={[.18, 9.8, .18]} color="#5c5146" /><Box position={[0, 9.65, 0]} scale={[2.8, .2, .22]} color="#9b8b70" /><group position={[0, 8.25, .1]} scale={[1.45, 1.45, 1.45]}><Bell /></group><group position={[-1.5, 0, 0]} scale={.7}><AmpCab /></group></group>;
   if (kind === 'amps') return <group rotation={[0, .18, 0]}><AmpStack /><group position={[-2.6, 0, .25]} scale={.72}><AmpCab /></group><group position={[2.55, 0, .25]} scale={.72}><AmpCab /></group></group>;
   if (kind === 'figure') return <group><group position={[-1.6, 0, 0]}><RockFigure /></group><group position={[1.5, 0, -.6]} scale={.9}><MicrophoneStand /></group><group position={[2.7, 0, .8]} scale={.65}><AmpCab /></group></group>;
-  if (kind === 'sign') return <group><Sign /><group position={[-2.8, 0, 1.2]} scale={.56}><Helmet /></group></group>;
-  if (kind === 'helmet') return <group><group position={[-1.6, 0, 0]} scale={1.1}><Helmet /></group><group position={[1.5, 0, -.2]} scale={.68}><AmpStack /></group><group position={[3, 0, 1]} scale={.62}><Guitar finish="#d7b266" style="classic" /></group></group>;
+  if (kind === 'sign') return <group><Sign /><group position={[-2.8, 0, 1.2]} scale={.56}><RoadVinyl /></group></group>;
+  if (kind === 'vinyl') return <group><group position={[-1.6, 0, 0]} scale={1.1}><RoadVinyl /></group><group position={[1.5, 0, -.2]} scale={.68}><AmpStack /></group><group position={[3, 0, 1]} scale={.62}><Guitar finish="#d7b266" style="classic" /></group></group>;
   if (kind === 'guitars') return <group><group position={[-2.3, 0, 0]}><Guitar /></group><group position={[2.2, 0, .5]} rotation={[0, .12, 0]}><Guitar finish="#d2b46c" style="classic" /></group><group position={[0, 0, -1.3]} scale={.7}><AmpStack /></group></group>;
   if (kind === 'mic') return <group><MicrophoneStand /><group position={[-2.5, 0, -.3]} scale={.82}><AmpCab /></group><group position={[2.5, 0, -.4]} scale={.82}><AmpCab /></group></group>;
   return <group><Sign wide={6.2} /><group position={[-3.2, 0, 1.5]}><Guitar /></group><group position={[3.4, 0, 1.3]} scale={.9}><Bell /></group><group position={[0, 0, -1.7]} scale={.82}><AmpStack /></group></group>;
