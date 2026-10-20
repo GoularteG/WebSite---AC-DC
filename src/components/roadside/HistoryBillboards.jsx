@@ -117,7 +117,7 @@ function Billboard({ chapter, index, onSelect }) {
       <boxGeometry args={[12.1, 5.5, .35]} />
       <meshStandardMaterial color="#282321" metalness={.55} roughness={.56} />
     </mesh>
-    <mesh position={[0, 5.2, -.015]} onClick={event => { event.stopPropagation(); document.body.style.cursor = ''; onSelect(chapter); }} onPointerOver={event => { event.stopPropagation(); document.body.style.cursor = 'pointer'; }} onPointerOut={() => { document.body.style.cursor = ''; }}>
+    <mesh position={[0, 5.2, -.015]} onClick={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = ''; onSelect(chapter); } : undefined} onPointerOver={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = 'pointer'; } : undefined} onPointerOut={onSelect ? () => { document.body.style.cursor = ''; } : undefined}>
       <planeGeometry args={[11.65, 5.05]} />
       <meshBasicMaterial map={poster.texture} toneMapped={false} />
     </mesh>

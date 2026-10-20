@@ -81,7 +81,7 @@ const smokeFragment = `varying vec2 vUv; uniform float strength; uniform float t
   void main(){vec2 p=vUv-.5; float fog=exp(-dot(p,p)*14.);
     float detail=.7+.18*sin(vUv.x*19.+sin(vUv.y*15.+travel))+.12*cos(vUv.y*26.-travel);
     gl_FragColor=vec4(.28,.19,.19,fog*detail*strength*.19);}`;
-function Atmospherics({ distance, quality, reduced }) {
+function Atmospherics({ distance, quality, reduced, ghostActive }) {
   const clouds=useRef(), particles=useRef();
   const smokeUniforms=useMemo(()=>({strength:{value:0},travel:{value:0}}),[]);
   const emberUniforms=useMemo(()=>({strength:{value:0},travel:{value:0}}),[]);
@@ -91,7 +91,7 @@ function Atmospherics({ distance, quality, reduced }) {
     return new Float32Array(values);
   },[quality]);
   useFrame(({camera})=>{
-    const strength=infernoMix(distance.current);
+    const strength=infernoMix(ghostActive ? -camera.position.z : distance.current);
     const travel=reduced?0:distance.current*.07;
     particles.current.material.uniforms.strength.value=strength;
     particles.current.material.uniforms.travel.value=travel;
@@ -119,16 +119,16 @@ function Atmospherics({ distance, quality, reduced }) {
 
 // Fixed world geometry; the existing vehicle/camera traversal supplies the parallax.
 // No extra lights, shadow maps, textures, bloom passes or perpetual animation loop.
-export default function InfernoFinale({ distance, quality, reduced }) {
+export default function InfernoFinale({ distance, quality, reduced, ghostActive = false }) {
   const world=useRef(), molten=useRef(), lava=useRef();
-  useFrame(()=>{
-    const mix=infernoMix(distance.current);
-    world.current.visible=distance.current>270;
+  useFrame(({ camera })=>{
+    const mix=infernoMix(ghostActive ? -camera.position.z : distance.current);
+    world.current.visible=ghostActive || distance.current>270;
     molten.current.emissiveIntensity=.8+mix*1.7;
     lava.current.emissiveIntensity=.45+mix*1.35;
   });
   return <group ref={world}>
-    <HellLandscape distance={distance} reduced={reduced}/><BasaltCliffs /><LavaChannels material={lava} /><Monument molten={molten} />
-    <Atmospherics distance={distance} quality={quality} reduced={reduced} />
+    <HellLandscape distance={distance} reduced={reduced} ghostActive={ghostActive}/><BasaltCliffs /><LavaChannels material={lava} /><Monument molten={molten} />
+    <Atmospherics distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
   </group>;
 }

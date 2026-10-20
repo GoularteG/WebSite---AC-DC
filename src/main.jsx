@@ -10,3 +10,4 @@ import './styles/history.css';
 createRoot(document.getElementById('root')).render(<React.StrictMode><App/></React.StrictMode>);
 
 import './styles/trunk.css';
+import './styles/ghost.css';

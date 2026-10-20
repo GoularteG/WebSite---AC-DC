@@ -54,9 +54,9 @@ function BandMonument(){
     {[-3.7,3.7].map(x=><mesh key={x} position={[x,-6,0]}><boxGeometry args={[.35,7,.5]}/><meshStandardMaterial color="#29272b" metalness={.6}/></mesh>)}
   </group>;
 }
-export default function HellLandscape({distance,reduced}){
+export default function HellLandscape({distance,reduced,ghostActive=false}){
   const travel=useRef(0),strength=useRef(0);
-  useFrame(()=>{travel.current=reduced?0:distance.current;strength.current=infernoMix(distance.current);},-1);
+  useFrame(({camera})=>{travel.current=reduced?0:distance.current;strength.current=ghostActive?infernoMix(-camera.position.z):infernoMix(distance.current);},-1);
   const crags=useMemo(()=>Array.from({length:28},(_,i)=>{
     const side=i%2?1:-1,s=635+i*7;
     return {position:[roadX(s)+side*(13+((i*13)%19)),3+(i%5),-s],scale:[2+(i%3),8+(i%6)*2,3+(i%4)],rotation:[0,i*.8,side*.12]};

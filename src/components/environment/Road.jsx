@@ -19,7 +19,7 @@ function Ribbon({ offset = 0, width, height, material, start, end }) {
   useEffect(() => () => geometry.dispose(), [geometry]);
   return <mesh geometry={geometry} material={material} receiveShadow />;
 }
-export default function Road({ distance }) {
+export default function Road({ distance, ghostActive = false }) {
   const asphaltTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
     const ctx=canvas.getContext('2d');ctx.fillStyle='#999994';ctx.fillRect(0,0,512,512);
@@ -40,8 +40,8 @@ export default function Road({ distance }) {
   palette.asphalt.material.map=asphaltTexture;
   palette.asphalt.material.bumpMap=asphaltTexture;palette.asphalt.material.bumpScale=.025;
   useEffect(() => () => Object.values(palette).forEach(item=>item.material.dispose()), [palette]);
-  useFrame(() => {
-    const mix = infernoMix(distance.current);
+  useFrame(({ camera }) => {
+    const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
     Object.values(palette).forEach(item=>item.material.color.lerpColors(item.normal,item.final,mix));
   });
   return <group>

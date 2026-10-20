@@ -2,16 +2,16 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { BackSide, Color } from 'three';
 import { infernoMix } from '../../data/finale';
-export default function Atmosphere({ distance }) {
+export default function Atmosphere({ distance, ghostActive = false }) {
   const sky = useRef(), skyMaterial = useRef(), fog = useRef(), sun = useRef(), ambient = useRef();
   const uniforms = useMemo(() => ({ inferno: { value: 0 } }), []);
   const colors = useMemo(() => ['#b45a38','#82130b','#ffab64','#ff4b16','#ffc58f','#f79150','#594347','#351522'].map(c=>new Color(c)), []);
   useFrame(({ camera }) => {
-    const mix = infernoMix(distance.current);
+    const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
     sky.current.position.copy(camera.position);
     skyMaterial.current.uniforms.inferno.value = mix;
     fog.current.color.lerpColors(colors[0],colors[1],mix);
-    fog.current.far = 255 - mix * 25;
+    fog.current.far = ghostActive ? 1500 : 255 - mix * 25;
     sun.current.color.lerpColors(colors[2],colors[3],mix);
     ambient.current.color.lerpColors(colors[4],colors[5],mix);
     ambient.current.groundColor.lerpColors(colors[6],colors[7],mix);
