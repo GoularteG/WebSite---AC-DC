@@ -9,6 +9,13 @@ test('chapter boundaries and end are reachable in both directions', () => {
   for (const chapter of [...chapters, ...chapters.toReversed()]) assert.equal(chapterAt(chapter.progress).id, chapter.id);
   assert.equal(clamp(-1),0); assert.equal(clamp(2),1);
 });
+test('first three chapters use distinct archival band photos and identify retrospective images', () => {
+  const firstPhotos = chapters.slice(0, 3).map(chapter => chapter.image);
+  assert.equal(new Set(firstPhotos.map(image => image.sourceUrl)).size, 3);
+  assert.ok(firstPhotos.every(image => image.description.includes('AC/DC') || image.description.includes('Angus')));
+  assert.ok(firstPhotos.slice(0, 2).every(image => image.kind === 'retrospective-band-photograph' && image.caption.includes('retrospectiva')));
+  assert.equal(firstPhotos[2].captured, '1977');
+});
 test('billboard chapters remain spaced before the final gate and road motion is reversible', () => {
   assert.equal(distanceAtProgress(0), 0);
   assert.equal(distanceAtProgress(1), JOURNEY_LENGTH);
