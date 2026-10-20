@@ -7,4 +7,4 @@ export const carAsset = {
   wheelAxis: 'x',
   wheelRadius: .36,
 };
-export const audioAsset = { url: null, credit: null };
+export const audioAsset = { url: '/audio/highway-to-hell-user.mp3', credit: 'Arquivo de áudio enviado pelo autor do projeto.' };
