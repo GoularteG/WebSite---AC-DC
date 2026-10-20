@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chapters, chapterAt, chapterVisibility, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH } from '../src/data/journey.js';
+import { chapters, chapterAt, chapterVisibility, clamp, distanceAtProgress, roadX, storyCameraOffset, JOURNEY_LENGTH } from '../src/data/journey.js';
 import { entries } from '../src/data/book.js';
 test('chapter boundaries and end are reachable in both directions', () => {
   assert.equal(chapters.length, 9);
@@ -32,6 +32,19 @@ test('story panels appear near their markers and road motion stays continuous in
 });
 test('road is continuous with gentle bends across the full playable route', () => {
   for(let s=0;s<JOURNEY_LENGTH;s+=.5) { assert.ok(Number.isFinite(roadX(s))); assert.ok(Math.abs(roadX(s+.5)-roadX(s))<.12); }
+});
+test('camera framing alternates with the chapter side and recenters at the gate', () => {
+  assert.equal(storyCameraOffset(0), 0);
+  for (let index = 0; index < 8; index++) {
+    assert.ok(Math.abs(storyCameraOffset(chapters[index].progress) - (index % 2 ? 1.7 : -1.8)) < 1e-9);
+  }
+  assert.ok(Math.abs(storyCameraOffset(chapters[8].progress)) < 1e-9);
+  let previous = storyCameraOffset(0);
+  for (let step = 1; step <= 1000; step++) {
+    const current = storyCameraOffset(step / 1000);
+    assert.ok(Math.abs(current - previous) < .6);
+    previous = current;
+  }
 });
 test('each book entry is a separate extensible page', () => {
   assert.equal(new Set(entries.map(entry=>entry.id)).size,entries.length);

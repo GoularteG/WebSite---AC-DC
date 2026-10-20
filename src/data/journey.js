@@ -15,6 +15,19 @@ export const roadHeading = (distance) => Math.atan2(13 / 110 * Math.cos(distance
 // Native scrolling rounds to device pixels; allow a sub-pixel tolerance at each marker.
 export const chapterAt = progress => chapters.reduce((current, chapter) => progress >= chapter.progress - .0005 ? chapter : current, chapters[0]);
 
+// Panning the camera (never the car) reserves the opposite side of the frame
+// for each chapter. The next composition settles before its story appears.
+export function storyCameraOffset(progress) {
+  let offset = 0;
+  for (const [index, chapter] of chapters.entries()) {
+    const next = chapter.id === 'hell-gate' ? 0 : index % 2 === 0 ? -1.8 : 1.7;
+    const t = clamp((progress - chapter.progress + .018) / .012);
+    const eased = t * t * (3 - 2 * t);
+    offset += (next - offset) * eased;
+  }
+  return offset;
+}
+
 // The road stays reversible; the car simply eases as it reaches each story marker.
 export function distanceAtProgress(progress) {
   const stops = [0, ...chapters.map(chapter => chapter.progress), 1];
