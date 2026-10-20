@@ -30,10 +30,13 @@ export function distanceAtProgress(progress) {
 export function chapterVisibility(progress, chapter) {
   if (!chapter || chapter.id === 'hell-gate') return 0;
   const index = chapters.findIndex(item => item.id === chapter.id);
-  const previous = chapters[index - 1];
   const next = chapters[index + 1];
-  const start = index === 0 ? .012 : (previous.progress + chapter.progress) / 2;
-  const end = (chapter.progress + next.progress) / 2;
-  const fade = Math.min(.018, (end - start) / 5);
-  return clamp((progress - start) / fade) * clamp((end - progress) / fade);
+  // Complete the outgoing story before the incoming one appears, so their
+  // text never overlaps on narrow screens or when a marker is selected.
+  const fade = .006;
+  const entering = index === 0
+    ? clamp((progress - .012) / .018)
+    : clamp((progress - chapter.progress + fade) / fade);
+  const leaving = clamp((next.progress - fade - progress) / fade);
+  return entering * leaving;
 }

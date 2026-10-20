@@ -18,7 +18,16 @@ test('story panels appear near their markers and road motion stays continuous in
     assert.ok(distance >= previous && distance - previous < 2);
     previous = distance;
   }
-  for (const chapter of chapters.slice(0, 8)) assert.equal(chapterVisibility(chapter.progress, chapter), 1);
+  assert.equal(chapterVisibility(chapters[0].progress, chapters[0]), 1);
+  for (let index = 1; index < 8; index++) {
+    const boundary = chapters[index].progress;
+    assert.equal(chapterVisibility(boundary, chapters[index - 1]), 0);
+    assert.equal(chapterVisibility(boundary, chapters[index]), 1);
+    assert.ok(Math.abs(chapterVisibility(boundary - .009, chapters[index - 1]) - .5) < 1e-9);
+    assert.ok(Math.abs(chapterVisibility(boundary - .003, chapters[index]) - .5) < 1e-9);
+    assert.equal(chapterVisibility(boundary - .003, chapters[index - 1]), 0);
+  }
+  assert.equal(chapterVisibility(.8, chapters[7]), 1);
   assert.equal(chapterVisibility(chapters.at(-1).progress, chapters.at(-1)), 0);
 });
 test('road is continuous with gentle bends across the full playable route', () => {
