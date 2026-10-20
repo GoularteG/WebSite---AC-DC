@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { chapters, chapterAt, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH, billboardDistance, upcomingBillboardAt } from '../src/data/journey.js';
 import { entries } from '../src/data/book.js';
+import { licensedPhotoSources } from '../src/data/historyPhotos.js';
 test('chapter boundaries and end are reachable in both directions', () => {
   assert.equal(chapters.length, 9);
   assert.equal(chapters.filter(chapter => chapter.narrative).length, 8);
@@ -15,6 +16,12 @@ test('first three chapters use distinct archival band photos and identify retros
   assert.ok(firstPhotos.every(image => image.description.includes('AC/DC') || image.description.includes('Angus')));
   assert.ok(firstPhotos.slice(0, 2).every(image => image.kind === 'retrospective-band-photograph' && image.caption.includes('retrospectiva')));
   assert.equal(firstPhotos[2].captured, '1977');
+});
+test('every billboard has a direct licensed image URL if the Commons redirect is unavailable', () => {
+  for (const chapter of chapters.slice(0, 8)) {
+    const sources = licensedPhotoSources(chapter.image);
+    assert.ok(sources.some(url => url.startsWith('https://upload.wikimedia.org/wikipedia/commons/')));
+  }
 });
 test('billboard chapters remain spaced before the final gate and road motion is reversible', () => {
   assert.equal(distanceAtProgress(0), 0);
