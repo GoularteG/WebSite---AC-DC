@@ -3,3 +3,12 @@
 
 .start-button span{font-size:0;width:14px;height:14px;border-top:2px solid currentColor;border-right:2px solid currentColor;position:relative}.start-button span:after{content:"";height:2px;width:17px;background:currentColor;position:absolute;right:-2px;top:5px;transform:rotate(-45deg)}
 .highway-footer{justify-content:flex-end}
+.site-header{position:fixed}
+.site-header nav{position:absolute;left:50%;transform:translateX(-50%)}
+.site-authors{margin-left:auto;max-width:260px;color:#e9d9c5;font-size:9px;line-height:1.5;text-align:right;letter-spacing:.3px}
+.site-authors strong{display:block;font-weight:600}
+.music-player{position:fixed;z-index:18;top:112px;right:4.6%;width:min(360px,91vw);padding:10px;border:1px solid #9d6746;background:#191513f5;box-shadow:0 16px 45px #000b}
+.music-player-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;color:#e7c19d;font-size:9px;font-weight:bold;letter-spacing:1px}
+.music-player-heading button{padding:4px 8px;font-size:14px;background:transparent}
+.music-player iframe{display:block;border:0;border-radius:8px}
+@media(max-width:1040px){.site-header{height:116px;align-items:flex-start;padding-top:12px}.site-authors{max-width:195px;font-size:8px}.site-header nav{top:66px;width:100%;justify-content:center;gap:25px}.music-player{top:120px;right:4.5%}}

@@ -2,8 +2,8 @@ import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react'
 import Credits from './components/Credits';
 import TrunkExperience from './components/trunk/TrunkExperience';
 import HistoryChapter from './components/history/HistoryChapter';
+import MusicPlayer from './components/MusicPlayer';
 import { useReducedMotion } from './hooks/usePreferences';
-import { useAudio } from './hooks/useAudio';
 import { chapters, chapterAt, clamp, upcomingBillboardAt } from './data/journey';
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
 export default function App() {
@@ -23,7 +23,6 @@ export default function App() {
   const onModelReady = useCallback(() => setModelReady(true), []);
   const progress = useRef(0), saved = useRef(0);
   const reduced = useReducedMotion();
-  const audio = useAudio();
   const chapter = chapterAt(value);
   const nextBillboard = upcomingBillboardAt(value, mobile);
   const atDestination = started && arrived && value > .97;
@@ -74,11 +73,12 @@ export default function App() {
     <header className="site-header">
       <a className="wordmark" href="#highway" onClick={(event)=>{event.preventDefault();navigate('highway');}} aria-label="AC/DC — início">AC<span>ϟ</span>DC</a>
       <nav aria-label="Áreas principais"><button className={tab==='highway'?'active':''} aria-current={tab==='highway'?'page':undefined} onClick={()=>navigate('highway')}><small>01</small> THE HIGHWAY</button><button className={tab==='making'?'active':''} aria-current={tab==='making'?'page':undefined} onClick={()=>navigate('making')}><small>02</small> THE MAKING OF</button></nav>
+      <span className="site-authors">Feito por: <strong>Gustavo Goularte, Gustavo Justo e Erik Carvalho</strong></span>
     </header>
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''}`} style={{height:started?'950vh':'100svh'}}>
       <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}><HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter}/></Suspense><div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening"><span className="eyebrow"><i/> NO TURNING BACK. JUST ROCK ’N’ ROLL.</span><h1>HIGHWAY<br/><span className="title-second"><em>TO</em> HELL</span><b aria-hidden="true">ϟ</b></h1><p>Uma estrada. Mil volts.<br/>O próximo capítulo começa com você.</p><button className="start-button" onClick={()=>{setStarted(true);go(.015);}}>ENTRAR NA ESTRADA <span>↗</span></button><span className="start-note">{reduced?'Explore pelos marcos do percurso':'Role para avançar. Volte para redescobrir.'}</span></section> : <>
-        {!atDestination && value >= .02 && nextBillboard && <button className="history-open" onClick={() => setSelectedChapter(nextBillboard)} aria-label={`Abrir próximo outdoor, capítulo ${nextBillboard.marker}: ${nextBillboard.title}`}><span>PRÓXIMO OUTDOOR {nextBillboard.marker} / 08</span><strong>{nextBillboard.period} · {nextBillboard.title}</strong><b aria-hidden="true">↗</b></button>}
+        {!atDestination && value >= .02 && nextBillboard && <button className="history-open" onClick={() => setSelectedChapter(nextBillboard)} aria-label={`Abrir capítulo ${nextBillboard.marker}: ${nextBillboard.title}`}><span>{nextBillboard.period}</span><strong>{nextBillboard.title}</strong></button>}
         {!atDestination && value > chapters.at(-1).progress - .006 && <section className="chapter-caption inferno-approach" style={{opacity:clamp((value - chapters.at(-1).progress + .006) / .006)}}><span className="eyebrow">09 / HIGHWAY TO HELL</span><h1>THE GATES OF HELL.</h1><p>O horizonte já não é o mesmo.</p></section>}
         <nav className="history-timeline" aria-label="Linha do tempo da estrada">{chapters.map(item=><button key={item.id} aria-label={`Ir para ${item.period}: ${item.title}`} aria-current={chapter.id===item.id?'step':undefined} className={chapter.id===item.id?'selected':''} onClick={()=>go(item.id === 'hell-gate' ? 1 : item.progress)} title={`${item.period} — ${item.title}`}><span className="timeline-number">{item.marker}</span><span className="timeline-period">{item.id==='hell-gate'?'INFERNO':item.period}</span></button>)}</nav>
         {atDestination && <section className="inferno-arrival" aria-labelledby="arrival-title">
@@ -90,9 +90,8 @@ export default function App() {
         </section>}
       </>}
       {modelError && <p className="audio-error" role="alert">{modelError}</p>}
-      <footer className="highway-footer"><div className="footer-controls"><button onClick={()=>setCredits(true)}>CRÉDITOS</button><button disabled={!audio.available} onClick={audio.toggle} aria-pressed={audio.playing} title={audio.available?'Ativar ou desativar áudio':'Aguardando um arquivo de áudio autorizado'}>♫ {audio.available?(audio.playing?'SOM LIGADO':'SOM DESLIGADO'):'ÁUDIO EM BREVE'}</button></div></footer>
+      <footer className="highway-footer"><div className="footer-controls"><button onClick={()=>setCredits(true)}>CRÉDITOS</button><MusicPlayer /></div></footer>
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
-      {audio.error && <p className="audio-error" role="alert">{audio.error}</p>}
       {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
