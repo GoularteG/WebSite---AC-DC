@@ -62,6 +62,7 @@ test('road is continuous with gentle bends across the full playable route', () =
   for(let s=0;s<JOURNEY_LENGTH;s+=.5) { assert.ok(Number.isFinite(roadX(s))); assert.ok(Math.abs(roadX(s+.5)-roadX(s))<.12); }
 });
 test('each book entry is a separate extensible page', () => {
+  assert.equal(entries.length, 8);
   assert.equal(new Set(entries.map(entry=>entry.id)).size,entries.length);
   assert.ok(entries.every(entry=>entry.title && entry.label && entry.paragraphs.length));
 });
