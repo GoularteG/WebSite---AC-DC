@@ -14,7 +14,11 @@ const portalFragment='varying vec2 vUv;uniform float travel;uniform float streng
 function MoltenMaterial({travel,strength,portal=false}){
   const material=useRef();
   const uniforms=useMemo(()=>({travel:{value:0},strength:{value:0}}),[]);
-  useFrame(()=>{material.current.uniforms.travel.value=travel.current;material.current.uniforms.strength.value=strength.current;});
+  useFrame(()=>{
+    material.current.uniforms.travel.value=travel.current;
+    material.current.uniforms.strength.value=strength.current;
+    if(portal) material.current.depthWrite=strength.current>.98;
+  });
   return <shaderMaterial ref={material} transparent depthWrite={false} toneMapped={false} uniforms={uniforms} vertexShader={vertex} fragmentShader={portal?portalFragment:lavaFragment}/>;
 }
 function LavaRiver({side,travel,strength}){
