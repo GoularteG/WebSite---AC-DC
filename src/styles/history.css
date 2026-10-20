@@ -94,8 +94,9 @@
 .history-photo-placeholder strong {font: 45px/1 'Metal Mania', Impact, sans-serif; color: #e9a778}
 .history-photo-placeholder small {font-size: 11px; letter-spacing: 1px}
 .history-archive-photo figcaption {margin-top: 12px; color: #d6c2ad; font-size: 12px; line-height: 1.5}
-.history-archive-photo figcaption small {display: block; margin-top: 6px; color: #bb9f89; font-size: 11px}
-.history-archive-photo a {text-decoration: underline; text-underline-offset: 3px}
+.photo-credits {display: grid; gap: 9px; padding-left: 19px; line-height: 1.6}
+.photo-credits li {font-size: 12px; color: #e4d1bc}
+.photo-credits a {text-decoration: underline; text-underline-offset: 3px}
 .history-archive-story p {margin: 0 0 22px; color: #f1e4d0; font-size: 16px; line-height: 1.7}
 .history-archive-story h3 {margin: 26px 0 12px; color: #e9a778; font-size: 11px; letter-spacing: 2px}
 .history-archive-story ol {display: grid; gap: 10px; margin: 0 0 24px; padding-left: 21px; color: #e8d3bc; font-size: 14px; line-height: 1.55}

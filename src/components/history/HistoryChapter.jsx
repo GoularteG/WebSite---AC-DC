@@ -30,7 +30,7 @@ export default function HistoryChapter({ chapter, onClose }) {
     <div className="history-archive-grid">
       <figure className="history-archive-photo">
         {photoUrl && !failed ? <img src={photoUrl} alt={image.description} decoding="async" onError={() => setFailed(true)} /> : <div className="history-photo-placeholder" role="img" aria-label="Fotografia histórica indisponível"><strong>{chapter.period}</strong><small>REGISTRO FOTOGRÁFICO INDISPONÍVEL</small></div>}
-        <figcaption>{image.caption}<small><a href={image.sourceUrl} target="_blank" rel="noopener noreferrer">{image.credit}</a> · <a href={image.licenseUrl} target="_blank" rel="noopener noreferrer">{image.license}</a></small></figcaption>
+        <figcaption>{image.caption}</figcaption>
       </figure>
       <div className="history-archive-story"><p>{chapter.narrative}</p><h3>NA LINHA DO TEMPO</h3><ol>{chapter.events.map(event => <li key={`${event.date}-${event.text}`}><strong>{event.date}</strong> {event.text}</li>)}</ol>{chapter.curiosity && <p className="history-curiosity"><strong>VOCÊ SABIA?</strong> {chapter.curiosity}</p>}{image.kind === 'contextual-period-photograph' && <p className="history-context-note">Imagem contextual de época; fotografia da banda ainda depende de licença.</p>}</div>
     </div>
