@@ -23,7 +23,7 @@ export default function MakingOf({ reduced, embedded=false, initialOpen=false, o
     if (event.key === 'ArrowRight') { event.preventDefault(); navigate('next'); }
     if (event.key === 'ArrowLeft') { event.preventDefault(); navigate('previous'); }
   }}>
-    <div className="book-heading"><span className="eyebrow">BASTIDORES DE UMA VIAGEM</span><h1>The Making Of<span>.</span></h1><p>Ideias, escolhas e cicatrizes. Um registro em construção.</p></div>
+    <div className="book-heading"><span className="eyebrow">BASTIDORES DE UMA VIAGEM</span><h1>The Making Of<span>.</span></h1><p>As ideias, os pedidos e as decisões que fizeram esta viagem acontecer.</p></div>
     <div className="archive-layout"><section className="archive-volume" aria-label="Livro de desenvolvimento">
     {!open ? <div className="closed-book-stage"><button className="archive-cover" onClick={() => setOpen(true)} aria-label="Abrir o livro de desenvolvimento">
       <span className="cover-spine" aria-hidden="true"/>
