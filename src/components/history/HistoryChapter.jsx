@@ -14,7 +14,7 @@ export default function HistoryChapter({ chapter, visibility, reduced }) {
   const photoUrl = licensedPhotoUrl(image);
   const showPhoto = photoUrl && !failed;
   const side = Number(chapter.marker) % 2 ? 'left' : 'right';
-  const summary = chapter.narrative.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
+  const summary = chapter.narrative.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
   const detailId = `history-detail-${chapter.id}`;
   return <><span className={`history-connector history-connector--${side}`} aria-hidden="true" style={{ opacity: visibility }}/><section
     className={`history-chapter history-chapter--${side} ${expanded ? 'history-chapter--expanded' : ''}`}
