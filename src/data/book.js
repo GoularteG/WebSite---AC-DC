@@ -70,7 +70,7 @@ export const entries = [
     title: 'Se a viagem começasse hoje.',
     paragraphs: [
       'Síntese editorial dos pedidos, não um prompt literal: “Crie um site cinematográfico sobre AC/DC. O scroll conduz o Dodge Charger 3D original por uma estrada reversível, com cenografia de rock. Conte oito capítulos históricos em outdoors com fotos identificadas; faça do nono marco um portal infernal tridimensional.”',
-      '“Acesse The Making Of por um porta-malas de roqueiro. No interior, o livro é o foco e o único objeto clicável. Permita folhear sem selecionar texto, preserve a leitura no celular e deixe a música pausada até o visitante tocar.” O projeto usa React e Three.js para sincronizar essa viagem. Gustavo Goularte, Gustavo Justo e Erik Carvalho aparecem nos créditos do site.',
+      '“Acesse The Making Of por um porta-malas de roqueiro. No interior, o livro é o foco e o único objeto clicável. Permita folhear sem selecionar texto, preserve a leitura no celular e deixe a música pausada até o visitante tocar.” O projeto usa React e Three.js para sincronizar essa viagem. Erik Carvalho, Gustavo Goularte e Gustavo Justo aparecem nos créditos do site.',
     ],
   },
 ];
