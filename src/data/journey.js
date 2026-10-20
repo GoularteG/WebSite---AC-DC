@@ -26,3 +26,11 @@ export function distanceAtProgress(progress) {
   const eased = t * t * (3 - 2 * t);
   return (start + (end - start) * eased) * JOURNEY_LENGTH;
 }
+
+export const billboardDistance = (chapter, mobile = false) => distanceAtProgress(chapter.progress) + (mobile ? 26 : 17);
+
+// The roadside prompt advances as soon as the car passes the actual board.
+export function upcomingBillboardAt(progress, mobile = false) {
+  const distance = distanceAtProgress(progress);
+  return chapters.slice(0, 8).find(chapter => distance < billboardDistance(chapter, mobile)) ?? null;
+}

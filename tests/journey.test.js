@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chapters, chapterAt, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH } from '../src/data/journey.js';
+import { chapters, chapterAt, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH, billboardDistance, upcomingBillboardAt } from '../src/data/journey.js';
 import { entries } from '../src/data/book.js';
 test('chapter boundaries and end are reachable in both directions', () => {
   assert.equal(chapters.length, 9);
@@ -28,6 +28,28 @@ test('billboard chapters remain spaced before the final gate and road motion is 
   const markers = chapters.slice(0, 8).map(chapter => distanceAtProgress(chapter.progress));
   assert.ok(markers.every((distance, index) => index === 0 || distance - markers[index - 1] > 40));
   assert.ok(markers.at(-1) + 26 < distanceAtProgress(chapters.at(-1).progress));
+});
+test('roadside prompt advances at each billboard, including on mobile and reverse travel', () => {
+  for (const mobile of [false, true]) {
+    for (let index = 0; index < 7; index++) {
+      const distance = billboardDistance(chapters[index], mobile);
+      const before = (distance - .01) / JOURNEY_LENGTH;
+      const after = (distance + .01) / JOURNEY_LENGTH;
+      // Distance easing means progress needs to be found by inversion.
+      const toProgress = target => {
+        let low = 0, high = 1;
+        for (let step = 0; step < 30; step++) {
+          const mid = (low + high) / 2;
+          if (distanceAtProgress(mid) < target) low = mid;
+          else high = mid;
+        }
+        return (low + high) / 2;
+      };
+      assert.equal(upcomingBillboardAt(toProgress(distance - .01), mobile)?.id, chapters[index].id);
+      assert.equal(upcomingBillboardAt(toProgress(distance + .01), mobile)?.id, chapters[index + 1].id);
+      assert.ok(after > before);
+    }
+  }
 });
 test('road is continuous with gentle bends across the full playable route', () => {
   for(let s=0;s<JOURNEY_LENGTH;s+=.5) { assert.ok(Number.isFinite(roadX(s))); assert.ok(Math.abs(roadX(s+.5)-roadX(s))<.12); }

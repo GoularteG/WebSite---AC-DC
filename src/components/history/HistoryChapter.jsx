@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-
-function licensedPhotoUrl(image) {
-  if (image.usageStatus !== 'open-license-verified') return null;
-  const filename = image.sourceUrl.split('/File:')[1];
-  return filename ? `https://commons.wikimedia.org/wiki/Special:Redirect/file/${filename}?width=960` : null;
-}
+import { licensedPhotoSources } from '../../data/historyPhotos';
 
 export default function HistoryChapter({ chapter, onClose }) {
   const dialog = useRef(null);
@@ -20,8 +15,7 @@ export default function HistoryChapter({ chapter, onClose }) {
     };
   }, []);
   const image = chapter.image;
-  const photoUrl = licensedPhotoUrl(image);
-  const imageSource = failed === 0 ? photoUrl : failed === 1 ? image.fallbackUrl : null;
+  const imageSource = licensedPhotoSources(image)[failed] ?? null;
   return <dialog ref={dialog} className="history-archive" onClose={onClose} aria-labelledby="history-archive-title">
     <header className="history-archive-header">
       <span>AC/DC · ARQUIVO DA ESTRADA · {chapter.marker} / 08</span>
