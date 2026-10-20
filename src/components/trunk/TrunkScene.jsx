@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox } from '@react-three/drei';
-import { CanvasTexture, DoubleSide, RepeatWrapping, Shape, SRGBColorSpace } from 'three';
+import { CanvasTexture, CatmullRomCurve3, DoubleSide, RepeatWrapping, Shape, SRGBColorSpace, Vector3 } from 'three';
 import BookModel from './BookModel';
 import GuitarModel from './GuitarModel';
 import { InteriorCamera } from './TrunkCamera';
@@ -16,11 +16,16 @@ function useSurface(kind) {
       ctx.strokeText('AC/DC',256,y);ctx.fillText('AC/DC',256,y);ctx.restore();
     };
     if(kind==='carpet'){
-      ctx.fillStyle='#414246';ctx.fillRect(0,0,512,512);
+      ctx.fillStyle='#303136';ctx.fillRect(0,0,512,512);
       for(let i=0;i<22000;i++){
         const x=(i*97)%512,y=(i*173+Math.floor(i/512)*31)%512;
-        ctx.fillStyle=i%5===0?'#66676a':i%2?'#4c4d50':'#313236';
+        ctx.fillStyle=i%5===0?'#55575a':i%2?'#404247':'#25262a';
         ctx.fillRect(x,y,i%7===0?2:1,i%3===0?4:2);
+      }
+      for(let i=0;i<28;i++){
+        ctx.strokeStyle=i%3?'#191b2080':'#69686455';ctx.lineWidth=i%4===0?2:1;
+        const x=(i*83)%512,y=(i*137)%512;
+        ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+18+(i%5)*8,y+5);ctx.stroke();
       }
     }else if(kind==='rubber'){
       ctx.fillStyle='#111214';ctx.fillRect(0,0,512,512);
@@ -49,9 +54,18 @@ function useSurface(kind) {
       ctx.fillStyle='#dfe5e7';ctx.strokeStyle='#334351';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(66,230);ctx.lineTo(446,165);ctx.lineTo(424,325);ctx.lineTo(86,370);ctx.closePath();ctx.fill();ctx.stroke();
       ctx.fillStyle='#8d1f24';ctx.textAlign='center';ctx.font='700 45px Georgia';ctx.fillText('THE RAZORS EDGE',256,430);
       ctx.fillStyle='#394650';ctx.font='17px Arial';ctx.fillText('1990',256,465);
+    }else if(kind==='archive'){
+      ctx.fillStyle='#dfd0b0';ctx.fillRect(0,0,512,512);
+      ctx.fillStyle='#c8b894';ctx.fillRect(24,24,464,464);
+      ctx.fillStyle='#e7d8b9';ctx.fillRect(35,35,442,442);
+      ctx.strokeStyle='#7c251d';ctx.lineWidth=9;ctx.strokeRect(35,35,442,442);
+      ctx.strokeStyle='#aa8250';ctx.lineWidth=3;ctx.strokeRect(51,51,410,410);
+      ctx.textAlign='center';ctx.fillStyle='#9b1f1b';ctx.font='italic 900 70px Arial Black';ctx.fillText('AC/DC',256,126);
+      ctx.fillStyle='#4c241d';ctx.font='20px Georgia';ctx.fillText('THE HIGHWAY ARCHIVES',256,173);
+      ctx.fillStyle='#291d19';ctx.font='bold 62px Georgia';ctx.fillText('THE MAKING',256,280);ctx.fillText('OF',256,355);
+      ctx.fillStyle='#9b1f1b';ctx.font='17px Georgia';ctx.fillText('BASTIDORES DE UMA VIAGEM  •  VOL. 01',256,427);
     }else{
       const data={
-        archive:{bg:'#ded8c9',ink:'#29231e',accent:'#9b251f',top:'HIGHWAY ARCHIVES',main:['THE MAKING','OF'],foot:'DEVELOPMENT FILE · 1973—2026'},
         ticket:{bg:'#ba9a68',ink:'#241b13',accent:'#8b1e1f',top:'ACϟDC',main:['WORLD TOUR','ADMIT ONE'],foot:'GENERAL ADMISSION · 1980'},
         setlist:{bg:'#d7d0bd',ink:'#25211d',accent:'#8b1e1f',top:'TONIGHT',main:['HIGHWAY','HELLS BELLS'],foot:'SET LIST · STAGE LEFT'},
         poster:{bg:'#242326',ink:'#d5c5ae',accent:'#9b201d',top:'LIVE',main:['HIGH','VOLTAGE'],foot:'ROCK & ROLL · ALL NIGHT'},
@@ -94,18 +108,22 @@ function SpareTire() {
 }
 function LidArchive() {
   const label=useSurface('archive');
+  const patch=useSurface('poster');
+  const pass=useSurface('pass');
   return <group position={[0,.98,.18]}>
     <mesh castShadow><boxGeometry args={[.84,.5,.025]}/><meshStandardMaterial map={label} color="#746e65" roughness={.82}/></mesh>
+    <mesh position={[-2.15,-.08,.015]} rotation={[0,0,-.09]} castShadow><boxGeometry args={[.5,.68,.024]}/><meshStandardMaterial map={patch} roughness={.74}/></mesh>
+    <mesh position={[2.19,-.04,.015]} rotation={[0,0,.07]} castShadow><boxGeometry args={[.47,.63,.024]}/><meshStandardMaterial map={pass} roughness={.8}/></mesh>
   </group>;
 }
 function TrunkInterior() {
   const carpet=useSurface('carpet');
   return <group>
-    <RoundedBox args={[7,.2,4.45]} position={[0,-.12,.1]} radius={.16} smoothness={4} receiveShadow><meshStandardMaterial map={carpet} color="#b5b5b8" roughness={1}/></RoundedBox>
+    <RoundedBox args={[7,.2,4.45]} position={[0,-.12,.1]} radius={.16} smoothness={4} receiveShadow><meshStandardMaterial map={carpet} color="#858487" roughness={1}/></RoundedBox>
     <CarPanel position={[0,.54,-2.12]} args={[7.15,1.25,.25]}/>
     <CarPanel position={[-3.38,.35,.08]} args={[.42,.95,4.25]} radius={.18}/><CarPanel position={[3.38,.35,.08]} args={[.42,.95,4.25]} radius={.18}/>
     {[-1,1].map(side=><group key={side}>
-      <RoundedBox position={[side*2.83,.25,-.55]} args={[.92,.75,2.45]} radius={.38} smoothness={6} castShadow receiveShadow><meshStandardMaterial map={carpet} color="#9b9b9e" roughness={1}/></RoundedBox>
+      <RoundedBox position={[side*2.83,.25,-.55]} args={[.92,.75,2.45]} radius={.38} smoothness={6} castShadow receiveShadow><meshStandardMaterial map={carpet} color="#78787c" roughness={1}/></RoundedBox>
       <MetalBar position={[side*3.5,.45,.1]} args={[.07,.08,4.35]} color="#111317"/>
       <MetalBar position={[side*3.32,.8,-1.55]} rotation={[0,0,side*.22]} args={[.08,1.5,.1]}/>
       <MetalBar position={[side*2.93,1.72,-1.87]} rotation={[0,0,side*.15]} args={[.09,1.1,.12]}/>
@@ -141,9 +159,9 @@ function AlbumCase({kind,position,rotation}) {
 }
 function AlbumsObject() {
   return <group>
-    <AlbumCase kind="black" position={[-.39,.03,.04]} rotation={[0,-.2,0]}/>
-    <AlbumCase kind="hell" position={[.2,.1,-.28]} rotation={[0,.17,0]}/>
-    <AlbumCase kind="razor" position={[.47,.18,.25]} rotation={[0,-.1,0]}/>
+    <AlbumCase kind="black" position={[-.64,.03,-.35]} rotation={[0,-.08,0]}/>
+    <AlbumCase kind="hell" position={[.52,.03,-.35]} rotation={[0,.08,0]}/>
+    <AlbumCase kind="razor" position={[.03,.12,.62]} rotation={[0,-.06,0]}/>
   </group>;
 }
 function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
@@ -173,15 +191,28 @@ function Picks() {
 }
 function Memorabilia() {
   return <group>
-    <PaperCard kind="poster" position={[-1.93,.037,-.58]} rotation={[0,-.25,0]} size={[.9,1.25]}/>
-    <PaperCard kind="setlist" position={[-1.13,.065,-.7]} rotation={[0,.18,0]} size={[.7,1.03]}/>
-    <PaperCard kind="pass" position={[1.2,.055,-.65]} rotation={[0,-.18,0]} size={[.66,.96]}/>
-    <PaperCard kind="ticket" position={[1.57,.08,-.54]} rotation={[0,.28,0]} size={[.45,.73]}/>
-    <PaperCard kind="flyer" position={[2.19,.045,-1.12]} rotation={[0,.24,0]} size={[.72,.95]}/>
-    <group position={[-1.12,.025,1.48]}><Picks/></group>
-    <mesh position={[-2.16,.07,-1.07]} rotation={[Math.PI/2,0,0]} castShadow><torusGeometry args={[.26,.033,8,42]}/><meshStandardMaterial color="#1a1b1c" roughness={.76}/></mesh>
-    <mesh position={[-2.12,.08,-1.06]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[.19,.027,8,42]}/><meshStandardMaterial color="#292a2b" roughness={.73}/></mesh>
-    <mesh position={[-2.36,.085,-1.25]} rotation={[0,.65,0]} castShadow><cylinderGeometry args={[.055,.055,.23,10]}/><meshStandardMaterial color="#b5aca0" metalness={.7} roughness={.3}/></mesh>
+    <PaperCard kind="poster" position={[-1.93,.037,-1.05]} rotation={[0,-.18,0]} size={[.9,1.25]}/>
+    <PaperCard kind="setlist" position={[-1.05,.065,-1.15]} rotation={[0,.12,0]} size={[.7,1.03]}/>
+    <PaperCard kind="pass" position={[1.18,.055,-.58]} rotation={[0,-.12,0]} size={[.66,.96]}/>
+    <PaperCard kind="ticket" position={[1.61,.08,-.42]} rotation={[0,.18,0]} size={[.45,.73]}/>
+    <PaperCard kind="flyer" position={[2.22,.045,-.55]} rotation={[0,.14,0]} size={[.72,.95]}/>
+    <group position={[.76,.025,2.02]}><Picks/></group>
+  </group>;
+}
+function RoadGear() {
+  const cable=useMemo(()=>new CatmullRomCurve3(Array.from({length:78},(_,i)=>{
+    const t=i/77,a=t*Math.PI*7,r=.28-t*.045;
+    return new Vector3(-1.99+Math.cos(a)*r,.075+t*.008,-1.28+Math.sin(a)*r);
+  })),[]);
+  return <group name="road-gear">
+    <mesh castShadow><tubeGeometry args={[cable,100,.028,7,false]}/><meshStandardMaterial color="#151618" roughness={.78}/></mesh>
+    <group position={[2.02,.145,-1.46]} rotation={[0,.14,0]}>
+      <RoundedBox args={[.78,.22,.48]} radius={.045} smoothness={4} castShadow><meshPhysicalMaterial color="#202227" metalness={.55} roughness={.38}/></RoundedBox>
+      <mesh position={[0,.119,.035]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.6,.25]}/><meshBasicMaterial color="#81241e"/></mesh>
+      <mesh position={[0,.121,-.15]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.61,.015]}/><meshBasicMaterial color="#e49a52"/></mesh>
+      {[-.24,0,.24].map(x=><mesh key={x} position={[x,.16,-.14]} castShadow><cylinderGeometry args={[.045,.052,.09,12]}/><meshStandardMaterial color="#b9b6ad" metalness={.85} roughness={.25}/></mesh>)}
+      <mesh position={[0,.17,.13]} castShadow><cylinderGeometry args={[.095,.095,.06,24]}/><meshStandardMaterial color="#bfc0ba" metalness={.78} roughness={.28}/></mesh>
+    </group>
   </group>;
 }
 function ProjectBook() {
@@ -189,7 +220,7 @@ function ProjectBook() {
   return <group rotation={[0,-.08,0]}>
     <BookModel length={2.5}/>
     <mesh position={[0,.405,0]} rotation={[-Math.PI/2,0,0]} castShadow>
-      <planeGeometry args={[.98,1.32]}/><meshStandardMaterial map={label} roughness={.48}/>
+      <planeGeometry args={[1.13,1.47]}/><meshStandardMaterial map={label} roughness={.48}/>
     </mesh>
     <mesh position={[-.62,.22,0]}><boxGeometry args={[.045,.2,2.43]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
   </group>;
@@ -197,16 +228,16 @@ function ProjectBook() {
 export default function TrunkScene({reduced,onSelect,active,paused}) {
   return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance'}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
     <color attach="background" args={['#090a0c']}/><fog attach="fog" args={['#090a0c',13,23]}/>
-    <hemisphereLight args={['#e7eef7','#24201c',2.1]}/>
-    <directionalLight castShadow position={[-3,7,6]} intensity={3} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
-    <directionalLight position={[5,3,-2]} intensity={2} color="#a5b4c2"/>
-    <pointLight position={[0,2.8,2.7]} intensity={8} distance={9} color="#e7a36e" decay={2}/>
-    <spotLight castShadow position={[0,5,3]} intensity={24} distance={10} angle={.53} penumbra={.85} color="#ffd6a7" shadow-mapSize={[512,512]}/>
+    <hemisphereLight args={['#e2e8ef','#171316',1.3]}/>
+    <directionalLight castShadow position={[-3,7,6]} intensity={2.6} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
+    <directionalLight position={[5,3,-2]} intensity={1.25} color="#a5b4c2"/>
+    <pointLight position={[0,2.8,2.7]} intensity={4} distance={9} color="#e7a36e" decay={2}/>
+    <spotLight castShadow position={[0,5,3]} intensity={17} distance={10} angle={.53} penumbra={.85} color="#ffd6a7" shadow-mapSize={[512,512]}/>
     <Suspense fallback={null}><Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment></Suspense>
     <InteriorCamera reduced={reduced}/><TrunkInterior/>
-    <group position={[2.08,.02,.92]} scale={.84}><AlbumsObject/></group>
-    <group position={[-2.3,.19,-.04]} rotation={[-Math.PI/2,0,.43]}><Suspense fallback={null}><GuitarModel height={3.38} finish="cherry"/></Suspense></group>
-    <Memorabilia/>
+    <group position={[2.08,.02,.85]} scale={.74}><AlbumsObject/></group>
+    <group position={[-1.48,.18,.11]} rotation={[-Math.PI/2,0,-.2]}><Suspense fallback={null}><GuitarModel height={3.5} finish="cherry"/></Suspense></group>
+    <Memorabilia/><RoadGear/>
     <SelectableObject id="book" active={active} onSelect={onSelect} position={[.1,.045,.62]} highlight={[1.28,1.31]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
     <ContactShadows position={[0,.01,.1]} opacity={.45} scale={7.2} blur={2.5} far={4}/>
   </Canvas>;

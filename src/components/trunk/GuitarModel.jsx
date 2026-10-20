@@ -17,7 +17,7 @@ export default function GuitarModel({height=3.8,finish='cherry',...props}){
       if(!materials.has(source.uuid)){
         let next=source.clone();
         if(finish==='cherry'&&source.name==='lambert3'){
-          next=new MeshPhysicalMaterial({color:new Color('#a01822'),side:DoubleSide,metalness:.08,roughness:.2,clearcoat:1,clearcoatRoughness:.1});
+          next=new MeshPhysicalMaterial({color:new Color('#751018'),side:DoubleSide,metalness:.12,roughness:.24,clearcoat:1,clearcoatRoughness:.09});
         }
         materials.set(source.uuid,next);
       }
