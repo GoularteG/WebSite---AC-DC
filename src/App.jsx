@@ -22,13 +22,13 @@ export default function App() {
   const [credits,setCredits] = useState(false);
   const [arrived, setArrived] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(null);
-  const [ghostUnlocked, setGhostUnlocked] = useState(false);
   const [ghostActive, setGhostActive] = useState(false);
   const ghostSequence = useRef(initialGhostSequence);
   const ghostControls = useRef({ pressed: new Set(), invalidate: null, overview: null });
   const exitGhost = useCallback(() => {
+    ghostSequence.current = initialGhostSequence;
     setGhostActive(false);
-    requestAnimationFrame(() => document.querySelector('.ghost-reopen')?.focus({ preventScroll: true }));
+    requestAnimationFrame(() => document.querySelector('.history-timeline button[aria-current="step"]')?.focus({ preventScroll: true }));
   }, []);
   const onModelReady = useCallback(() => setModelReady(true), []);
   const progress = useRef(0), saved = useRef(0);
@@ -37,15 +37,14 @@ export default function App() {
   const nextBillboard = upcomingBillboardAt(value, mobile);
   const atDestination = started && arrived && value > .97;
   useEffect(() => {
-    if (!started || phase !== 'road' || ghostUnlocked) return;
+    if (!started || phase !== 'road' || ghostActive) return;
     const next = advanceGhostSequence(ghostSequence.current, value);
     ghostSequence.current = next;
     if (next.unlocked) {
       setSelectedChapter(null);
-      setGhostUnlocked(true);
       setGhostActive(true);
     }
-  }, [value, started, phase, ghostUnlocked]);
+  }, [value, started, phase, ghostActive]);
   useEffect(() => {
     if (!ghostActive) return;
     requestAnimationFrame(() => document.querySelector('.ghost-hud-actions button:last-child')?.focus({ preventScroll: true }));
@@ -82,7 +81,7 @@ export default function App() {
   }, [phase,onZoomed,onReturned,modelReady,modelError]);
   const navigate = next => {
     setSelectedChapter(null);
-    setGhostActive(false);
+    if (ghostActive) exitGhost();
     if (next === 'making' && phase === 'road') {
       saved.current = scrollY;
       scrollTo({top:saved.current,behavior:'instant'});
@@ -118,7 +117,6 @@ export default function App() {
       <footer className="highway-footer"><div className="footer-controls"><button onClick={()=>setCredits(true)}>CRÉDITOS</button><MusicPlayer /></div></footer>
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
       {ghostActive && <GhostHud controls={ghostControls} onExit={exitGhost} />}
-      {ghostUnlocked && !ghostActive && phase === 'road' && <button className="ghost-reopen" onClick={() => setGhostActive(true)}>ϟ CÂMERA FANTASMA</button>}
       {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}

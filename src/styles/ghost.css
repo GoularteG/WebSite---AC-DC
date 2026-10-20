@@ -3,9 +3,8 @@
 .ghost-hud{position:fixed;z-index:21;top:118px;left:4.6%;max-width:min(410px,90vw);padding:14px 17px 12px;border:1px solid #e9a16688;background:#161313dc;box-shadow:0 18px 50px #0009;color:#f7e5c9;backdrop-filter:blur(8px)}
 .ghost-hud-kicker{display:block;color:#f6ab73;font:18px/1.2 'Metal Mania',Impact,sans-serif;letter-spacing:.7px}
 .ghost-hud-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 8px}
-.ghost-hud-actions button,.ghost-reopen{min-height:38px;padding:9px 12px;border:1px solid #db9a686e;background:#251b19;color:#f6dec5;font-size:9px;font-weight:700;letter-spacing:1px}
-.ghost-hud-actions button:hover,.ghost-reopen:hover{background:#4b2923}
+.ghost-hud-actions button{min-height:38px;padding:9px 12px;border:1px solid #db9a686e;background:#251b19;color:#f6dec5;font-size:9px;font-weight:700;letter-spacing:1px}
+.ghost-hud-actions button:hover{background:#4b2923}
 .ghost-hud p{margin:0;color:#d1bea9;font-size:10px;line-height:1.55}
 .ghost-hud-mobile,.ghost-pad{display:none}
-.ghost-reopen{position:fixed;z-index:7;top:118px;left:4.6%;background:#181313d9}
-@media(max-width:760px){.ghost-hud{top:126px;left:5%;right:5%;max-width:none;padding:10px 12px}.ghost-hud-kicker{font-size:16px}.ghost-hud-desktop{display:none}.ghost-hud .ghost-hud-mobile{display:block}.ghost-pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-top:10px}.ghost-pad button{min-height:44px;border:1px solid #ba855e88;background:#2e211c;color:#ffe4c1;font-size:19px;touch-action:none}.ghost-reopen{top:126px;left:5%}}
+@media(max-width:760px){.ghost-hud{top:126px;left:5%;right:5%;max-width:none;padding:10px 12px}.ghost-hud-kicker{font-size:16px}.ghost-hud-desktop{display:none}.ghost-hud .ghost-hud-mobile{display:block}.ghost-pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-top:10px}.ghost-pad button{min-height:44px;border:1px solid #ba855e88;background:#2e211c;color:#ffe4c1;font-size:19px;touch-action:none}}
