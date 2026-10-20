@@ -9,7 +9,7 @@ import Scenery from '../components/roadside/Scenery';
 import { TrunkCamera } from '../components/trunk/TrunkCamera';
 import Charger from '../components/car/Charger';
 import { carAsset } from '../data/assets';
-import { distanceAtProgress, roadX, storyCameraOffset } from '../data/journey';
+import { distanceAtProgress, roadX } from '../data/journey';
 import { arrivalMix, FINAL_STOP_DISTANCE, infernoMix } from '../data/finale';
 const cameraConfig = { position: [2.5, 4.1, 11], fov: 55, near: .1, far: 1000 };
 class ModelBoundary extends Component {
@@ -45,16 +45,11 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
     const fov=MathUtils.lerp(55,width<761?65:55,arrival);
     if(Math.abs(camera.fov-fov)>.001){camera.fov=fov;camera.updateProjectionMatrix();}
     position.current.lerp(finalPosition.current, arrival);
+    camera.position.copy(position.current);
     look.current.set(roadX(s + 10) + 2.5, 1.2, -s - 10);
     if (width < 761) look.current.set(roadX(s) + 2.5, 1.2, -s - 3);
     finalPosition.current.set(roadX(s + 22) + 1, 6.1, -s - 22);
     look.current.lerp(finalPosition.current, arrival);
-    // A translated camera and target pan the car away from the story rail
-    // without moving its original lane transform. The finale returns to center.
-    const framing = (width < 761 ? 0 : storyCameraOffset(targetProgress)) * (1 - arrival);
-    position.current.x += framing;
-    look.current.x += framing;
-    camera.position.copy(position.current);
     camera.lookAt(look.current);
     car.current.position.set(roadX(s) + 2.5, .025, -s);
     car.current.rotation.y = -Math.atan((roadX(s + .1) - roadX(s - .1)) / .2);
