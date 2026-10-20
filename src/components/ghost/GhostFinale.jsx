@@ -1,25 +1,24 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { AnimationMixer, Box3, Matrix4, Vector3 } from 'three';
+import { AnimationMixer, Box3, Vector3 } from 'three';
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { roadX } from '../../data/journey';
 
 const nearEnough = (camera, position) => camera.position.distanceToSquared(position) < 145 * 145;
 
-function DisplayModel({ object, position, height, upright = false, children }) {
+function DisplayModel({ object, position, height }) {
   const fit = useMemo(() => {
     object.updateMatrixWorld(true);
     const bounds = new Box3().setFromObject(object);
-    if (upright) bounds.applyMatrix4(new Matrix4().makeRotationX(Math.PI / 2));
     const size = bounds.getSize(new Vector3());
     const center = bounds.getCenter(new Vector3());
     const scale = height / Math.max(size.y, .001);
     return { scale, offset: [-center.x * scale, -bounds.min.y * scale, -center.z * scale] };
-  }, [object, height, upright]);
+  }, [object, height]);
   return <group position={position}>
     <group position={fit.offset} scale={fit.scale}>
-      <group rotation-x={upright ? Math.PI / 2 : 0}><primitive object={object} /></group>
+      <primitive object={object} />
     </group>
     {children}
   </group>;
@@ -40,7 +39,7 @@ function DancingBanana({ scene, animations }) {
     mixer.update(Math.min(delta, .05));
     invalidate();
   });
-  return <DisplayModel object={scene} position={position.toArray()} height={4.1} upright />;
+  return <DisplayModel object={scene} position={position.toArray()} height={4.1} />;
 }
 
 function RocketBall({ scene }) {
@@ -66,7 +65,7 @@ function ReaperAndWildCard({ scene }) {
   return <group>
     {figures.map((figure, index) => {
       const s = 907 + index * 5;
-      return <DisplayModel key={index} object={figure} position={[roadX(s) + 11 + index * 4, 0, -s]} height={4.15} upright />;
+      return <DisplayModel key={index} object={figure} position={[roadX(s) + 11 + index * 4, 0, -s]} height={4.15} />;
     })}
   </group>;
 }
