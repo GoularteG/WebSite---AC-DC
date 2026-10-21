@@ -2,6 +2,9 @@
 
 Experiência interativa de estudo, criada por **Erik Carvalho, Gustavo Goularte e Gustavo Justo**. Uma estrada 3D conduz um Dodge Charger R/T 1970 por oito capítulos da história do AC/DC até um nono destino inspirado em *Highway to Hell*.
 
+<img width="1870" height="826" alt="image" src="https://github.com/user-attachments/assets/b6302906-e49c-4437-8bbd-6e79d463b7ad" />
+
+
 **[Abrir o site](https://acdc-highway-goularte.purpleowlet34.chatgpt.site/)**
 
 Este é um projeto de fãs e não é um site oficial ou afiliado ao AC/DC.
