@@ -1,49 +1,57 @@
 # AC/DC — Highway to Hell
 
-Primeira versão experimental em React + Vite + Three.js / React Three Fiber / Drei. Sem biografia da banda e sem gravações comerciais. Implementação no repositório original.
+Experiência interativa de estudo, criada por **Erik Carvalho, Gustavo Goularte e Gustavo Justo**. Uma estrada 3D conduz um Dodge Charger R/T 1970 por oito capítulos da história do AC/DC até um nono destino inspirado em *Highway to Hell*.
 
-## Executar
+**[Abrir o site](https://acdc-highway-goularte.purpleowlet34.chatgpt.site/)**
 
-```sh
+Este é um projeto de fãs e não é um site oficial ou afiliado ao AC/DC.
+
+## Experiência
+
+- **The Highway:** avance e retorne pela estrada com o scroll. O carro, os cenários e os outdoors históricos acompanham o percurso. A linha do tempo permite ir diretamente a um dos oito capítulos ou ao portal final.
+- **The Making Of:** um porta-malas 3D apresenta o livro do processo criativo, a guitarra, CDs e objetos de estrada. O livro é o único objeto clicável; suas oito páginas podem ser folheadas com mouse, toque ou teclado. Ao voltar, a posição na estrada é preservada.
+- **Áudio:** a gravação enviada ao projeto começa pausada e só toca após o visitante selecionar o controle.
+- **Acessibilidade:** há navegação por teclado, alternativas textuais para os controles e adaptação para movimento reduzido. A experiência 3D requer WebGL.
+
+## Rodar localmente
+
+Requer Node.js 20.19+ ou 22.12+ e npm.
+
+```bash
 npm ci
 npm run dev
-npm run test
+```
+
+O Vite informa o endereço local, normalmente `http://localhost:5173`. Para validar e gerar a versão estática:
+
+```bash
+npm test
 npm run build
 npm run preview
 ```
 
-Vite serve na porta 5173 por padrão. `dist/` contém o build estático. Não há backend nem segredos. Para hospedagem, configurar fallback de SPA para index.html.
-
-## Experiência
-
-Duas áreas: **The Highway** e **The Making Of**. Inicie a estrada e role nos dois sentidos, ou selecione um dos quatro marcos. Page Up/Down, Home e End usam a navegação nativa do navegador. A posição da câmera é derivada da mesma curva que constrói a estrada. O modo leve limita DPR a 1 e desliga sombras; o modo alto limita DPR a 1,5. Movimento reduzido troca a rolagem contínua por navegação pelos marcos, sem interpolação. Ao abrir o livro, a cena desmonta e libera os recursos declarativos do Canvas.
-
-## Modelo integrado: Dodge Charger R/T 1970
-
-O modelo GLB fornecido é um **Charger**, diferente do Challenger solicitado no briefing. A versão 0.2 usa o arquivo original, preservado byte a byte em `public/models/charger-1970-original.glb`. Veja `docs/model-inspection.md` para autoria, licença, estrutura e adaptações. As rodas estão mescladas com outras peças por material e permanecem estáticas; separar conjuntos exige edição de uma cópia do modelo.
-
-O carregador normaliza o comprimento para 5,28 m e ajusta a orientação e o contato com o solo. Materiais são clonados antes das alterações de aparência; linhas técnicas de SketchUp são ocultadas apenas na apresentação. O original não é sobrescrito.
+O build fica em `dist/`. O projeto é uma aplicação estática React/Vite, sem backend. Em uma hospedagem própria, encaminhe rotas desconhecidas para `index.html` caso use navegação direta por URL.
 
 ## Organização
 
-- `src/scenes/HighwayScene.jsx`: Canvas, iluminação e câmera.
-- `src/components/environment/`: geometria da estrada e atmosfera.
-- `src/components/roadside/`: cenografia original de guitarras, amplificadores e palcos.
-- `src/components/car/`: carregador do modelo original.
-- `src/components/book/`: capa, páginas e sumário responsivos.
-- `src/data/book.js`: cada objeto adiciona uma página ao livro.
-- `src/data/assets.js`: configuração de modelo e áudio autorizado.
-- `src/data/journey.js`: percurso e marcos provisórios.
-- `docs/briefing-original.md`: pedido integral recebido.
+| Caminho | Responsabilidade |
+| --- | --- |
+| `src/App.jsx` | Navegação entre estrada, porta-malas, capítulos e controles globais. |
+| `src/scenes/HighwayScene.jsx` | Cena principal em React Three Fiber. |
+| `src/components/environment/` e `src/components/roadside/` | Estrada, destino final e cenografia. |
+| `src/components/trunk/` e `src/components/book/` | Porta-malas interativo e livro. |
+| `src/data/history.json` | Conteúdo dos oito capítulos e referências das fotografias. |
+| `src/data/book.js` | Texto do The Making Of. |
+| `public/models/` | Modelos GLB carregados pela experiência. |
 
-## Escolhas e limites
+## Recursos e direitos
 
-A tipografia Metal Mania é hospedada localmente via @fontsource, sob SIL Open Font License. É uma alternativa inspirada no rock, não o logotipo nem a fonte oficial. A cenografia é original; não contém fotografias nem modelos de integrantes. A referência Prometheus não foi inspecionada, pois o domínio não está na lista liberada da rede. O scroll usa interpolação no ciclo de renderização R3F; GSAP não é necessário nesta fase. A animação do livro usa CSS, com duas páginas em desktop e uma em celular.
+Os modelos 3D permanecem creditados aos seus autores. As licenças declaradas nos arquivos enviados são **CC BY 4.0**: [Dodge Charger R/T 1970 — Emmanual Robinson, Jr.](https://sketchfab.com/3d-models/dominic-torettos-1970-dodge-charger-rt-fast-x-0e2c80e2928d4b76b49914db5bbb47ca), [Guitarra elèctrica — Aroig](https://sketchfab.com/3d-models/guitarra-electrica-cc6bc30cdb8645fa8eba878ad854f802), [Book — Encyclopedia — Maxence Rouillet](https://sketchfab.com/3d-models/book-encyclopedia-0487cb088c244d02a736cb337e65778c) e [Ball — Rocket League — Jako](https://sketchfab.com/3d-models/ball-rocket-league-2c8911aa1dcd4c53bad842f2d354dfe2). A descrição do [modelo do carro](docs/model-inspection.md) e da [guitarra](docs/guitar-asset.md) registra as adaptações realizadas. A fonte Metal Mania é distribuída sob a [SIL Open Font License](docs/metal-mania-license.txt).
 
-O controle de áudio permanece indisponível até configurar um arquivo autorizado. Depois disso, o hook só toca após interação explícita e trata falhas de reprodução. Não há autoplay.
+As fotografias históricas são carregadas de fontes externas, com autoria e licença indicadas nos capítulos e na seção **Créditos** do site. As artes dos estojos de CD são interpretações gráficas do projeto, não capas oficiais.
 
-O build e os testes de lógica não substituem avaliação visual. Conferir em navegador real: enquadramento do carro após integração, retorno de scroll, troca de abas, páginas pares/ímpares do livro, movimento reduzido, WebGL indisponível, touch e FPS. Não há sincronização musical nem biografia nesta fase.
+`public/audio/highway-to-hell-user.mp3` é a gravação fornecida para este projeto. O arquivo está acessível publicamente no repositório e no site. A origem de uma gravação ao vivo, por si só, não comprova autorização para distribuir a composição, a apresentação ou o fonograma; confirme esses direitos antes de reutilizar ou republicar o áudio.
 
-## Validação desta versão
+O [briefing original](docs/briefing-original.md), que documenta o início do processo criativo, também está público no repositório.
 
-Resultados reais e limitações estão em `docs/validation.md`. Capturas desktop e mobile estão em `artifacts/`. Sem publicação remota nesta entrega.
+O nome AC/DC, os títulos, os personagens e demais marcas pertencem a seus respectivos titulares. Este repositório **não possui uma licença geral** que autorize reutilizar todo o código, mídia e recursos em conjunto. Não inclua segredos ou dados pessoais nos arquivos versionados: o repositório e seus históricos de commits são públicos.
