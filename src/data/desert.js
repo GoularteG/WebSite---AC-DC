@@ -1,4 +1,4 @@
-import { roadX } from './journey.js';
+import { billboardDistance, chapters, roadX } from './journey.js';
 
 const random = (index, salt) => {
   const n = Math.sin(index * 127.1 + salt * 311.7) * 43758.5453;
@@ -24,8 +24,24 @@ export function desertHeight(offset, distance) {
   const drainage = .5 + .5 * Math.abs(Math.sin(distance * .097 + lateral * .041));
   return -.09 + fade * smooth(18, 60, lateral) * (fan + (ridge + farRidge) * (.82 + drainage * .18));
 }
+// Sink the first metres of the basin below the flat road plane. Its visible
+// edge then follows the irregular fan height instead of drawing a straight seam.
+export function basinSurfaceHeight(offset, distance) {
+  const lateral = Math.abs(offset);
+  const edge = 1 - smooth(18, 41, lateral);
+  const ripple = .75 + .25 * Math.sin(distance * .083 + lateral * .17);
+  return desertHeight(offset, distance) - .32 * edge * ripple;
+}
 const rooted = (distance, side, offset, burial = .03) =>
-  [roadX(distance) + side * offset, desertHeight(side * offset, distance) - burial, -distance];
+  [roadX(distance) + side * offset, Math.max(-.09, basinSurfaceHeight(side * offset, distance)) - burial, -distance];
+
+// Keep the nearer, larger pieces away from the chapter boards on both layouts.
+const boards = chapters.slice(0, 8).flatMap((chapter, index) => [
+  { distance: billboardDistance(chapter), side: index % 2 ? 1 : -1 },
+  { distance: billboardDistance(chapter, true), side: index === 0 ? -1 : 1 },
+]);
+const clearOfBoard = (distance, side, offset, radius = 0) =>
+  boards.every(board => board.side !== side || Math.abs(distance - board.distance) > 9 || offset - radius > 22);
 
 // Asymmetric groups have a dominant butte and smaller broken spurs, with open
 // stretches between. Their foot slopes connect to the basin rather than float.
@@ -54,15 +70,16 @@ export const desertMesas = outcrops.flatMap((center, cluster) =>
 const stonePatches = [-38, 20, 83, 171, 226, 309, 391, 472, 548, 599];
 export const desertRocks = stonePatches.flatMap((center, patch) => {
   const side = patch % 3 === 0 ? -1 : 1;
-  const offset = 28 + random(patch, 11) * 28;
-  return Array.from({ length: 10 + patch % 4 }, (_, member) => {
+  return Array.from({ length: 12 + patch % 4 }, (_, member) => {
     const index = patch * 17 + member;
-    const distance = center + (random(index, 8) - .5) * 29;
-    const spread = offset + (random(index, 9) - .5) * 11;
-    const width = member < 2 ? 1.25 + random(index, 10) * 1.75 : .22 + random(index, 10) * .9;
+    const distance = center + (random(index, 8) - .5) * 37;
+    const spread = 13 + random(patch, 11) * 15 + (random(index, 9) - .5) * 8;
+    const width = member < 3 ? 1.4 + random(index, 10) * 1.45 : .28 + random(index, 10) * .9;
+    const roadsideSpread = Math.max(11.5 + width, spread);
+    const safeSpread = clearOfBoard(distance, side, roadsideSpread, width) ? roadsideSpread : 25 + random(index, 43) * 6;
     return {
-      distance, side, width, offset: spread,
-      position: rooted(distance, side, spread, .1),
+      distance, side, width, offset: safeSpread,
+      position: rooted(distance, side, safeSpread, .1),
       height: width * (.45 + random(index, 12) * .6),
       depth: .68 + random(index, 13) * .3,
       rotation: random(index, 14) * Math.PI * 2,
@@ -78,7 +95,8 @@ export const desertScrub = scrubPatches.flatMap((center, patch) =>
     const index = patch * 23 + member;
     const distance = center + (random(index, 15) - .5) * 47;
     const side = random(index, 16) > .5 ? 1 : -1;
-    const offset = 20 + random(index, 17) * 39;
+    const nearby = 11.5 + random(index, 17) * 23;
+    const offset = clearOfBoard(distance, side, nearby, 1.4) ? nearby : 24 + random(index, 44) * 9;
     return {
       distance, side, offset,
       position: rooted(distance, side, offset),
@@ -99,7 +117,8 @@ export const desertYucca = yuccaGroves.flatMap((center, grove) =>
     const index = grove * 7 + member;
     const distance = center + (random(index, 22) - .5) * 58;
     const side = random(index, 23) > .45 ? 1 : -1;
-    const offset = 22 + random(index, 24) * 35;
+    const nearby = 13 + random(index, 24) * 19;
+    const offset = clearOfBoard(distance, side, nearby, 1.5) ? nearby : 25 + random(index, 45) * 7;
     return {
       distance, side, offset,
       position: rooted(distance, side, offset),

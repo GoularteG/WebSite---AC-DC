@@ -1,5 +1,5 @@
 import { BufferGeometry, Color, Float32BufferAttribute, Vector3 } from 'three';
-import { desertHeight } from '../../data/desert.js';
+import { basinSurfaceHeight } from '../../data/desert.js';
 import { roadX } from '../../data/journey.js';
 
 // Geometry builders are independent of React so their complete execution can be
@@ -71,7 +71,7 @@ export function basinTerrainGeometry() {
       const distance = -145 + row * 825 / rows;
       for (let col = 0; col <= columns; col++) {
         const offset = side * (18 + col * 352 / columns);
-        const height = desertHeight(offset, distance);
+        const height = basinSurfaceHeight(offset, distance);
         positions.push(roadX(distance) + offset, height, -distance);
         const tint = near.clone().lerp(far, Math.min(1, Math.max(0, (Math.abs(offset) - 105) / 170)));
         // Broad variations follow drainage, with subtle granular mineral color.
