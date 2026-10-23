@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { BufferGeometry, CanvasTexture, RepeatWrapping, SRGBColorSpace, Color, Float32BufferAttribute, MeshStandardMaterial } from 'three';
 import { roadX } from '../../data/journey';
 import { infernoMix } from '../../data/finale';
+import { createRoadShoulder } from './roadShoulder';
 export function ribbonGeometry(offset, width, start = -90, end = 1040, height = 0) {
   const points = [], indices = [], uvs = [];
   const count = Math.ceil((end - start) / 2);
@@ -20,6 +21,9 @@ function Ribbon({ offset = 0, width, height, material, start, end }) {
   return <mesh geometry={geometry} material={material} receiveShadow />;
 }
 export default function Road({ distance, ghostActive = false }) {
+  const shoulderGeometries = useMemo(() => [-1, 1].map(createRoadShoulder), []);
+  const shoulderMaterial = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 1 }), []);
+  useEffect(() => () => { shoulderGeometries.forEach(geometry => geometry.dispose()); shoulderMaterial.dispose(); }, [shoulderGeometries, shoulderMaterial]);
   const asphaltTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
     const ctx=canvas.getContext('2d');ctx.fillStyle='#999994';ctx.fillRect(0,0,512,512);
@@ -53,7 +57,7 @@ export default function Road({ distance, ghostActive = false }) {
   const palette = useMemo(() => Object.fromEntries(Object.entries({
     shoulder:['#705345','#382126'], asphalt:['#28292c','#1a171c'],
     edge:['#d6c5a7','#c07a55'], center:['#f6b643','#fb8d32'],
-    dash:['#9c9789','#70544e'], ground:['#4e342c','#261b21'],
+    dash:['#9c9789','#70544e'], ground:['#8d7158','#261b21'],
   }).map(([key,[normal,final]]) => [key,{normal:new Color(normal),final:new Color(final),material:new MeshStandardMaterial({color:normal,roughness:.9})}])), []);
   palette.asphalt.material.map=asphaltTexture;
   palette.asphalt.material.bumpMap=asphaltTexture;palette.asphalt.material.bumpScale=.025;
@@ -63,9 +67,10 @@ export default function Road({ distance, ghostActive = false }) {
   useFrame(({ camera }) => {
     const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
     Object.values(palette).forEach(item=>item.material.color.lerpColors(item.normal,item.final,mix));
+    shoulderMaterial.color.setRGB(1 - mix * .65, 1 - mix * .73, 1 - mix * .69);
   });
   return <group>
-    <Ribbon width={15} height={-.045} material={palette.shoulder.material} />
+    {shoulderGeometries.map((geometry, index) => <mesh key={index} geometry={geometry} material={shoulderMaterial} receiveShadow />)}
     <Ribbon width={11} height={0} material={palette.asphalt.material} />
     {[-5, 5].map(offset => <Ribbon key={offset} offset={offset} width={.1} height={.015} material={palette.edge.material} />)}
     {[-.13, .13].map(offset => <Ribbon key={offset} offset={offset} width={.09} height={.018} material={palette.center.material} />)}

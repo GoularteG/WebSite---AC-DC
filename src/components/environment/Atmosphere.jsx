@@ -23,8 +23,8 @@ const skyFragment = `varying vec3 vDirection;
   void main() {
     vec3 dir = normalize(vDirection);
     float h = dir.y;
-    vec3 horizon = mix(vec3(.93, .39, .19), vec3(.56, .22, .23), dusk);
-    vec3 upper = mix(vec3(.16, .10, .17), vec3(.055, .045, .10), dusk);
+    vec3 horizon = mix(vec3(.77, .58, .39), vec3(.48, .34, .33), dusk);
+    vec3 upper = mix(vec3(.18, .26, .32), vec3(.055, .065, .105), dusk);
     horizon = mix(horizon, vec3(.93, .06, .018), inferno);
     upper = mix(upper, vec3(.13, .008, .02), inferno);
     vec3 color = mix(horizon, upper, smoothstep(-.08, .75, h));
@@ -33,7 +33,7 @@ const skyFragment = `varying vec3 vDirection;
     vec2 cloudUv = vec2(atan(dir.x, -dir.z) * 5.2, h * 13.);
     float cloud = noise(cloudUv) * .63 + noise(cloudUv * 2.1) * .37;
     float band = smoothstep(.05, .18, h) * (1. - smoothstep(.54, .76, h));
-    color *= 1. - smoothstep(.45, .71, cloud) * band * mix(.27, .48, dusk);
+    color *= 1. - smoothstep(.53, .78, cloud) * band * mix(.14, .28, dusk);
 
     float sunDot = dot(dir, normalize(vec3(-.23, .115, -1.)));
     float halo = pow(max(0., sunDot), 60.);
@@ -60,10 +60,10 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     dusk: { value: 0 }, inferno: { value: 0 }, thunder: { value: 0 }, pulse: { value: 0 },
   }), []);
   const colors = useMemo(() => ({
-    fogStart: new Color('#ab6650'), fogDusk: new Color('#66505a'), fogHell: new Color('#82130b'),
-    sunStart: new Color('#ffb46d'), sunDusk: new Color('#d28472'), sunHell: new Color('#ff4b16'),
-    skyStart: new Color('#ffc58f'), skyDusk: new Color('#ad9aa9'), skyHell: new Color('#f79150'),
-    groundStart: new Color('#594347'), groundDusk: new Color('#33313d'), groundHell: new Color('#351522'),
+    fogStart: new Color('#b59c84'), fogDusk: new Color('#847579'), fogHell: new Color('#82130b'),
+    sunStart: new Color('#ffe0b1'), sunDusk: new Color('#e7a079'), sunHell: new Color('#ff4b16'),
+    skyStart: new Color('#c7d4dd'), skyDusk: new Color('#a9abc1'), skyHell: new Color('#f79150'),
+    groundStart: new Color('#796047'), groundDusk: new Color('#403b43'), groundHell: new Color('#351522'),
   }), []);
   useEffect(() => {
     const update = event => {
@@ -84,21 +84,21 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     skyMaterial.current.uniforms.thunder.value = thunder;
     skyMaterial.current.uniforms.pulse.value = pulse.current * (1 - inferno * .5);
     fog.current.color.copy(colors.fogStart).lerp(colors.fogDusk, dusk).lerp(colors.fogHell, inferno);
-    fog.current.far = ghostActive ? 1500 : 250 - inferno * 20;
+    fog.current.far = ghostActive ? 1500 : 325 - inferno * 95;
     sun.current.color.copy(colors.sunStart).lerp(colors.sunDusk, dusk).lerp(colors.sunHell, inferno);
-    sun.current.intensity = 3.4 - dusk * .65 + inferno * .55;
+    sun.current.intensity = 2.7 - dusk * .75 + inferno * 1.4;
     ambient.current.color.copy(colors.skyStart).lerp(colors.skyDusk, dusk).lerp(colors.skyHell, inferno);
     ambient.current.groundColor.copy(colors.groundStart).lerp(colors.groundDusk, dusk).lerp(colors.groundHell, inferno);
-    ambient.current.intensity = 2.1 - dusk * .25 + inferno * .25;
+    ambient.current.intensity = 1.15 - dusk * .1 + inferno * 1.05;
   });
   return <>
     <mesh ref={sky} renderOrder={-1}>
       <sphereGeometry args={[700, 24, 16]} />
       <shaderMaterial ref={skyMaterial} side={BackSide} depthWrite={false} uniforms={uniforms} vertexShader={skyVertex} fragmentShader={skyFragment} />
     </mesh>
-    <fog ref={fog} attach="fog" args={['#ab6650', 70, 250]} />
-    <hemisphereLight ref={ambient} args={['#ffc58f', '#594347', 2.1]} />
-    <directionalLight ref={sun} position={[-30, 35, -80]} intensity={3.4} color="#ffb46d" />
+    <fog ref={fog} attach="fog" args={['#b59c84', 80, 325]} />
+    <hemisphereLight ref={ambient} args={['#c7d4dd', '#796047', 1.15]} />
+    <directionalLight ref={sun} position={[-60, 35, -100]} intensity={2.7} color="#ffe0b1" />
     <DesertLandscape />
   </>;
 }
