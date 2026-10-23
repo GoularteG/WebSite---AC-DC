@@ -6,6 +6,7 @@ import Road from '../components/environment/Road';
 import Atmosphere from '../components/environment/Atmosphere';
 import InfernoFinale from '../components/environment/InfernoFinale';
 import Scenery from '../components/roadside/Scenery';
+import RoadLighting from '../components/roadside/RoadLighting';
 import HistoryBillboards from '../components/roadside/HistoryBillboards';
 import GhostCamera from '../components/ghost/GhostCamera';
 import { TrunkCamera } from '../components/trunk/TrunkCamera';
@@ -68,13 +69,13 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
   return <>
     <TrunkCamera phase={phase} car={car} roadLook={look} reduced={reduced} onZoomed={onZoomed} onReturned={onReturned}/>
     <group name="journey-car" ref={car}><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
-    <spotLight ref={fill} intensity={220} distance={24} angle={.85} penumbra={.75} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
+    <spotLight ref={fill} intensity={125} distance={25} angle={.95} penumbra={.9} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
   </>;
 }
 export default function HighwayScene({ phase, started, onZoomed, onReturned, progress, targetProgress, reduced, quality, onModelError, onModelReady, onArrival, onSelectChapter, ghostActive, ghostControls, onGhostExit }) {
   const distance = useRef(0);
   return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={ghostActive ? 1 : quality === 'high' ? [1, 1.5] : 1} camera={cameraConfig} gl={{ antialias: quality === 'high', powerPreference: 'high-performance' }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
-    <Atmosphere distance={distance} ghostActive={ghostActive} reduced={reduced} /><Road distance={distance} ghostActive={ghostActive} /><Scenery />{started && <HistoryBillboards onSelect={ghostActive ? null : onSelectChapter} />}
+    <Atmosphere distance={distance} ghostActive={ghostActive} reduced={reduced} /><Road distance={distance} ghostActive={ghostActive} /><Scenery /><RoadLighting distance={distance} ghostActive={ghostActive} />{started && <HistoryBillboards onSelect={ghostActive ? null : onSelectChapter} />}
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
     {ghostActive && <ModelBoundary><Suspense fallback={null}><GhostFinale /></Suspense></ModelBoundary>}
     <Environment resolution={64}><color attach="background" args={['#625853']} /><Lightformer intensity={2.5} color="#f6e6d4" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={3} color="#ffe4bf" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>

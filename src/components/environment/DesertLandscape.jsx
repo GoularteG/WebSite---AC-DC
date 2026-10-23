@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
-import { BufferGeometry, Color, Float32BufferAttribute, MeshStandardMaterial, Object3D, IcosahedronGeometry } from 'three';
-import { desertMesas, desertRocks } from '../../data/desert';
+import { BufferGeometry, Color, Float32BufferAttribute, MeshStandardMaterial, Object3D, IcosahedronGeometry, CylinderGeometry, DoubleSide } from 'three';
+import { desertMesas, desertRocks, desertScrub, desertYucca } from '../../data/desert';
 
 const mesaTones = ['#ffffff', '#e9d5c7', '#f3dfc6', '#dcc9c1', '#f7e1ca'];
 const rockTones = ['#765348', '#9b674b', '#66463e', '#a77453'];
+const scrubTones = ['#796e52', '#68634a', '#8a7555', '#585b47'];
+const yuccaTones = ['#5b6046', '#737255', '#515c47', '#867d58'];
 
 function mesaGeometry() {
   const geometry = new BufferGeometry();
@@ -41,6 +43,28 @@ function mesaGeometry() {
   return geometry;
 }
 
+function yuccaGeometry() {
+  const positions = [];
+  for (let layer = 0; layer < 2; layer++) {
+    const count = layer ? 9 : 13;
+    for (let index = 0; index < count; index++) {
+      const angle = index * Math.PI * 2 / count + layer * .24;
+      const dx = Math.cos(angle), dz = Math.sin(angle);
+      const spread = layer ? .58 : 1;
+      const width = layer ? .095 : .13;
+      const left = [dx * .06 - dz * width, .05, dz * .06 + dx * width];
+      const right = [dx * .06 + dz * width, .05, dz * .06 - dx * width];
+      const shoulder = [dx * spread * .6, layer ? .72 : .46, dz * spread * .6];
+      const tip = [dx * spread, layer ? .95 : .25, dz * spread];
+      positions.push(...left, ...right, ...shoulder, ...left, ...shoulder, ...tip, ...right, ...tip, ...shoulder);
+    }
+  }
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 function FormationInstances({ formations, geometry, material, tones }) {
   const mesh = useRef();
   const invalidate = useThree(state => state.invalidate);
@@ -64,13 +88,24 @@ function FormationInstances({ formations, geometry, material, tones }) {
 export default function DesertLandscape() {
   const mesas = useMemo(mesaGeometry, []);
   const rocks = useMemo(() => new IcosahedronGeometry(1, 1), []);
+  const scrub = useMemo(() => new IcosahedronGeometry(1, 1), []);
+  const yuccaLeaves = useMemo(yuccaGeometry, []);
+  const yuccaTrunks = useMemo(() => new CylinderGeometry(.08, .16, 1, 7), []);
+  const trunks = useMemo(() => desertYucca.map(plant => ({ ...plant, position: [plant.position[0], plant.height * .38, plant.position[2]], width: plant.width * .28, height: plant.height * .76, depth: .55 })), []);
+  const crowns = useMemo(() => desertYucca.map(plant => ({ ...plant, position: [plant.position[0], plant.height * .73, plant.position[2]], width: plant.width, height: plant.height * .48, depth: 1 })), []);
   const mesaMaterial = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: true }), []);
   const rockMaterial = useMemo(() => new MeshStandardMaterial({ roughness: 1, flatShading: true }), []);
+  const plantMaterial = useMemo(() => new MeshStandardMaterial({ roughness: 1, flatShading: true, side: DoubleSide }), []);
+  const trunkMaterial = useMemo(() => new MeshStandardMaterial({ color: '#554637', roughness: 1, flatShading: true }), []);
   useEffect(() => () => {
-    mesas.dispose(); rocks.dispose(); mesaMaterial.dispose(); rockMaterial.dispose();
-  }, [mesas, rocks, mesaMaterial, rockMaterial]);
+    mesas.dispose(); rocks.dispose(); scrub.dispose(); yuccaLeaves.dispose(); yuccaTrunks.dispose();
+    mesaMaterial.dispose(); rockMaterial.dispose(); plantMaterial.dispose(); trunkMaterial.dispose();
+  }, [mesas, rocks, scrub, yuccaLeaves, yuccaTrunks, mesaMaterial, rockMaterial, plantMaterial, trunkMaterial]);
   return <group name="layered-desert-landscape">
     <FormationInstances formations={desertMesas} geometry={mesas} material={mesaMaterial} tones={mesaTones} />
     <FormationInstances formations={desertRocks} geometry={rocks} material={rockMaterial} tones={rockTones} />
+    <FormationInstances formations={desertScrub} geometry={scrub} material={plantMaterial} tones={scrubTones} />
+    <FormationInstances formations={trunks} geometry={yuccaTrunks} material={trunkMaterial} tones={['#ffffff','#ffffff','#ffffff','#ffffff']} />
+    <FormationInstances formations={crowns} geometry={yuccaLeaves} material={plantMaterial} tones={yuccaTones} />
   </group>;
 }

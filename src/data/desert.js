@@ -35,3 +35,33 @@ export const desertRocks = Array.from({ length: 76 }, (_, index) => {
     tone: index % 4,
   };
 });
+
+// Low vegetation breaks up the empty shoulder without blocking the story boards.
+export const desertScrub = Array.from({ length: 112 }, (_, index) => {
+  const distance = -34 + index * 6.2;
+  const side = index % 2 ? 1 : -1;
+  const offset = 20 + random(index, 11) * 20;
+  const height = .42 + random(index, 13) * .65;
+  return {
+    distance, side, offset,
+    position: [roadX(distance) + side * offset, height * .48, -distance],
+    width: .38 + random(index, 12) * .58,
+    height,
+    rotation: random(index, 14) * Math.PI * 2,
+    tone: index % 4,
+  };
+});
+
+export const desertYucca = Array.from({ length: 27 }, (_, index) => {
+  const distance = -12 + index * 25;
+  const side = index % 2 ? 1 : -1;
+  const offset = 31 + random(index, 15) * 21;
+  return {
+    distance, side, offset,
+    position: [roadX(distance) + side * offset, -.06, -distance],
+    width: .9 + random(index, 16) * .7,
+    height: 2.2 + random(index, 17) * 1.4,
+    rotation: random(index, 18) * Math.PI * 2,
+    tone: index % 4,
+  };
+});

@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Shape, Vector2 } from 'three';
-import { Instances, Instance } from '@react-three/drei';
 import { roadX } from '../../data/journey';
 
 const darkMetal = '#211c1a';
@@ -170,7 +169,5 @@ function Exhibit({ kind }) {
 export default function Scenery() {
   return <group>
     {STATIONS.map(({ s, side, kind }) => <group key={s} position={[roadX(s) + side * (kind === 'stage' || kind === 'finale' ? 19 : 15), 0, -s]} rotation={[0, side < 0 ? .12 : -.12, 0]}><Exhibit kind={kind} /></group>)}
-    <Instances limit={170}><boxGeometry args={[.1,1.2,.1]}/><meshStandardMaterial color="#a9967d"/>{Array.from({length:85},(_,i)=>{const s=i*12-30;return [-1,1].map(side=><Instance key={`${i}-${side}`} position={[roadX(s)+side*6.5,.6,-s]}/>);})}</Instances>
-    <Instances limit={170}><boxGeometry args={[.18,.2,.05]}/><meshStandardMaterial color="#f6b643" emissive="#7e4116" emissiveIntensity={.35}/>{Array.from({length:85},(_,i)=>{const s=i*12-30;return [-1,1].map(side=><Instance key={`${i}-${side}`} position={[roadX(s)+side*6.5,.95,-s+.08]}/>);})}</Instances>
   </group>;
 }
