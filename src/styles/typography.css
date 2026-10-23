@@ -1,0 +1,50 @@
+/* Angular blackletter display type inspired by the supplied reference.
+   Keep narrative copy, controls and small labels in their legible text faces. */
+:root { --rock-title: 'New Rocker', 'Metal Mania', Georgia, serif; }
+
+.wordmark,
+.opening h1,
+.chapter-caption h1,
+.inferno-arrival h1,
+.history-open strong,
+.history-archive-heading h2,
+.history-photo-placeholder strong,
+.trunk-heading h1,
+.trunk-description h2,
+.guitar-inspector-heading h2,
+.book-heading h1,
+.archive-room .book-heading h1,
+.paper-content h2,
+.archive-cover strong,
+.book-cover strong,
+.album-shelf h2,
+.album-shelf h3,
+.album-object figcaption h3 {
+  font-family: var(--rock-title);
+  font-weight: 400;
+  font-style: normal;
+}
+
+.wordmark { letter-spacing: -.055em; transform: none; }
+.opening h1 {
+  font-size: clamp(54px, 8vw, 132px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  transform: none;
+}
+.opening .title-second em { letter-spacing: -.03em; }
+.chapter-caption h1,
+.inferno-arrival h1 { letter-spacing: -.015em; transform: none; }
+.history-open strong { line-height: 1.15; }
+.history-archive-heading h2 { line-height: 1.07; overflow-wrap: anywhere; }
+.trunk-heading h1,
+.trunk-description h2,
+.guitar-inspector-heading h2,
+.book-heading h1,
+.album-shelf h2 { line-height: 1.12; }
+.paper-content h2 { line-height: 1.2; letter-spacing: -.025em; }
+
+@media (max-width: 760px) {
+  .opening h1 { font-size: clamp(48px, 12vw, 78px); }
+  .history-archive-heading h2 { font-size: clamp(32px, 9vw, 48px); }
+}

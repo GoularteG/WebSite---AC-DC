@@ -34,7 +34,7 @@ const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning }, 
   const [fontsReady, setFontsReady] = useState(false);
   useEffect(() => {
     let mounted = true;
-    document.fonts.load('34px "Metal Mania"').then(() => { if (mounted) setFontsReady(true); });
+    document.fonts.load('34px "New Rocker"').then(() => { if (mounted) setFontsReady(true); });
     return () => { mounted = false; };
   }, []);
   const [portrait, setPortrait] = useState(() => matchMedia('(max-width: 760px)').matches);
