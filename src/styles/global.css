@@ -9,3 +9,4 @@
 .site-authors strong{display:block;font-weight:600}
 @media(min-width:761px) and (max-width:1040px){.site-header nav{position:static;transform:none;margin-left:auto;margin-right:26px;gap:23px}.site-authors{margin-left:0;max-width:195px;font-size:8px}}
 @media(max-width:760px){.site-header{height:116px;align-items:flex-start;padding-top:12px}.site-authors{max-width:195px;font-size:8px}.site-header nav{top:66px;width:100%;justify-content:center;gap:25px}}
+.scene-retry{margin-top:14px;padding:10px 18px;border:1px solid #e9a65d;background:#241b18;color:#ffe3bd;font-size:12px;letter-spacing:.08em;text-transform:uppercase}.scene-retry:hover,.scene-retry:focus-visible{background:#493024}

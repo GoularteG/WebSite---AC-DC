@@ -25,7 +25,7 @@ class ModelBoundary extends Component {
 export class SceneBoundary extends Component {
   state = { error: false };
   static getDerivedStateFromError() { return { error: true }; }
-  render() { return this.state.error ? <div className="scene-fallback"><span>O horizonte continua aqui.</span><p>Não foi possível iniciar a cena 3D. Tente um navegador com WebGL habilitado ou explore The Making Of.</p></div> : this.props.children; }
+  render() { return this.state.error ? <div className="scene-fallback"><span>O horizonte continua aqui.</span><p>Não foi possível iniciar a cena 3D. Se houver outras abas do site abertas, feche-as e tente novamente.</p><button className="scene-retry" onClick={() => this.setState({ error: false })}>Tentar novamente ↻</button></div> : this.props.children; }
 }
 function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetProgress, reduced, onModelError, onModelReady, onArrival, quality, ghostActive }) {
   const invalidate = useThree(state => state.invalidate);
