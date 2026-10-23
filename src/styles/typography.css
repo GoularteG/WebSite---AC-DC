@@ -25,7 +25,11 @@
   font-style: normal;
 }
 
-.wordmark { letter-spacing: -.055em; transform: none; }
+.wordmark { display: inline-flex; align-items: center; min-width: 150px; height: 58px; letter-spacing: -.055em; transform: none; text-shadow: none; }
+.wordmark img { display: block; width: 150px; max-height: 58px; object-fit: contain; }
+.wordmark img[hidden], .wordmark-fallback[hidden] { display: none; }
+.wordmark .wordmark-fallback { color: #e7d7b9; font-size: 43px; line-height: 1; text-shadow: 2px 2px #a40f17; }
+.wordmark .wordmark-fallback span { font-size: 55px; }
 .opening h1 {
   font-size: clamp(54px, 8vw, 132px);
   line-height: 1.02;
@@ -45,6 +49,10 @@
 .paper-content h2 { line-height: 1.2; letter-spacing: -.025em; }
 
 @media (max-width: 760px) {
+  .wordmark { min-width: 118px; height: 46px; }
+  .wordmark img { width: 118px; max-height: 46px; }
+  .wordmark .wordmark-fallback { font-size: 34px; }
+  .wordmark .wordmark-fallback span { font-size: 42px; }
   .opening h1 { font-size: clamp(48px, 12vw, 78px); }
   .history-archive-heading h2 { font-size: clamp(32px, 9vw, 48px); }
 }

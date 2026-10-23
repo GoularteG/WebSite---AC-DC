@@ -95,7 +95,7 @@ export default function App() {
   return <>
     <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
     <header className="site-header">
-      <a className="wordmark" href="#highway" onClick={(event)=>{event.preventDefault();navigate('highway');}} aria-label="AC/DC — início">AC<span>ϟ</span>DC</a>
+      <a className="wordmark" href="#highway" onClick={(event)=>{event.preventDefault();navigate('highway');}} aria-label="AC/DC — início"><img src="https://upload.wikimedia.org/wikipedia/commons/5/59/ACDC_Logo.svg" alt="" width="150" height="58" onError={event=>{event.currentTarget.hidden=true;event.currentTarget.nextElementSibling.hidden=false;}}/><span className="wordmark-fallback" hidden>AC<span>ϟ</span>DC</span></a>
       <nav aria-label="Áreas principais"><button className={tab==='highway'?'active':''} aria-current={tab==='highway'?'page':undefined} onClick={()=>navigate('highway')}><small>01</small> THE HIGHWAY</button><button className={tab==='making'?'active':''} aria-current={tab==='making'?'page':undefined} onClick={()=>navigate('making')}><small>02</small> THE MAKING OF</button></nav>
       <span className="site-authors">Feito por: <strong>Erik Carvalho, Gustavo Goularte e Gustavo Justo</strong></span>
     </header>

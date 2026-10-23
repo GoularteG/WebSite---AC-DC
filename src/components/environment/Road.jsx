@@ -30,7 +30,25 @@ export default function Road({ distance, ghostActive = false }) {
     for(const x of [91,158,354,421]){const g=ctx.createLinearGradient(x-16,0,x+16,0);g.addColorStop(0,'#11111100');g.addColorStop(.5,'#11111120');g.addColorStop(1,'#11111100');ctx.fillStyle=g;ctx.fillRect(x-16,0,32,512);}
     const texture=new CanvasTexture(canvas);texture.wrapS=texture.wrapT=RepeatWrapping;texture.colorSpace=SRGBColorSpace;texture.anisotropy=4;return texture;
   },[]);
-  useEffect(()=>()=>asphaltTexture.dispose(),[asphaltTexture]);
+  const desertTexture=useMemo(()=>{
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#ead9c7';ctx.fillRect(0,0,512,512);
+    let seed=41;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    for(let i=0;i<125;i++){
+      const x=random()*512,y=random()*512,r=12+random()*65;
+      const dust=ctx.createRadialGradient(x,y,0,x,y,r);
+      dust.addColorStop(0,i%3?'#67483920':'#fff5d919');dust.addColorStop(1,'#ffffff00');
+      ctx.fillStyle=dust;ctx.fillRect(x-r,y-r,r*2,r*2);
+    }
+    for(let i=0;i<11000;i++){
+      const v=Math.floor(90+random()*90);
+      ctx.fillStyle=`rgba(${v},${Math.floor(v*.77)},${Math.floor(v*.6)},.13)`;
+      ctx.fillRect(random()*512,random()*512,1.5,1.5);
+    }
+    const texture=new CanvasTexture(canvas);texture.wrapS=texture.wrapT=RepeatWrapping;
+    texture.repeat.set(9,13);texture.colorSpace=SRGBColorSpace;texture.anisotropy=4;return texture;
+  },[]);
+  useEffect(()=>()=>{asphaltTexture.dispose();desertTexture.dispose();},[asphaltTexture,desertTexture]);
 
   const palette = useMemo(() => Object.fromEntries(Object.entries({
     shoulder:['#705345','#382126'], asphalt:['#28292c','#1a171c'],
@@ -39,6 +57,8 @@ export default function Road({ distance, ghostActive = false }) {
   }).map(([key,[normal,final]]) => [key,{normal:new Color(normal),final:new Color(final),material:new MeshStandardMaterial({color:normal,roughness:.9})}])), []);
   palette.asphalt.material.map=asphaltTexture;
   palette.asphalt.material.bumpMap=asphaltTexture;palette.asphalt.material.bumpScale=.025;
+  palette.ground.material.map=desertTexture;
+  palette.ground.material.bumpMap=desertTexture;palette.ground.material.bumpScale=.035;
   useEffect(() => () => Object.values(palette).forEach(item=>item.material.dispose()), [palette]);
   useFrame(({ camera }) => {
     const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
