@@ -1,8 +1,8 @@
 import { roadX } from './journey.js';
 
-// Sparse, staggered fixtures leave room for the historical boards and exhibits.
-export const roadsideLamps = Array.from({ length: 17 }, (_, index) => {
-  const distance = 18 + index * 42;
+// Isolated pullout lights; the open desert between them remains unlit.
+const pullouts = [29, 98, 218, 336, 452, 571, 678];
+export const roadsideLamps = pullouts.map((distance, index) => {
   const side = index % 2 === 0 ? -1 : 1;
   return {
     distance,

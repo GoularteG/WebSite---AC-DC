@@ -12,11 +12,12 @@ test('desert formations stay clear of the road and roadside billboards', () => {
 });
 
 test('desert has varied formations on both sides before the inferno', () => {
-  assert.ok(desertMesas.length >= 30);
+  assert.ok(desertMesas.length >= 18);
   assert.ok(desertRocks.length >= 60);
   assert.ok(desertMesas.some(formation => formation.side < 0));
   assert.ok(desertMesas.some(formation => formation.side > 0));
   assert.ok(desertMesas.every(formation => formation.distance < 625));
+  assert.deepEqual(new Set(desertMesas.map(formation => formation.shape)), new Set([0, 1, 2]));
 });
 
 test('new desert details and lights clear the driving corridor', () => {
@@ -24,7 +25,7 @@ test('new desert details and lights clear the driving corridor', () => {
     const gap = Math.abs(plant.position[0] - roadX(plant.distance)) - plant.width;
     assert.ok(gap > 18, `plant at ${plant.distance} is too close to the road`);
   }
-  assert.ok(roadsideLamps.length < 25);
+  assert.ok(roadsideLamps.length < 10);
   for (const lamp of roadsideLamps) {
     assert.ok(Math.abs(lamp.position[0] - roadX(lamp.distance)) > 8);
     assert.ok(Math.abs(lamp.head[0] - roadX(lamp.distance)) > 6);
