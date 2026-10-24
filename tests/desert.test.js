@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { basinSurfaceHeight, desertMesas, desertRocks, desertScrub, desertYucca } from '../src/data/desert.js';
 import { billboardDistance, chapters, roadX } from '../src/data/journey.js';
 import { roadsideLamps } from '../src/data/roadLighting.js';
-import { sceneryStations } from '../src/data/sceneryStations.js';
+import { roadsideAssets } from '../src/data/roadsideAssets.js';
 
 test('desert formations reach the verge without entering the driving corridor', () => {
   for (const formation of desertMesas) {
@@ -53,7 +53,7 @@ test('billboard approach stays clear of posts, exhibits and foreground plants', 
       const side = mobile ? (index === 0 ? -1 : 1) : (index % 2 ? 1 : -1);
       for (const obstacle of [
         ...roadsideLamps.map(lamp => ({ distance: lamp.distance, side: lamp.side })),
-        ...sceneryStations.map(station => ({ distance: station.s, side: station.side })),
+        ...roadsideAssets.map(asset => ({ distance: asset.distance, side: asset.side })),
       ]) {
         assert.ok(obstacle.side !== side || distance - obstacle.distance < 0 || distance - obstacle.distance > 30,
           `chapter ${index + 1} ${mobile ? 'mobile' : 'desktop'} has a post or exhibit in front`);
@@ -65,4 +65,12 @@ test('billboard approach stays clear of posts, exhibits and foreground plants', 
       }
     }
   }
+});
+
+test('roadside landmarks use a small varied set with room for the driving lane', () => {
+  assert.deepEqual(roadsideAssets.map(asset => asset.side), [1, -1, 1, -1, 1]);
+  assert.ok(new Set(roadsideAssets.map(asset => asset.group)).size >= 4);
+  assert.ok(roadsideAssets.every(asset => asset.offset > 15 && asset.distance < 610));
+  assert.ok(roadsideAssets.filter(asset => asset.kind === 'model').every(asset =>
+    asset.modelPath === '/models/guitar-electric.glb'));
 });

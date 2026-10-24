@@ -11,7 +11,7 @@ Este é um projeto de fãs e não é um site oficial ou afiliado ao AC/DC.
 
 ## Experiência
 
-- **The Highway:** avance e retorne pela estrada com o scroll. O céu, a luz e o deserto evoluem até o portal final; os outdoors históricos acompanham o percurso. A linha do tempo permite ir diretamente a um dos oito capítulos ou ao portal final.
+- **The Highway:** avance e retorne pela estrada com o scroll. O céu, a luz e o deserto evoluem até o portal final; os outdoors históricos acompanham o percurso. Cinco marcos 3D temáticos pontuam as laterais; a [seleção, origem e licença dos modelos](docs/roadside-scenography.md) estão documentadas. A linha do tempo permite ir diretamente a um dos oito capítulos ou ao portal final.
 - **The Making Of:** um porta-malas 3D apresenta o livro do processo criativo, a guitarra, CDs e objetos de estrada. O livro é o único objeto clicável; suas oito páginas podem ser folheadas com mouse, toque ou teclado. Ao voltar, a posição na estrada é preservada.
 - **Áudio:** a gravação enviada ao projeto começa pausada e só toca após o visitante selecionar o controle.
 - **Acessibilidade:** há navegação por teclado, alternativas textuais para os controles e adaptação para movimento reduzido. A experiência 3D requer WebGL.
