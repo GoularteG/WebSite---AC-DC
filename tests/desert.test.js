@@ -24,6 +24,12 @@ test('desert has varied formations on both sides before the inferno', () => {
   assert.ok(desertMesas.some(formation => formation.side < 0));
   assert.ok(desertMesas.some(formation => formation.side > 0));
   assert.ok(desertMesas.every(formation => formation.distance < 625));
+  assert.ok(desertMesas.some(formation => formation.offset - formation.width < 28),
+    'large rock formations should be visible from the roadside');
+  assert.ok(desertRocks.filter(stone => stone.offset < 20).length > 90,
+    'near-road stones should continue throughout the journey');
+  assert.ok(desertScrub.filter(plant => plant.offset < 20).length > 70,
+    'foreground vegetation should not be isolated to a few stops');
   assert.deepEqual(new Set(desertMesas.map(formation => formation.shape)), new Set([0, 1, 2]));
 });
 

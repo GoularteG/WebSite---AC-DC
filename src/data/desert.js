@@ -52,7 +52,9 @@ export const desertMesas = outcrops.flatMap((center, cluster) =>
     const distance = center + (member - 1) * 22 + (random(index, 1) - .5) * 15;
     const side = member === 3 ? (cluster % 2 ? 1 : -1) : (cluster % 2 ? -1 : 1);
     const width = member === 1 ? 26 + random(index, 3) * 9 : 15 + random(index, 3) * 13;
-    const offset = 72 + random(index, 4) * 49 + (member === 0 ? 11 : 0);
+    // Keep the silhouette behind the exhibits, but let the rock wall visibly
+    // approach the road instead of reading as a distant backdrop.
+    const offset = width + 23 + random(index, 4) * 18 + (member === 0 ? 5 : 0);
     return {
       distance, side, width, offset,
       position: rooted(distance, side, offset, .4),
@@ -67,14 +69,14 @@ export const desertMesas = outcrops.flatMap((center, cluster) =>
 
 // Small angular stones follow a few dry washes; tiny satellite fragments make
 // each patch read as weathered geology instead of evenly scattered pebbles.
-const stonePatches = [-38, 20, 83, 171, 226, 309, 391, 472, 548, 599];
+const stonePatches = [-38, 20, 83, 140, 171, 226, 274, 309, 353, 391, 432, 472, 518, 548, 599];
 export const desertRocks = stonePatches.flatMap((center, patch) => {
   const side = patch % 3 === 0 ? -1 : 1;
   return Array.from({ length: 12 + patch % 4 }, (_, member) => {
     const index = patch * 17 + member;
     const distance = center + (random(index, 8) - .5) * 37;
-    const spread = 13 + random(patch, 11) * 15 + (random(index, 9) - .5) * 8;
-    const width = member < 3 ? 1.4 + random(index, 10) * 1.45 : .28 + random(index, 10) * .9;
+    const spread = 12 + random(patch, 11) * 12 + (random(index, 9) - .5) * 7;
+    const width = member < 4 ? 1.6 + random(index, 10) * 1.65 : .32 + random(index, 10) * 1.05;
     const roadsideSpread = Math.max(11.5 + width, spread);
     const safeSpread = clearOfBoard(distance, side, roadsideSpread, width) ? roadsideSpread : 25 + random(index, 43) * 6;
     return {
@@ -89,13 +91,13 @@ export const desertRocks = stonePatches.flatMap((center, patch) => {
   });
 });
 
-const scrubPatches = [-32, 15, 66, 131, 188, 263, 327, 394, 465, 527, 591];
+const scrubPatches = [-32, 15, 66, 107, 131, 188, 234, 263, 327, 363, 394, 465, 503, 527, 591];
 export const desertScrub = scrubPatches.flatMap((center, patch) =>
   Array.from({ length: 12 + patch % 6 }, (_, member) => {
     const index = patch * 23 + member;
     const distance = center + (random(index, 15) - .5) * 47;
     const side = random(index, 16) > .5 ? 1 : -1;
-    const nearby = 11.5 + random(index, 17) * 23;
+    const nearby = 11 + random(index, 17) * 17;
     const offset = clearOfBoard(distance, side, nearby, 1.4) ? nearby : 24 + random(index, 44) * 9;
     return {
       distance, side, offset,
@@ -111,13 +113,13 @@ export const desertScrub = scrubPatches.flatMap((center, patch) =>
 
 // Ground-growing Mojave yucca: short fibrous core and a crown rooted at soil
 // level, rather than a palm-like rosette balanced on a thin pole.
-const yuccaGroves = [28, 105, 218, 325, 403, 556];
+const yuccaGroves = [28, 105, 168, 218, 325, 403, 485, 556];
 export const desertYucca = yuccaGroves.flatMap((center, grove) =>
   Array.from({ length: grove === 2 ? 5 : 4 }, (_, member) => {
     const index = grove * 7 + member;
     const distance = center + (random(index, 22) - .5) * 58;
     const side = random(index, 23) > .45 ? 1 : -1;
-    const nearby = 13 + random(index, 24) * 19;
+    const nearby = 12 + random(index, 24) * 17;
     const offset = clearOfBoard(distance, side, nearby, 1.5) ? nearby : 25 + random(index, 45) * 7;
     return {
       distance, side, offset,
