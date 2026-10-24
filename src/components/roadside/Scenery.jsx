@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Shape, Vector2 } from 'three';
 import { roadX } from '../../data/journey';
+import { sceneryStations } from '../../data/sceneryStations';
 
 const darkMetal = '#211c1a';
 function Box({ position, scale, color = darkMetal, metalness = .25, roughness = .55 }) {
@@ -146,14 +147,6 @@ function LightingTower() {
     <group position={[0, 4.9, .25]}><Bolt /></group>
   </group>;
 }
-const STATIONS = [
-  { s: 36, side: -1, kind: 'sg' }, { s: 92, side: 1, kind: 'stage' },
-  { s: 152, side: -1, kind: 'bell' }, { s: 211, side: 1, kind: 'amps' },
-  { s: 272, side: -1, kind: 'figure' }, { s: 329, side: 1, kind: 'sign' },
-  { s: 388, side: -1, kind: 'vinyl' }, { s: 447, side: 1, kind: 'guitars' },
-  { s: 506, side: -1, kind: 'amps' }, { s: 565, side: 1, kind: 'mic' },
-  { s: 623, side: -1, kind: 'figure' }, { s: 681, side: 1, kind: 'finale' },
-];
 function Exhibit({ kind }) {
   if (kind === 'sg') return <group><Guitar /><group position={[-2.2, 0, -1]} scale={.55}><AmpStack /></group><group position={[2, 0, 1]} scale={.78}><RoadVinyl /></group></group>;
   if (kind === 'stage') return <group><LightingTower /><group position={[-3.1, 0, 1]} scale={.76}><AmpStack /></group><group position={[3.1, 0, 1]} scale={.76}><AmpStack /></group></group>;
@@ -168,6 +161,6 @@ function Exhibit({ kind }) {
 }
 export default function Scenery() {
   return <group>
-    {STATIONS.map(({ s, side, kind }) => <group key={s} position={[roadX(s) + side * (kind === 'stage' || kind === 'finale' ? 19 : 15), 0, -s]} rotation={[0, side < 0 ? .12 : -.12, 0]}><Exhibit kind={kind} /></group>)}
+    {sceneryStations.map(({ s, side, kind }) => <group key={s} position={[roadX(s) + side * (kind === 'stage' || kind === 'finale' ? 19 : 15), 0, -s]} rotation={[0, side < 0 ? .12 : -.12, 0]}><Exhibit kind={kind} /></group>)}
   </group>;
 }

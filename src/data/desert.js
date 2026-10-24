@@ -41,7 +41,8 @@ const boards = chapters.slice(0, 8).flatMap((chapter, index) => [
   { distance: billboardDistance(chapter, true), side: index === 0 ? -1 : 1 },
 ]);
 const clearOfBoard = (distance, side, offset, radius = 0) =>
-  boards.every(board => board.side !== side || Math.abs(distance - board.distance) > 9 || offset - radius > 22);
+  boards.every(board => board.side !== side || board.distance - distance < -4
+    || board.distance - distance > 28 || offset - radius > 29);
 
 // Asymmetric groups have a dominant butte and smaller broken spurs, with open
 // stretches between. Their foot slopes connect to the basin rather than float.
@@ -78,7 +79,7 @@ export const desertRocks = stonePatches.flatMap((center, patch) => {
     const spread = 12 + random(patch, 11) * 12 + (random(index, 9) - .5) * 7;
     const width = member < 4 ? 1.6 + random(index, 10) * 1.65 : .32 + random(index, 10) * 1.05;
     const roadsideSpread = Math.max(11.5 + width, spread);
-    const safeSpread = clearOfBoard(distance, side, roadsideSpread, width) ? roadsideSpread : 25 + random(index, 43) * 6;
+    const safeSpread = clearOfBoard(distance, side, roadsideSpread, width) ? roadsideSpread : 32 + width + random(index, 43) * 6;
     return {
       distance, side, width, offset: safeSpread,
       position: rooted(distance, side, safeSpread, .1),
@@ -98,7 +99,7 @@ export const desertScrub = scrubPatches.flatMap((center, patch) =>
     const distance = center + (random(index, 15) - .5) * 47;
     const side = random(index, 16) > .5 ? 1 : -1;
     const nearby = 11 + random(index, 17) * 17;
-    const offset = clearOfBoard(distance, side, nearby, 1.4) ? nearby : 24 + random(index, 44) * 9;
+    const offset = clearOfBoard(distance, side, nearby, 1.4) ? nearby : 32 + random(index, 44) * 8;
     return {
       distance, side, offset,
       position: rooted(distance, side, offset),
@@ -120,7 +121,7 @@ export const desertYucca = yuccaGroves.flatMap((center, grove) =>
     const distance = center + (random(index, 22) - .5) * 58;
     const side = random(index, 23) > .45 ? 1 : -1;
     const nearby = 12 + random(index, 24) * 17;
-    const offset = clearOfBoard(distance, side, nearby, 1.5) ? nearby : 25 + random(index, 45) * 7;
+    const offset = clearOfBoard(distance, side, nearby, 1.5) ? nearby : 32 + random(index, 45) * 8;
     return {
       distance, side, offset,
       position: rooted(distance, side, offset),
