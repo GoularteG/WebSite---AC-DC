@@ -29,7 +29,7 @@ Os valores de triângulos abaixo vêm dos acessores indexados do GLB; draw calls
 
 ## Alterações
 
-- A experiência do porta-malas e a cena do inferno foram separadas em chunks carregados quando necessários. O inferno é preparado antes de entrar no trecho final e permanece montado para evitar recarga em scroll reverso.
+- A experiência do porta-malas foi separada em um chunk carregado quando necessário. A cena do inferno permanece carregada com a estrada para que a lava apareça sem atraso, inclusive quando o usuário avança rapidamente até o final.
 - Os marcos laterais e outdoors são montados em uma janela ao redor do carro, com margem à frente. A foto de um outdoor só começa a carregar depois de se aproximar. Texturas de outdoors e materiais clonados dos modelos são descartados ao sair da janela.
 - A guitarra deixa de ser carregada pela tela de abertura. O carro continua prioritário.
 - O cálculo das três luminárias ativas deixou de ordenar e copiar a lista de postes em cada frame.

@@ -1,9 +1,10 @@
-import { Component, Suspense, lazy, useRef, useEffect, useState } from 'react';
+import { Component, Suspense, lazy, useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import { MathUtils, Vector3 } from 'three';
 import Road from '../components/environment/Road';
 import Atmosphere from '../components/environment/Atmosphere';
+import InfernoFinale from '../components/environment/InfernoFinale';
 import Scenery from '../components/roadside/Scenery';
 import RoadLighting from '../components/roadside/RoadLighting';
 import HistoryBillboards from '../components/roadside/HistoryBillboards';
@@ -15,7 +16,6 @@ import { distanceAtProgress, roadX } from '../data/journey';
 import { arrivalMix, FINAL_STOP_DISTANCE, infernoMix } from '../data/finale';
 const cameraConfig = { position: [2.5, 4.1, 11], fov: 55, near: .1, far: 1000 };
 const GhostFinale = lazy(() => import('../components/ghost/GhostFinale'));
-const InfernoFinale = lazy(() => import('../components/environment/InfernoFinale'));
 class ModelBoundary extends Component {
   state = { error: false };
   static getDerivedStateFromError() { return { error: true }; }
@@ -92,13 +92,9 @@ function QualitySampler({ onSample }) {
 }
 export default function HighwayScene({ phase, started, onZoomed, onReturned, progress, targetProgress, reduced, quality, onQualitySample, onModelError, onModelReady, onArrival, onSelectChapter, ghostActive, ghostControls, onGhostExit }) {
   const distance = useRef(0);
-  const [finalePrepared, setFinalePrepared] = useState(false);
-  useEffect(() => {
-    if (ghostActive || distanceAtProgress(targetProgress) > 230) setFinalePrepared(true);
-  }, [targetProgress, ghostActive]);
   return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={ghostActive ? 1 : quality === 'high' ? [1, 1.5] : quality === 'balanced' ? [1, 1.2] : 1} camera={cameraConfig} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
     <Atmosphere distance={distance} ghostActive={ghostActive} reduced={reduced} /><Road distance={distance} ghostActive={ghostActive} /><Scenery started={started} targetProgress={targetProgress} /><RoadLighting distance={distance} ghostActive={ghostActive} />{started && <HistoryBillboards targetProgress={targetProgress} onSelect={ghostActive ? null : onSelectChapter} />}
-    {finalePrepared && <Suspense fallback={null}><InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} /></Suspense>}
+    <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
     {ghostActive && <ModelBoundary><Suspense fallback={null}><GhostFinale /></Suspense></ModelBoundary>}
     <Environment resolution={64}><color attach="background" args={['#625853']} /><Lightformer intensity={2.5} color="#f6e6d4" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={3} color="#ffe4bf" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>
     <JourneyRig phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} ghostActive={ghostActive} />
