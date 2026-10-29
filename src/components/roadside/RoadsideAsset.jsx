@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { Box3, Color, DoubleSide, MeshPhysicalMaterial, Vector3 } from 'three';
 
@@ -32,9 +32,9 @@ export default function RoadsideAsset({ asset }) {
     bounds.setFromObject(root);
     const center = bounds.getCenter(new Vector3());
     root.position.set(-center.x, -bounds.min.y, -center.z);
+    root.userData.ownedMaterials = [...materials.values()];
     return root;
   }, [asset, scene]);
+  useEffect(() => () => model.userData.ownedMaterials.forEach(material => material.dispose()), [model]);
   return <primitive object={model} dispose={null} />;
 }
-
-useGLTF.preload('/models/guitar-electric.glb');

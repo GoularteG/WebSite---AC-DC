@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { Box3, Vector3 } from 'three';
 
@@ -26,9 +26,10 @@ export default function BookModel({length=2.55,...props}) {
     const center=centered.getCenter(new Vector3());
     root.position.sub(center);
     root.position.y-=centered.min.y-center.y;
+    root.userData.ownedMaterials=[];
+    root.traverse(child=>{if(child.isMesh&&child.material)root.userData.ownedMaterials.push(child.material);});
     return root;
   },[scene,length]);
+  useEffect(()=>()=>model.userData.ownedMaterials.forEach(material=>material.dispose()),[model]);
   return <group name="uploaded-encyclopedia-book" {...props}><primitive object={model} dispose={null}/></group>;
 }
-
-useGLTF.preload(BOOK_URL);

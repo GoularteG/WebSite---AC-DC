@@ -1,4 +1,4 @@
-import {useMemo} from 'react';
+import {useMemo,useEffect} from 'react';
 import {useGLTF} from '@react-three/drei';
 import {Box3,Color,DoubleSide,MeshPhysicalMaterial,Vector3} from 'three';
 
@@ -15,10 +15,9 @@ export default function GuitarModel({height=3.8,finish='cherry',...props}){
       const source=child.material;
       if(!source)return;
       if(!materials.has(source.uuid)){
-        let next=source.clone();
-        if(finish==='cherry'&&source.name==='lambert3'){
-          next=new MeshPhysicalMaterial({color:new Color('#751018'),side:DoubleSide,metalness:.12,roughness:.24,clearcoat:1,clearcoatRoughness:.09});
-        }
+        const next=finish==='cherry'&&source.name==='lambert3'
+          ? new MeshPhysicalMaterial({color:new Color('#751018'),side:DoubleSide,metalness:.12,roughness:.24,clearcoat:1,clearcoatRoughness:.09})
+          : source.clone();
         materials.set(source.uuid,next);
       }
       child.material=materials.get(source.uuid);
@@ -29,7 +28,9 @@ export default function GuitarModel({height=3.8,finish='cherry',...props}){
     root.updateMatrixWorld(true);
     const center=new Box3().setFromObject(root).getCenter(new Vector3());
     root.position.sub(center);
+    root.userData.ownedMaterials=[...materials.values()];
     return root;
   },[scene,height,finish]);
+  useEffect(()=>()=>model.userData.ownedMaterials.forEach(material=>material.dispose()),[model]);
   return <group name="uploaded-guitar" {...props}><primitive object={model} dispose={null}/></group>;
 }

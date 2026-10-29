@@ -59,14 +59,15 @@ export default function Road({ distance, ghostActive = false }) {
     edge:['#d6c5a7','#c07a55'], center:['#f6b643','#fb8d32'],
     dash:['#9c9789','#70544e'], ground:['#8d7158','#261b21'],
   }).map(([key,[normal,final]]) => [key,{normal:new Color(normal),final:new Color(final),material:new MeshStandardMaterial({color:normal,roughness:.9})}])), []);
+  const paletteItems = useMemo(() => Object.values(palette), [palette]);
   palette.asphalt.material.map=asphaltTexture;
   palette.asphalt.material.bumpMap=asphaltTexture;palette.asphalt.material.bumpScale=.025;
   palette.ground.material.map=desertTexture;
   palette.ground.material.bumpMap=desertTexture;palette.ground.material.bumpScale=.035;
-  useEffect(() => () => Object.values(palette).forEach(item=>item.material.dispose()), [palette]);
+  useEffect(() => () => paletteItems.forEach(item=>item.material.dispose()), [paletteItems]);
   useFrame(({ camera }) => {
     const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
-    Object.values(palette).forEach(item=>item.material.color.lerpColors(item.normal,item.final,mix));
+    paletteItems.forEach(item=>item.material.color.lerpColors(item.normal,item.final,mix));
     shoulderMaterial.color.setRGB(1 - mix * .65, 1 - mix * .73, 1 - mix * .69);
   });
   return <group>

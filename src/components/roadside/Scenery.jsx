@@ -1,6 +1,6 @@
 import { Suspense, useMemo } from 'react';
 import { Shape, Vector2 } from 'three';
-import { roadX } from '../../data/journey';
+import { distanceAtProgress, roadX } from '../../data/journey';
 import { roadsideAssets } from '../../data/roadsideAssets';
 import RoadsideAsset from './RoadsideAsset';
 
@@ -94,8 +94,10 @@ function Landmark({ asset }) {
     </group>}
   </group>;
 }
-export default function Scenery() {
+export default function Scenery({ started, targetProgress }) {
+  const position = distanceAtProgress(targetProgress);
+  if (!started) return null;
   return <group name="curated-roadside-landmarks">
-    {roadsideAssets.map(asset => <Landmark key={asset.id} asset={asset} />)}
+    {roadsideAssets.filter(asset => asset.distance > position - 100 && asset.distance < position + 210).map(asset => <Landmark key={asset.id} asset={asset} />)}
   </group>;
 }

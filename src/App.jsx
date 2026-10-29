@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import Credits from './components/Credits';
-import TrunkExperience from './components/trunk/TrunkExperience';
 import HistoryChapter from './components/history/HistoryChapter';
 import MusicPlayer from './components/MusicPlayer';
 import GhostHud from './components/ghost/GhostHud';
@@ -8,6 +7,8 @@ import { useReducedMotion } from './hooks/usePreferences';
 import { chapters, chapterAt, clamp, upcomingBillboardAt } from './data/journey';
 import { advanceGhostSequence, initialGhostSequence } from './data/ghostUnlock';
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
+const TrunkExperience = lazy(() => import('./components/trunk/TrunkExperience'));
+const qualityModes = { high: 'Alto', balanced: 'Equilibrado', performance: 'Desempenho' };
 export default function App() {
   const [pageVisible, setPageVisible] = useState(() => !document.hidden);
   const [phase, setPhase] = useState('road');
@@ -17,7 +18,32 @@ export default function App() {
   const [started, setStarted] = useState(false);
   const [value, setValue] = useState(0);
   const [mobile, setMobile] = useState(() => innerWidth < 761);
-  const [quality] = useState(() => innerWidth < 768 ? 'low' : 'high');
+  const [qualityPreference, setQualityPreference] = useState(() => {
+    try { const saved = localStorage.getItem('acdc-quality'); return ['auto', 'high', 'balanced', 'performance'].includes(saved) ? saved : 'auto'; } catch { return 'auto'; }
+  });
+  const [automaticQuality, setAutomaticQuality] = useState('balanced');
+  const quality = qualityPreference === 'auto' ? automaticQuality : qualityPreference;
+  const [qualityOpen, setQualityOpen] = useState(false);
+  const qualitySamples = useRef({ slow: 0, fast: 0 });
+  const onQualitySample = useCallback(fps => {
+    if (qualityPreference !== 'auto') return;
+    const samples = qualitySamples.current;
+    samples.slow = fps < 35 ? samples.slow + 1 : 0;
+    samples.fast = fps > 55 ? samples.fast + 1 : 0;
+    if (samples.slow >= 2) {
+      setAutomaticQuality(current => current === 'high' ? 'balanced' : 'performance');
+      samples.slow = 0;
+    } else if (samples.fast >= 3) {
+      setAutomaticQuality(current => current === 'performance' ? 'balanced' : 'high');
+      samples.fast = 0;
+    }
+  }, [qualityPreference]);
+  const chooseQuality = mode => {
+    setQualityPreference(mode);
+    qualitySamples.current = { slow: 0, fast: 0 };
+    try { localStorage.setItem('acdc-quality', mode); } catch {}
+    setQualityOpen(false);
+  };
   const [modelError, setModelError] = useState('');
   const [modelReady, setModelReady] = useState(false);
   const [credits,setCredits] = useState(false);
@@ -65,7 +91,7 @@ export default function App() {
     // Reduced motion jumps directly to the sampled world state, but scroll
     // remains available in both directions alongside the chapter controls.
     let frame = 0;
-    const update = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { const max = document.documentElement.scrollHeight - innerHeight; progress.current = clamp(scrollY / Math.max(1,max)); setValue(progress.current); }); };
+    const update = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { const max = document.documentElement.scrollHeight - innerHeight; progress.current = clamp(scrollY / Math.max(1,max)); setValue(previous => Math.abs(previous - progress.current) > .001 ? progress.current : previous); }); };
     addEventListener('scroll',update,{passive:true}); addEventListener('resize',update); update();
     return () => { cancelAnimationFrame(frame); removeEventListener('scroll',update); removeEventListener('resize',update); };
   }, [phase,started,reduced,ghostActive]);
@@ -106,7 +132,7 @@ export default function App() {
       <span className="site-authors">Feito por: <strong>Erik Carvalho, Gustavo Goularte e Gustavo Justo</strong></span>
     </header>
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''} ${ghostActive?'ghost-active':''}`} style={{height:started?'950vh':'100svh'}}>
-      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}>{pageVisible && <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>}</Suspense><div className="vignette"/><div className="film-grain"/></div>
+      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}>{pageVisible && <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>}</Suspense>{pageVisible && !modelReady && !modelError && <div className="car-loading" role="status">PREPARANDO O DODGE 3D <span aria-hidden="true">ϟ</span></div>}<div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening"><span className="eyebrow"><i/> NO TURNING BACK. JUST ROCK ’N’ ROLL.</span><h1>HIGHWAY<br/><span className="title-second"><em>TO</em> HELL</span><b aria-hidden="true">ϟ</b></h1><button className="start-button" onClick={()=>{setStarted(true);go(.015);}}>ENTRAR NA ESTRADA <span>↗</span></button><span className="start-note">{reduced?'Explore pelos marcos do percurso':'Role para avançar. Volte para redescobrir.'}</span></section> : ghostActive ? null : <>
         {!atDestination && value >= .02 && nextBillboard && <button className="history-open" onClick={() => setSelectedChapter(nextBillboard)} aria-label={`Abrir capítulo ${nextBillboard.marker}: ${nextBillboard.title}`}><span>{nextBillboard.period}</span><strong>{nextBillboard.title}</strong></button>}
         {!atDestination && value > chapters.at(-1).progress - .006 && <section className="chapter-caption inferno-approach" style={{opacity:clamp((value - chapters.at(-1).progress + .006) / .006)}}><span className="eyebrow">09 / HIGHWAY TO HELL</span><h1>THE GATES OF HELL.</h1><p>O horizonte já não é o mesmo.</p></section>}
@@ -120,13 +146,13 @@ export default function App() {
         </section>}
       </>}
       {modelError && <p className="audio-error" role="alert">{modelError}</p>}
-      <footer className="highway-footer"><div className="footer-controls"><button onClick={()=>setCredits(true)}>CRÉDITOS</button><MusicPlayer /></div></footer>
+      <footer className="highway-footer"><div className="footer-controls"><div className="quality-setting"><button aria-expanded={qualityOpen} aria-controls="quality-options" onClick={() => setQualityOpen(open => !open)}>QUALIDADE · {qualityPreference === 'auto' ? `AUTO (${qualityModes[quality]})` : qualityModes[quality]}</button>{qualityOpen && <div id="quality-options" className="quality-options" role="group" aria-label="Qualidade gráfica">{[['auto','Automático'], ...Object.entries(qualityModes)].map(([mode,label])=><button key={mode} aria-pressed={qualityPreference===mode} onClick={()=>chooseQuality(mode)}>{label}</button>)}</div>}</div><button onClick={()=>setCredits(true)}>CRÉDITOS</button><MusicPlayer /></div></footer>
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
       {ghostActive && <GhostHud controls={ghostControls} onExit={exitGhost} />}
       {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
-    {phase==='trunk'&&<TrunkExperience reduced={reduced} onReturn={()=>navigate('highway')}/>}
+    {phase==='trunk'&&<Suspense fallback={<div className="loading trunk-loading">ABRINDO O PORTA-MALAS <span>ϟ</span></div>}><TrunkExperience reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
   </>;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { CanvasTexture, SRGBColorSpace } from 'three';
 import { useThree } from '@react-three/fiber';
-import { chapters, billboardDistance, roadX } from '../../data/journey';
+import { chapters, billboardDistance, distanceAtProgress, roadX } from '../../data/journey';
 import { licensedPhotoSources } from '../../data/historyPhotos';
 
 function wrapTitle(ctx, title, maxWidth) {
@@ -114,10 +114,11 @@ function makePoster(chapter) {
   return { canvas, texture };
 }
 
-function Billboard({ chapter, index, onSelect }) {
+function Billboard({ chapter, index, onSelect, loadPhoto }) {
   const mobile = useThree(state => state.size.width < 761);
   const invalidate = useThree(state => state.invalidate);
   const poster = useMemo(() => makePoster(chapter), [chapter]);
+  useEffect(() => () => poster.texture.dispose(), [poster]);
   useEffect(() => {
     let active = true;
     let loadedPhoto = null;
@@ -131,6 +132,7 @@ function Billboard({ chapter, index, onSelect }) {
       document.fonts.load('86px "Metal Mania"'),
       document.fonts.load('63px "New Rocker"'),
     ]).then(redraw).catch(() => {});
+    if (!loadPhoto) return () => { active = false; };
     const sources = licensedPhotoSources(chapter.image);
     const load = index => {
       if (index >= sources.length) return;
@@ -145,8 +147,8 @@ function Billboard({ chapter, index, onSelect }) {
       photo.src = sources[index];
     };
     load(0);
-    return () => { active = false; poster.texture.dispose(); };
-  }, [chapter, invalidate, poster]);
+    return () => { active = false; };
+  }, [chapter, invalidate, poster, loadPhoto]);
   const distance = billboardDistance(chapter, mobile);
   const side = mobile ? (index === 0 ? -1 : 1) : index % 2 ? 1 : -1;
   return <group position={[roadX(distance) + side * (mobile ? 9.5 : 14), 0, -distance]} rotation={[0, side * -.11, 0]} scale={mobile ? .72 : 1.12}>
@@ -185,8 +187,13 @@ function Billboard({ chapter, index, onSelect }) {
   </group>;
 }
 
-export default function HistoryBillboards({ onSelect }) {
+export default function HistoryBillboards({ onSelect, targetProgress }) {
+  const distance = distanceAtProgress(targetProgress);
   return <group name="historical-roadside-billboards">
-    {chapters.slice(0, 8).map((chapter, index) => <Billboard key={chapter.id} chapter={chapter} index={index} onSelect={onSelect} />)}
+    {chapters.slice(0, 8).map((chapter, index) => ({chapter, index})).filter(({chapter}) => {
+      // Keep the next boards inside the fog range while releasing textures behind the car.
+      const board = billboardDistance(chapter);
+      return board > distance - 90 && board < distance + 260;
+    }).map(({chapter, index}) => <Billboard key={chapter.id} chapter={chapter} index={index} onSelect={onSelect} loadPhoto={billboardDistance(chapter) < distance + 215} />)}
   </group>;
 }

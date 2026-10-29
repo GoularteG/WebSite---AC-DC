@@ -18,11 +18,21 @@ export default function RoadLighting({ distance, ghostActive }) {
   }, [targets, invalidate]);
   useFrame(({ camera }) => {
     const s = ghostActive ? -camera.position.z : distance.current;
-    const near = [...roadsideLamps].sort((a, b) => Math.abs(a.distance - s) - Math.abs(b.distance - s));
+    // The lamp list is fixed; a three-slot search avoids a sort and array copy per frame.
+    const near = [null, null, null];
+    const ranges = [Infinity, Infinity, Infinity];
+    for (const lamp of roadsideLamps) {
+      const range = Math.abs(lamp.distance - s);
+      for (let i = 0; i < 3; i++) {
+        if (range >= ranges[i]) continue;
+        for (let j = 2; j > i; j--) { ranges[j] = ranges[j-1]; near[j] = near[j-1]; }
+        ranges[i] = range; near[i] = lamp; break;
+      }
+    }
     lights.current.forEach((light, index) => {
       if (!light) return;
       const lamp = near[index];
-      const range = Math.abs(lamp.distance - s);
+      const range = ranges[index];
       light.position.set(...lamp.head);
       targets[index].position.set(lamp.head[0] - lamp.side * 2.2, .1, lamp.head[2]);
       // Three actual lamps illuminate the asphalt and the vehicle as they pass.

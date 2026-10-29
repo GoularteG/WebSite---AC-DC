@@ -13,3 +13,4 @@ createRoot(document.getElementById('root')).render(<React.StrictMode><App/></Rea
 import './styles/trunk.css';
 import './styles/ghost.css';
 import './styles/typography.css';
+import './styles/performance.css';
