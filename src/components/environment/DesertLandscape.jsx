@@ -39,7 +39,7 @@ export default function DesertLandscape() {
     scrub: creosoteGeometry(),
     yucca: rootedYuccaGeometry(),
     stoneMaterial: new MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: true }),
-    terrainMaterial: new MeshStandardMaterial({ vertexColors: true, roughness: 1 }),
+    terrainMaterial: new MeshStandardMaterial({ vertexColors: true, roughness: 1, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }),
     plantMaterial: new MeshStandardMaterial({ vertexColors: true, roughness: 1, side: DoubleSide }),
   }), []);
   useEffect(() => () => {

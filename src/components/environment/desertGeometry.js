@@ -62,9 +62,9 @@ export function erodedFormationGeometry(shape = 0) {
 }
 
 export function basinTerrainGeometry() {
-  const positions = [], colors = [], indices = [];
+  const positions = [], colors = [], indices = [], colWeights = [];
   const columns = 77, rows = 205;
-  const near = new Color('#8d7158'), far = new Color('#806b5c');
+  const verge = new Color('#82634a'), near = new Color('#8d7158'), far = new Color('#806b5c');
   for (const side of [-1, 1]) {
     const base = positions.length / 3;
     for (let row = 0; row <= rows; row++) {
@@ -73,10 +73,14 @@ export function basinTerrainGeometry() {
         const offset = side * (18 + col * 352 / columns);
         const height = basinSurfaceHeight(offset, distance);
         positions.push(roadX(distance) + offset, height, -distance);
-        const tint = near.clone().lerp(far, Math.min(1, Math.max(0, (Math.abs(offset) - 105) / 170)));
+        colWeights.push(Math.min(1, Math.max(0, (col - 5) / 11)));
+        const absOff = Math.abs(offset);
+        const tint = absOff < 68
+          ? verge.clone().lerp(near, Math.min(1, Math.max(0, (absOff - 28) / 40)))
+          : near.clone().lerp(far, Math.min(1, Math.max(0, (absOff - 105) / 170)));
         // Broad variations follow drainage, with subtle granular mineral color.
-        const variation = .97 + .045 * Math.sin(distance * .13 + offset * .19)
-          + .025 * Math.sin(distance * .49 - offset * .31);
+        const variation = .98 + .032 * Math.sin(distance * .13 + offset * .19)
+          + .018 * Math.sin(distance * .49 - offset * .31);
         tint.multiplyScalar(variation);
         colors.push(tint.r, tint.g, tint.b);
         if (row < rows && col < columns) {
@@ -93,6 +97,22 @@ export function basinTerrainGeometry() {
   geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
+  // Blend inner verge normals toward straight-up (0,1,0) so the emerging edge
+  // receives identical sunlight to the flat desert plane without a dark ramp shadow.
+  const normals = geometry.attributes.normal.array;
+  for (let i = 0; i < colWeights.length; i++) {
+    const w = colWeights[i];
+    if (w < 1) {
+      const idx = i * 3;
+      const nx = normals[idx] * w;
+      const ny = normals[idx + 1] * w + (1 - w);
+      const nz = normals[idx + 2] * w;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      normals[idx] = nx / len;
+      normals[idx + 1] = ny / len;
+      normals[idx + 2] = nz / len;
+    }
+  }
   geometry.computeBoundingSphere();
   return geometry;
 }

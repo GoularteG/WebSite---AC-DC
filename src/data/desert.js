@@ -15,7 +15,7 @@ export function desertHeight(offset, distance) {
   const lateral = Math.abs(offset);
   const side = Math.sign(offset);
   const fade = smooth(-145, -105, distance) * (1 - smooth(610, 680, distance));
-  const fan = smooth(18, 85, lateral) * (1.25 + .65 * Math.sin(distance * .037 + lateral * .053)
+  const fan = smooth(18, 66, lateral) * (2.15 + .85 * Math.sin(distance * .037 + lateral * .053)
     + .3 * Math.sin(distance * .081 - lateral * .11));
   const ridge = Math.exp(-Math.pow((lateral - 189) / 54, 2))
     * (22 + 12 * Math.sin(distance * .022 + side * 1.7) + 7 * Math.sin(distance * .063 + side));
@@ -28,7 +28,7 @@ export function desertHeight(offset, distance) {
 // edge then follows the irregular fan height instead of drawing a straight seam.
 export function basinSurfaceHeight(offset, distance) {
   const lateral = Math.abs(offset);
-  const edge = 1 - smooth(18, 41, lateral);
+  const edge = 1 - smooth(18, 35 + 4.5 * Math.sin(distance * .043 + Math.sign(offset)), lateral);
   const ripple = .75 + .25 * Math.sin(distance * .083 + lateral * .17);
   return desertHeight(offset, distance) - .32 * edge * ripple;
 }

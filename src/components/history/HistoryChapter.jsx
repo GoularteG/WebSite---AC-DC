@@ -16,10 +16,10 @@ export default function HistoryChapter({ chapter, onClose }) {
   }, []);
   const image = chapter.image;
   const imageSource = licensedPhotoSources(image)[failed] ?? null;
-  return <dialog ref={dialog} className="history-archive" onClose={onClose} aria-labelledby="history-archive-title">
+  return <dialog ref={dialog} className="history-archive" onCancel={e => { e.preventDefault(); onClose(); }} aria-labelledby="history-archive-title">
     <header className="history-archive-header">
       <span>AC/DC · ARQUIVO DA ESTRADA · {chapter.marker} / 08</span>
-      <button type="button" onClick={() => dialog.current.close()} aria-label="Fechar capítulo e voltar à estrada">✕ <span>VOLTAR À ESTRADA</span></button>
+      <button type="button" onClick={onClose} aria-label="Fechar capítulo e voltar à estrada">✕ <span>VOLTAR À ESTRADA</span></button>
     </header>
     <div className="history-archive-heading"><span>{chapter.period}</span><h2 id="history-archive-title">{chapter.title}</h2></div>
     <div className="history-archive-grid">

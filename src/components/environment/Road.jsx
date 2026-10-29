@@ -22,7 +22,7 @@ function Ribbon({ offset = 0, width, height, material, start, end }) {
 }
 export default function Road({ distance, ghostActive = false }) {
   const shoulderGeometries = useMemo(() => [-1, 1].map(createRoadShoulder), []);
-  const shoulderMaterial = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 1 }), []);
+  const shoulderMaterial = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 1, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), []);
   useEffect(() => () => { shoulderGeometries.forEach(geometry => geometry.dispose()); shoulderMaterial.dispose(); }, [shoulderGeometries, shoulderMaterial]);
   const asphaltTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
@@ -63,7 +63,7 @@ export default function Road({ distance, ghostActive = false }) {
   palette.asphalt.material.map=asphaltTexture;
   palette.asphalt.material.bumpMap=asphaltTexture;palette.asphalt.material.bumpScale=.025;
   palette.ground.material.map=desertTexture;
-  palette.ground.material.bumpMap=desertTexture;palette.ground.material.bumpScale=.035;
+  palette.ground.material.bumpMap=desertTexture;palette.ground.material.bumpScale=.035;palette.ground.material.polygonOffset=true;palette.ground.material.polygonOffsetFactor=2;palette.ground.material.polygonOffsetUnits=2;
   useEffect(() => () => paletteItems.forEach(item=>item.material.dispose()), [paletteItems]);
   useFrame(({ camera }) => {
     const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
