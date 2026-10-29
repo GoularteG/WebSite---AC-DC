@@ -48,7 +48,7 @@ const skyFragment = `varying vec3 vDirection;
     color += vec3(.6, .76, 1.) * (bolt * 1.5 + .055) * thunder;
 
     // Bass energy warms only the distant horizon; silence leaves a complete scene.
-    color += vec3(.13, .045, .018) * pulse * exp(-abs(h - .05) * 11.);
+    color += vec3(.24, .09, .032) * pulse * exp(-abs(h - .09) * 4.2);
     gl_FragColor = vec4(color, 1.);
   }`;
 
@@ -67,7 +67,7 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
   }), []);
   useEffect(() => {
     const update = event => {
-      pulse.current = reduced ? 0 : event.detail;
+      pulse.current = reduced ? 0 : (Number.isFinite(event.detail) ? event.detail : 0);
       invalidate();
     };
     addEventListener(AUDIO_PULSE_EVENT, update);
