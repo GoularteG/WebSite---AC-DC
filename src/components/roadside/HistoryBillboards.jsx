@@ -1,27 +1,26 @@
-import { useEffect, useMemo } from 'react';
-import { CanvasTexture, SRGBColorSpace } from 'three';
+import { useEffect, useMemo, useRef } from 'react';
+import { CanvasTexture, Object3D, SRGBColorSpace } from 'three';
 import { useThree } from '@react-three/fiber';
 import { chapters, billboardDistance, distanceAtProgress, roadX } from '../../data/journey';
 import { licensedPhotoSources } from '../../data/historyPhotos';
 
-// Analytic light pools keep every panel illuminated without adding 24 spotlights.
-const panelVertex = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`;
-const panelFragment = `uniform sampler2D poster; varying vec2 vUv;
-  void main(){
-    float spread=mix(.055,.19,vUv.y);
-    float pools=0.;
-    for(int i=0;i<3;i++){
-      float center=.16+float(i)*.34;
-      pools+=exp(-pow((vUv.x-center)/spread,2.)) * exp(-vUv.y*.85);
-    }
-    vec3 printColor=texture2D(poster,vUv).rgb;
-    vec3 lighting=vec3(.70,.72,.76)+vec3(.55,.43,.28)*pools;
-    gl_FragColor=vec4(printColor*lighting,1.);
-    #include <colorspace_fragment>
-  }`;
-
-function BillboardFloodlights() {
+function BillboardFloodlights({ active }) {
+  const lights = useRef([]);
+  const targets = useMemo(() => [-4,0,4].map(x => {
+    const target = new Object3D();
+    target.position.set(x,5.5,.04);
+    return target;
+  }), []);
+  const invalidate = useThree(state => state.invalidate);
+  useEffect(() => {
+    lights.current.forEach((light, index) => { if (light) light.target = targets[index]; });
+    invalidate();
+  }, [active, targets, invalidate]);
   return <group name="billboard-uplights">
+    {active && targets.map((target,index)=><group key={index}>
+      <primitive object={target}/>
+      <spotLight ref={node=>{lights.current[index]=node;}} position={[[-4,0,4][index],1.93,1.756]} color="#ffe4bc" intensity={110} distance={13} angle={.56} penumbra={.65} decay={2} castShadow={false}/>
+    </group>)}
     {[-4,0,4].map(x=><group key={x}>
       <mesh position={[x,2.25,.28]}><boxGeometry args={[.36,.2,.26]}/><meshStandardMaterial color="#38383b" metalness={.8} roughness={.38}/></mesh>
       <mesh position={[x,2.02,1.04]} rotation={[1.87,0,0]}><boxGeometry args={[.085,1.65,.085]}/><meshStandardMaterial color="#67666a" metalness={.8} roughness={.35}/></mesh>
@@ -145,11 +144,10 @@ function makePoster(chapter) {
   return { canvas, texture };
 }
 
-function Billboard({ chapter, index, onSelect, loadPhoto }) {
+function Billboard({ chapter, index, onSelect, loadPhoto, activeLighting }) {
   const mobile = useThree(state => state.size.width < 761);
   const invalidate = useThree(state => state.invalidate);
   const poster = useMemo(() => makePoster(chapter), [chapter]);
-  const panelUniforms = useMemo(() => ({ poster: { value: poster.texture } }), [poster]);
   useEffect(() => () => poster.texture.dispose(), [poster]);
   useEffect(() => {
     let active = true;
@@ -202,7 +200,7 @@ function Billboard({ chapter, index, onSelect, loadPhoto }) {
     </mesh>
     <mesh position={[0, 5.45, .008]} onClick={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = ''; onSelect(chapter); } : undefined} onPointerOver={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = 'pointer'; } : undefined} onPointerOut={onSelect ? () => { document.body.style.cursor = ''; } : undefined}>
       <planeGeometry args={[11.8, 5.9]} />
-      <shaderMaterial uniforms={panelUniforms} vertexShader={panelVertex} fragmentShader={panelFragment} toneMapped={false} />
+      <meshStandardMaterial map={poster.texture} emissiveMap={poster.texture} emissive="#ffffff" emissiveIntensity={.22} roughness={.95} metalness={0} />
     </mesh>
     {[-6.08, 6.08].map(x => <mesh key={x} position={[x, 5.45, .035]}>
       <boxGeometry args={[.16, 6.2, .2]} />
@@ -212,17 +210,23 @@ function Billboard({ chapter, index, onSelect, loadPhoto }) {
       <boxGeometry args={[12.25, .14, .2]} />
       <meshStandardMaterial color="#7f3f35" metalness={.72} roughness={.48} />
     </mesh>
-    <BillboardFloodlights />
+    <BillboardFloodlights active={activeLighting} />
   </group>;
 }
 
 export default function HistoryBillboards({ onSelect, targetProgress }) {
   const distance = distanceAtProgress(targetProgress);
+  const mobile = useThree(state => state.size.width < 761);
+  // Only the board being approached owns real lights: at most three spotlights.
+  const illuminated = chapters.slice(0,8).find(chapter => {
+    const s = billboardDistance(chapter, mobile);
+    return s > distance - 25 && s < distance + 140;
+  });
   return <group name="historical-roadside-billboards">
     {chapters.slice(0, 8).map((chapter, index) => ({chapter, index})).filter(({chapter}) => {
       // Keep the next boards inside the fog range while releasing textures behind the car.
       const board = billboardDistance(chapter);
       return board > distance - 90 && board < distance + 260;
-    }).map(({chapter, index}) => <Billboard key={chapter.id} chapter={chapter} index={index} onSelect={onSelect} loadPhoto={billboardDistance(chapter) < distance + 215} />)}
+    }).map(({chapter, index}) => <Billboard key={chapter.id} chapter={chapter} index={index} onSelect={onSelect} activeLighting={chapter.id === illuminated?.id} loadPhoto={billboardDistance(chapter) < distance + 215} />)}
   </group>;
 }
