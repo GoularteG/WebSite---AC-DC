@@ -53,7 +53,7 @@ export function useAudio() {
         analyser.smoothingTimeConstant = 0.42;
         source.connect(analyser);
         analyser.connect(context.destination);
-        graph.current = { context, analyser, data: new Uint8Array(analyser.frequencyBinCount), avg: 0, pulse: 0 };
+        graph.current = { context, analyser, data: new Uint8Array(analyser.frequencyBinCount), avg: 0, pulse: 0, lastBeat: 0 };
       }
       await graph.current?.context.resume();
       await player.current.play();
@@ -72,6 +72,11 @@ export function useAudio() {
           const prevAvg = Number.isFinite(graph.current.avg) && graph.current.avg > 0 ? graph.current.avg : level;
           const avg = prevAvg * 0.82 + level * 0.18;
           graph.current.avg = avg;
+          const now = performance.now();
+          if (level > .18 && level > prevAvg * 1.14 && now - graph.current.lastBeat > 500) {
+            graph.current.lastBeat = now;
+            dispatchEvent(new CustomEvent('highway:audio-beat'));
+          }
 
           // Keep a gentle base warmth while music plays + strong rhythmic spike on drum/chord hits
           const base = Math.min(0.18, Math.max(0, (level - 0.06) * 0.35));
