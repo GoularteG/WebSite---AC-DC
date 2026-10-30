@@ -38,6 +38,9 @@ export default function Charger({ distance, onReady }) {
         if (material.name === 'Color_A06') {
           material.emissive.set('#ff1708'); material.emissiveIntensity = .85;
         }
+        if (material.name === 'Color_004') {
+          material.emissive.set('#ffe2a8'); material.emissiveIntensity = .95;
+        }
         material.envMapIntensity = 1.3;
         materials.set(original, material); return material;
       };
