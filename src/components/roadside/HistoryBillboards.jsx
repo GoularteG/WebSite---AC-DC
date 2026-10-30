@@ -4,6 +4,37 @@ import { useThree } from '@react-three/fiber';
 import { chapters, billboardDistance, distanceAtProgress, roadX } from '../../data/journey';
 import { licensedPhotoSources } from '../../data/historyPhotos';
 
+// Analytic light pools keep every panel illuminated without adding 24 spotlights.
+const panelVertex = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`;
+const panelFragment = `uniform sampler2D poster; varying vec2 vUv;
+  void main(){
+    float spread=mix(.055,.19,vUv.y);
+    float pools=0.;
+    for(int i=0;i<3;i++){
+      float center=.16+float(i)*.34;
+      pools+=exp(-pow((vUv.x-center)/spread,2.)) * exp(-vUv.y*.85);
+    }
+    vec3 printColor=texture2D(poster,vUv).rgb;
+    vec3 lighting=vec3(.70,.72,.76)+vec3(.55,.43,.28)*pools;
+    gl_FragColor=vec4(printColor*lighting,1.);
+    #include <colorspace_fragment>
+  }`;
+
+function BillboardFloodlights() {
+  return <group name="billboard-uplights">
+    {[-4,0,4].map(x=><group key={x}>
+      <mesh position={[x,2.25,.28]}><boxGeometry args={[.36,.2,.26]}/><meshStandardMaterial color="#38383b" metalness={.8} roughness={.38}/></mesh>
+      <mesh position={[x,2.02,1.04]} rotation={[1.87,0,0]}><boxGeometry args={[.085,1.65,.085]}/><meshStandardMaterial color="#67666a" metalness={.8} roughness={.35}/></mesh>
+      <group position={[x,1.8,1.85]} rotation={[-2.2,0,0]}>
+        <mesh><boxGeometry args={[.65,.48,.25]}/><meshStandardMaterial color="#313238" metalness={.7} roughness={.4}/></mesh>
+        <mesh position={[0,0,.135]}><boxGeometry args={[.53,.36,.025]}/><meshStandardMaterial color="#e5d5ae" emissive="#ffe4b4" emissiveIntensity={2.2} toneMapped={false}/></mesh>
+        <mesh position={[0,0,.16]}><boxGeometry args={[.38,.22,.015]}/><meshBasicMaterial color="#fff1d2" toneMapped={false}/></mesh>
+        {[-.35,.35].map(side=><mesh key={side} position={[side,0,-.035]}><boxGeometry args={[.055,.32,.26]}/><meshStandardMaterial color="#7b7770" metalness={.8} roughness={.4}/></mesh>)}
+      </group>
+    </group>)}
+  </group>;
+}
+
 function wrapTitle(ctx, title, maxWidth) {
   const words = title.toUpperCase().split(' ');
   const lines = [];
@@ -118,6 +149,7 @@ function Billboard({ chapter, index, onSelect, loadPhoto }) {
   const mobile = useThree(state => state.size.width < 761);
   const invalidate = useThree(state => state.invalidate);
   const poster = useMemo(() => makePoster(chapter), [chapter]);
+  const panelUniforms = useMemo(() => ({ poster: { value: poster.texture } }), [poster]);
   useEffect(() => () => poster.texture.dispose(), [poster]);
   useEffect(() => {
     let active = true;
@@ -170,7 +202,7 @@ function Billboard({ chapter, index, onSelect, loadPhoto }) {
     </mesh>
     <mesh position={[0, 5.45, .008]} onClick={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = ''; onSelect(chapter); } : undefined} onPointerOver={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = 'pointer'; } : undefined} onPointerOut={onSelect ? () => { document.body.style.cursor = ''; } : undefined}>
       <planeGeometry args={[11.8, 5.9]} />
-      <meshBasicMaterial map={poster.texture} toneMapped={false} />
+      <shaderMaterial uniforms={panelUniforms} vertexShader={panelVertex} fragmentShader={panelFragment} toneMapped={false} />
     </mesh>
     {[-6.08, 6.08].map(x => <mesh key={x} position={[x, 5.45, .035]}>
       <boxGeometry args={[.16, 6.2, .2]} />
@@ -180,10 +212,7 @@ function Billboard({ chapter, index, onSelect, loadPhoto }) {
       <boxGeometry args={[12.25, .14, .2]} />
       <meshStandardMaterial color="#7f3f35" metalness={.72} roughness={.48} />
     </mesh>
-    {[-5.5, -3.65, -1.83, 0, 1.83, 3.65, 5.5].map(x => <mesh key={`lamp-${x}`} position={[x, 8.85, .02]}>
-      <sphereGeometry args={[.12, 8, 6]} />
-      <meshBasicMaterial color="#ffc17e" toneMapped={false} />
-    </mesh>)}
+    <BillboardFloodlights />
   </group>;
 }
 
