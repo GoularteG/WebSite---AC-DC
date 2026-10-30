@@ -9,7 +9,7 @@ laterais. Posições e escalas ficam em `src/data/roadsideAssets.js`; o carregad
 | --- | --- | --- |
 | 70, direita | Guitarra monumental vermelha | Modelo de Aroig, adaptação de material e escala |
 | 230, esquerda | Estrutura de palco, amplificadores e microfone | Objetos já construídos neste projeto |
-| 390, direita | Sino cênico de Hells Bells | Objeto já construído neste projeto, reposicionado |
+| 330, direita | Sino cênico de Hells Bells | Sino autoral refinado: bronze, boca oca, inscrição e correntes; fora da sobreposição do outdoor |
 | 475, esquerda | Parede de amplificadores | Objetos já construídos neste projeto |
 | 585, direita | Guitarra de acabamento original | Segunda apresentação do mesmo modelo de Aroig |
 

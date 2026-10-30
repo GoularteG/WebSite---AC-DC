@@ -161,3 +161,11 @@ export const desertVergeScrub = vergePatches.flatMap((center, patch) =>
       depth: .8, rotation: random(index, 42) * Math.PI * 2, tone: index % 4 };
   })
 );
+
+// Sparse colonies: leave exhibit approaches and the volcanic finale open.
+export const desertCacti = Array.from({length:32},(_,index)=>{
+  const cluster=Math.floor(index/2), distance=-10+cluster*38+(index%2)*7;
+  const side=cluster%2?1:-1, offset=13+random(index,93)*13+(index%2)*6;
+  return {distance,side,offset,position:rooted(distance,side,offset,.06),width:.75+random(index,94)*.4,
+    height:.65+random(index,95)*.65,depth:.9,rotation:random(index,96)*1.5-.75,tone:index%4};
+}).filter(plant=>clearOfBoard(plant.distance,plant.side,plant.offset,1.3));

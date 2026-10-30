@@ -15,7 +15,7 @@ export const roadsideAssets = [
   },
   {
     id: 'hells-bell', group: 'bells', kind: 'bell',
-    distance: 390, side: 1, offset: 22, scale: 1.3,
+    distance: 330, side: 1, offset: 17, scale: 1.3,
     rotation: [0, .12, 0],
   },
   {

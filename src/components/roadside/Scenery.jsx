@@ -1,8 +1,9 @@
 import { Suspense, useMemo } from 'react';
-import { Shape, Vector2 } from 'three';
+import { Shape } from 'three';
 import { distanceAtProgress, roadX } from '../../data/journey';
 import { roadsideAssets } from '../../data/roadsideAssets';
 import RoadsideAsset from './RoadsideAsset';
+import HellsBell from './HellsBell';
 
 const darkMetal = '#211c1a';
 function Box({ position, scale, color = darkMetal, metalness = .25, roughness = .55 }) {
@@ -50,15 +51,6 @@ function MicrophoneStand() {
     <Cylinder position={[0, .16, 0]} args={[.1, .12, .18, 12]} color="#26211e" />
   </group>;
 }
-function Bell() {
-  const profile = useMemo(() => [new Vector2(.12, 1.05), new Vector2(.2, .82), new Vector2(.32, .56), new Vector2(.48, .27), new Vector2(.76, -.12), new Vector2(.93, -.2), new Vector2(.94, -.28)], []);
-  return <group>
-    <Cylinder position={[0, 1.42, 0]} args={[.17, .21, .38, 20]} color="#8d7650" metalness={.82} />
-    <mesh position={[0, 1.17, 0]} castShadow><latheGeometry args={[profile, 32]} /><meshStandardMaterial color="#a6813e" metalness={.86} roughness={.24} side={2} /></mesh>
-    <Cylinder position={[0, .68, 0]} args={[.13, .11, 1.02, 24]} color="#aa8846" metalness={.88} />
-    <Cylinder position={[0, .12, 0]} args={[.17, .17, .2, 16]} color="#43372a" metalness={.55} />
-  </group>;
-}
 function LightingTower() {
   return <group>
     {[-2.6, 2.6].map(x => <group key={x}>
@@ -83,10 +75,11 @@ function Landmark({ asset }) {
       <group position={[0, 0, 1]}><MicrophoneStand /></group>
     </group>}
     {kind === 'bell' && <group>
-      {[-2.4, 2.4].map(x => <Box key={x} position={[x, 4.55, 0]} scale={[.25, 9.1, .35]} color="#27282a" metalness={.72} />)}
-      <Box position={[0, 9.1, 0]} scale={[5.15, .36, .4]} color="#3a3430" metalness={.72} />
-      <Cylinder position={[0, 8.5, 0]} args={[.08, .08, 1.2, 10]} color="#44403c" metalness={.78} />
-      <group position={[0, 4.5, 0]} scale={2.25}><Bell /></group>
+      {[-3.7, 3.7].map(x => <Box key={x} position={[x, 4.55, 0]} scale={[.25, 9.1, .35]} color="#27282a" metalness={.72} />)}
+      <Box position={[0, 9.1, 0]} scale={[7.8, .42, .55]} color="#3a3430" metalness={.72} />
+      {[0,1,2].map(i=><mesh key={i} position={[0,8.65+i*.16,0]} rotation={[0,i%2*Math.PI/2,0]}><torusGeometry args={[.13,.035,6,16]}/><meshStandardMaterial color="#6e6250" metalness={.8} roughness={.45}/></mesh>)}
+      {[-1,1].map(side=><Box key={side} position={[side*3.17,8.55,0]} scale={[.13,1.45,.18]} color="#52483a" />)}
+      <group position={[0, 3.1, 0]} scale={2.1}><HellsBell /></group>
     </group>}
     {kind === 'amps' && <group>
       {[-3.4, 0, 3.4].map((x, index) => <group key={x} position={[x, 0, index === 1 ? -.55 : .35]}

@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Color, DoubleSide, MeshStandardMaterial, Object3D } from 'three';
-import { desertMesas, desertRocks, desertScrub, desertYucca, desertPebbles, desertVergeScrub } from '../../data/desert';
+import { desertCacti, desertMesas, desertRocks, desertScrub, desertYucca, desertPebbles, desertVergeScrub } from '../../data/desert';
 import { basinTerrainGeometry, creosoteGeometry, desertStoneGeometry, erodedFormationGeometry, rootedYuccaGeometry } from './desertGeometry';
+
+import { cactusGeometry } from './cactusGeometry';
 
 const mesaTones = ['#ffffff', '#e3d7c8', '#eee0ca', '#d8cec4', '#f3e6d1'];
 const rockTones = ['#a48c71', '#bc9d78', '#998878', '#c3aa86'];
@@ -36,6 +38,7 @@ export default function DesertLandscape() {
     mesas: [0,1,2].map(erodedFormationGeometry),
     basin: basinTerrainGeometry(),
     rocks: desertStoneGeometry(),
+    cactus: cactusGeometry(),
     scrub: creosoteGeometry(),
     yucca: rootedYuccaGeometry(),
     stoneMaterial: new MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: true }),
@@ -53,6 +56,7 @@ export default function DesertLandscape() {
     <FormationInstances formations={desertPebbles} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
     <FormationInstances formations={desertScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />
     <FormationInstances formations={desertVergeScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />
+    <FormationInstances formations={desertCacti} geometry={assets.cactus} material={assets.stoneMaterial} tones={yuccaTones} />
     <FormationInstances formations={desertYucca} geometry={assets.yucca} material={assets.plantMaterial} tones={yuccaTones} />
   </group>;
 }
