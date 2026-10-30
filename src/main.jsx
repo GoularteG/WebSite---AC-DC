@@ -14,3 +14,4 @@ import './styles/trunk.css';
 import './styles/ghost.css';
 import './styles/typography.css';
 import './styles/performance.css';
+import './styles/music-player.css';

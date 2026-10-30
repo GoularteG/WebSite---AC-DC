@@ -8,7 +8,6 @@ import { chapters, chapterAt, clamp, upcomingBillboardAt } from './data/journey'
 import { advanceGhostSequence, initialGhostSequence } from './data/ghostUnlock';
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
 const TrunkExperience = lazy(() => import('./components/trunk/TrunkExperience'));
-const qualityModes = { high: 'Alto', balanced: 'Equilibrado', performance: 'Desempenho' };
 export default function App() {
   const [pageVisible, setPageVisible] = useState(() => !document.hidden);
   const [phase, setPhase] = useState('road');
@@ -18,15 +17,10 @@ export default function App() {
   const [started, setStarted] = useState(false);
   const [value, setValue] = useState(0);
   const [mobile, setMobile] = useState(() => innerWidth < 761);
-  const [qualityPreference, setQualityPreference] = useState(() => {
-    try { const saved = localStorage.getItem('acdc-quality'); return ['auto', 'high', 'balanced', 'performance'].includes(saved) ? saved : 'auto'; } catch { return 'auto'; }
-  });
   const [automaticQuality, setAutomaticQuality] = useState('balanced');
-  const quality = qualityPreference === 'auto' ? automaticQuality : qualityPreference;
-  const [qualityOpen, setQualityOpen] = useState(false);
+  const quality = automaticQuality;
   const qualitySamples = useRef({ slow: 0, fast: 0 });
   const onQualitySample = useCallback(fps => {
-    if (qualityPreference !== 'auto') return;
     const samples = qualitySamples.current;
     samples.slow = fps < 35 ? samples.slow + 1 : 0;
     samples.fast = fps > 55 ? samples.fast + 1 : 0;
@@ -37,13 +31,7 @@ export default function App() {
       setAutomaticQuality(current => current === 'performance' ? 'balanced' : 'high');
       samples.fast = 0;
     }
-  }, [qualityPreference]);
-  const chooseQuality = mode => {
-    setQualityPreference(mode);
-    qualitySamples.current = { slow: 0, fast: 0 };
-    try { localStorage.setItem('acdc-quality', mode); } catch {}
-    setQualityOpen(false);
-  };
+  }, []);
   const [modelError, setModelError] = useState('');
   const [modelReady, setModelReady] = useState(false);
   const [credits,setCredits] = useState(false);
@@ -146,13 +134,14 @@ export default function App() {
         </section>}
       </>}
       {modelError && <p className="audio-error" role="alert">{modelError}</p>}
-      <footer className="highway-footer"><div className="footer-controls"><div className="quality-setting"><button aria-expanded={qualityOpen} aria-controls="quality-options" onClick={() => setQualityOpen(open => !open)}>QUALIDADE · {qualityPreference === 'auto' ? `AUTO (${qualityModes[quality]})` : qualityModes[quality]}</button>{qualityOpen && <div id="quality-options" className="quality-options" role="group" aria-label="Qualidade gráfica">{[['auto','Automático'], ...Object.entries(qualityModes)].map(([mode,label])=><button key={mode} aria-pressed={qualityPreference===mode} onClick={()=>chooseQuality(mode)}>{label}</button>)}</div>}</div><button onClick={()=>setCredits(true)}>CRÉDITOS</button><MusicPlayer /></div></footer>
+
       <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
       {ghostActive && <GhostHud controls={ghostControls} onExit={exitGhost} />}
       {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
+    <div className="site-music"><MusicPlayer /></div>
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
-    {phase==='trunk'&&<Suspense fallback={<div className="loading trunk-loading">ABRINDO O PORTA-MALAS <span>ϟ</span></div>}><TrunkExperience reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
+    {phase==='trunk'&&<Suspense fallback={<div className="loading trunk-loading">ABRINDO O PORTA-MALAS <span>ϟ</span></div>}><TrunkExperience onCredits={()=>setCredits(true)} reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
   </>;
 }

@@ -7,6 +7,8 @@ export function useAudio() {
   const meter = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolumeState] = useState(0.5);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [error, setError] = useState('');
 
   const emitPulse = value => dispatchEvent(new CustomEvent('highway:audio-pulse', { detail: value }));
@@ -21,12 +23,17 @@ export function useAudio() {
     player.current = audio;
 
     const failed = () => { stopMeter(); setPlaying(false); setError('Áudio indisponível.'); };
+    const update = () => { setPosition(audio.currentTime); setDuration(Number.isFinite(audio.duration) ? audio.duration : 0); };
+    audio.addEventListener('timeupdate', update);
+    audio.addEventListener('loadedmetadata', update);
     audio.addEventListener('error', failed);
 
     return () => {
       stopMeter();
       audio.pause();
       audio.removeEventListener('error', failed);
+      audio.removeEventListener('timeupdate', update);
+      audio.removeEventListener('loadedmetadata', update);
       graph.current?.context.close();
       graph.current = null;
       audio.removeAttribute('src');
@@ -96,5 +103,6 @@ export function useAudio() {
     }
   };
 
-  return { playing, toggle, volume, setVolume, error, available: Boolean(audioAsset.url) };
+  const seek = value => { if (player.current && duration > 0) { player.current.currentTime = Math.max(0, Math.min(duration, Number(value))); setPosition(player.current.currentTime); } };
+  return { position, duration, seek, playing, toggle, volume, setVolume, error, available: Boolean(audioAsset.url) };
 }

@@ -7,7 +7,7 @@ class TrunkSceneBoundary extends Component {
   static getDerivedStateFromError(){return {failed:true};}
   render(){return this.state.failed?<p className="trunk-webgl-fallback">Explore a coleção pelos botões abaixo.</p>:this.props.children;}
 }
-export default function TrunkExperience({reduced,onReturn}) {
+export default function TrunkExperience({reduced,onReturn,onCredits}) {
   const returnButton=useRef(null);
   useEffect(()=>{returnButton.current?.focus({preventScroll:true});},[]);
   const [selected,setSelected]=useState(null),[active,setActive]=useState(null),[opening,setOpening]=useState(false);
@@ -31,6 +31,7 @@ export default function TrunkExperience({reduced,onReturn}) {
         <div className="trunk-book-opening__cover"><span>AC/DC</span><strong>THE<br/>MAKING<br/>OF</strong><small>HIGHWAY TO HELL</small></div>
       </div>
     </div>}
+    <button className="trunk-credits" onClick={onCredits}>CRÉDITOS DO PROJETO ↗</button>
     <ObjectSelection onSelect={select} onFocus={setActive}/>
     <p className="trunk-hint">Toque no livro para abrir · Sua posição na estrada está guardada.</p>
     {selected==='book'&&<TrunkBook reduced={reduced} onClose={()=>setSelected(null)}/>}
