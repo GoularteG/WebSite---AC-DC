@@ -78,26 +78,39 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     const beat = () => {
       const now = performance.now();
       const state = storm.current;
-      if (reduced || document.hidden || now - state.lastStrike < 4200) return;
+      if (reduced || document.hidden || now - state.lastStrike < 2200) return;
       state.flash = .55;
       state.lastStrike = now;
       state.x = Math.sin(distance.current * .037) * .48;
       invalidate();
     };
+    // Wake the demand renderer only for an occasional storm flash, also without music.
+    const stormTimer = reduced ? null : setInterval(() => {
+      if (document.hidden || distance.current < 25) return;
+      const state = storm.current;
+      const now = performance.now();
+      const mix = infernoMix(distance.current);
+      const interval = 5600 - mix * 2300 + Math.sin(distance.current * .03) * 650;
+      if (now - state.lastStrike < interval) return;
+      state.lastStrike = now;
+      state.flash = .40 + mix * .25;
+      state.x = Math.sin(now * .00037) * .53;
+      invalidate();
+    }, 800);
     addEventListener(AUDIO_PULSE_EVENT, update);
     addEventListener('highway:audio-beat', beat);
-    return () => { removeEventListener(AUDIO_PULSE_EVENT, update); removeEventListener('highway:audio-beat', beat); };
+    return () => { clearInterval(stormTimer); removeEventListener(AUDIO_PULSE_EVENT, update); removeEventListener('highway:audio-beat', beat); };
   }, [invalidate, reduced]);
   useFrame(({ camera, scene }, delta) => {
     const travelled = ghostActive ? -camera.position.z : distance.current;
     const dusk = smooth(95, 550, travelled);
     const inferno = infernoMix(travelled);
     const state = storm.current;
-    const zone = Math.floor(Math.max(0, travelled - 65) / 72);
+    const zone = Math.floor(Math.max(0, travelled - 30) / 38);
     const now = performance.now();
     if (zone !== state.zone) {
       state.zone = zone;
-      if (!reduced && travelled > 65 && now - state.lastStrike > 4200) {
+      if (!reduced && travelled > 30 && now - state.lastStrike > 2200) {
         state.flash = .38 + dusk * .25 + inferno * .18;
         state.lastStrike = now;
         state.x = Math.sin(zone * 2.37) * .5;
