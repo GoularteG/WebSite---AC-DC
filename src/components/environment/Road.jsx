@@ -60,6 +60,12 @@ export default function Road({ distance, ghostActive = false }) {
     dash:['#9c9789','#70544e'], ground:['#8d7158','#261b21'],
   }).map(([key,[normal,final]]) => [key,{normal:new Color(normal),final:new Color(final),material:new MeshStandardMaterial({color:normal,roughness:.9})}])), []);
   const paletteItems = useMemo(() => Object.values(palette), [palette]);
+  palette.asphalt.material.emissive.set('#564037');
+  palette.asphalt.material.emissiveIntensity=.12;
+  palette.edge.material.emissive.set('#947753');
+  palette.edge.material.emissiveIntensity=.16;
+  palette.center.material.emissive.set('#ac6628');
+  palette.center.material.emissiveIntensity=.18;
   palette.asphalt.material.map=asphaltTexture;
   palette.asphalt.material.bumpMap=asphaltTexture;palette.asphalt.material.bumpScale=.025;
   palette.ground.material.map=desertTexture;

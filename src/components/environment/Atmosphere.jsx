@@ -88,7 +88,7 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     addEventListener('highway:audio-beat', beat);
     return () => { removeEventListener(AUDIO_PULSE_EVENT, update); removeEventListener('highway:audio-beat', beat); };
   }, [invalidate, reduced]);
-  useFrame(({ camera }, delta) => {
+  useFrame(({ camera, scene }, delta) => {
     const travelled = ghostActive ? -camera.position.z : distance.current;
     const dusk = smooth(95, 550, travelled);
     const inferno = infernoMix(travelled);
@@ -118,10 +118,12 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     fog.current.color.copy(colors.fogStart).lerp(colors.fogDusk, dusk).lerp(colors.fogHell, inferno);
     fog.current.far = ghostActive ? 1500 : 325 - inferno * 95;
     sun.current.color.copy(colors.sunStart).lerp(colors.sunDusk, dusk).lerp(colors.sunHell, inferno);
-    sun.current.intensity = (.95 - dusk * .22) * (1 - inferno) + 3.35 * inferno;
+    sun.current.intensity = (.48 - dusk * .12) * (1 - inferno) + 2.65 * inferno;
     ambient.current.color.copy(colors.skyStart).lerp(colors.skyDusk, dusk).lerp(colors.skyHell, inferno);
     ambient.current.groundColor.copy(colors.groundStart).lerp(colors.groundDusk, dusk).lerp(colors.groundHell, inferno);
-    ambient.current.intensity = (.65 - dusk * .10) * (1 - inferno) + 2.1 * inferno;
+    scene.environmentIntensity = .22 + inferno * .16;
+    sun.current.position.set(-40 * (1 - inferno), 22, -100 - inferno * 120);
+    ambient.current.intensity = (.26 - dusk * .05) * (1 - inferno) + .58 * inferno;
   });
   return <>
     <mesh ref={sky} renderOrder={-1}>
@@ -129,8 +131,8 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
       <shaderMaterial ref={skyMaterial} side={BackSide} depthWrite={false} uniforms={uniforms} vertexShader={skyVertex} fragmentShader={skyFragment} />
     </mesh>
     <fog ref={fog} attach="fog" args={['#342126', 80, 325]} />
-    <hemisphereLight ref={ambient} args={['#7e829a', '#352729', .65]} />
-    <directionalLight ref={sun} position={[-60, 35, -100]} intensity={.95} color="#ffe0b1" />
+    <hemisphereLight ref={ambient} args={['#7e829a', '#352729', .26]} />
+    <directionalLight ref={sun} position={[-60, 35, -100]} intensity={.48} color="#ffe0b1" />
     <DesertLandscape />
   </>;
 }

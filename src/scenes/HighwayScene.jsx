@@ -70,7 +70,7 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
   return <>
     <TrunkCamera phase={phase} car={car} roadLook={look} reduced={reduced} onZoomed={onZoomed} onReturned={onReturned}/>
     <group name="journey-car" ref={car}><Headlights distance={distance} /><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
-    <spotLight ref={fill} intensity={125} distance={25} angle={.95} penumbra={.9} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
+    <spotLight ref={fill} intensity={80} distance={18} angle={.70} penumbra={.9} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
   </>;
 }
 function QualitySampler({ onSample }) {
@@ -97,7 +97,7 @@ export default function HighwayScene({ phase, started, onZoomed, onReturned, pro
     <Atmosphere distance={distance} ghostActive={ghostActive} reduced={reduced} /><Road distance={distance} ghostActive={ghostActive} /><Scenery started={started} targetProgress={targetProgress} /><RoadLighting distance={distance} ghostActive={ghostActive} />{started && <HistoryBillboards targetProgress={targetProgress} onSelect={ghostActive ? null : onSelectChapter} />}
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
     {ghostActive && <ModelBoundary><Suspense fallback={null}><GhostFinale /></Suspense></ModelBoundary>}
-    <Environment resolution={64}><color attach="background" args={['#625853']} /><Lightformer intensity={2.5} color="#f6e6d4" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={3} color="#ffe4bf" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>
+    <Environment resolution={64} environmentIntensity={.22}><color attach="background" args={['#141219']} /><Lightformer intensity={1.2} color="#a9aec6" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={1.3} color="#ce826d" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>
     <JourneyRig phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} ghostActive={ghostActive} />
     {started && onQualitySample && <QualitySampler onSample={onQualitySample} />}
     {ghostActive && <GhostCamera controls={ghostControls} onExit={onGhostExit} reduced={reduced} />}

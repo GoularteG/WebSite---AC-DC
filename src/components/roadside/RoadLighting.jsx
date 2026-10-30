@@ -36,7 +36,7 @@ export default function RoadLighting({ distance, ghostActive }) {
       light.position.set(...lamp.head);
       targets[index].position.set(lamp.head[0] - lamp.side * 2.2, .1, lamp.head[2]);
       // Three actual lamps illuminate the asphalt and the vehicle as they pass.
-      light.intensity = Math.max(0, Math.min(1, (28 - range) / 11)) * 190 * (1 - infernoMix(s) * .6);
+      light.intensity = Math.max(0, Math.min(1, (28 - range) / 11)) * 245 * (1 - infernoMix(s) * .6);
     });
   }, -1);
   return <group name="desert-road-lighting">
@@ -59,6 +59,6 @@ export default function RoadLighting({ distance, ghostActive }) {
       {roadsideLamps.map(lamp => <Instance key={lamp.distance} position={[lamp.position[0], 5.84, lamp.position[2]]} />)}
     </Instances>
     {targets.map((target, index) => <primitive key={index} object={target} />)}
-    {targets.map((_, index) => <spotLight key={index} ref={node => { lights.current[index] = node; }} color="#ffd69c" intensity={0} distance={23} angle={.93} penumbra={.72} decay={2} />)}
+    {targets.map((_, index) => <spotLight key={index} ref={node => { lights.current[index] = node; }} color="#ffd69c" intensity={0} distance={21} angle={.70} penumbra={.72} decay={2} />)}
   </group>;
 }
