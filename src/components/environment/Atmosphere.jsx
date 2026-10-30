@@ -23,26 +23,21 @@ const skyFragment = `varying vec3 vDirection;
   void main() {
     vec3 dir = normalize(vDirection);
     float h = dir.y;
-    vec3 horizon = mix(vec3(.67, .38, .22), vec3(.43, .16, .13), dusk);
-    vec3 upper = mix(vec3(.12, .15, .20), vec3(.035, .026, .06), dusk);
-    horizon = mix(horizon, vec3(.93, .06, .018), inferno);
-    upper = mix(upper, vec3(.13, .008, .02), inferno);
-    vec3 color = mix(horizon, upper, smoothstep(-.08, .75, h));
+    // Low sunset band beneath long, dark storm clouds, matching the reference.
+    vec3 upper = mix(vec3(.018,.021,.028), vec3(.012,.009,.017), dusk);
+    vec3 ember = mix(vec3(.72,.075,.016), vec3(.86,.035,.009), inferno);
+    float sunset = exp(-max(h,0.) * 13.);
+    vec3 color = mix(upper, ember, sunset);
+    color += vec3(.72,.22,.012) * exp(-abs(h-.006)*70.);
 
-    // Three noise octaves on the existing sky dome: no cloud meshes or extra passes.
-    vec2 cloudUv = vec2(atan(dir.x, -dir.z) * 3.8 + drift, h * 8.);
+    // Horizontally stretched noise creates layered clouds without more draw calls.
+    vec2 cloudUv = vec2(atan(dir.x, -dir.z) * 2.6 + drift, h * 25.);
     float cloud = noise(cloudUv) * .57 + noise(cloudUv * 2.03) * .29 + noise(cloudUv * 4.1) * .14;
-    float band = smoothstep(.015, .14, h) * (1. - smoothstep(.72, .96, h));
-    float mass = smoothstep(.36, .66, cloud) * band;
-    color = mix(color, mix(vec3(.075,.065,.085), vec3(.085,.018,.025), inferno), mass * (.65 + dusk * .22));
-    float rim = exp(-abs(cloud - .46) * 32.) * band;
-    color += vec3(.26,.075,.018) * rim * (.35 + dusk * .4 + inferno * .5);
-
-    float sunDot = dot(dir, normalize(vec3(-.23, .115, -1.)));
-    float halo = pow(max(0., sunDot), 60.);
-    float disc = pow(max(0., sunDot), 850.);
-    color += vec3(1., .39, .12) * (halo * .24 + disc * 1.15) * (1. - dusk * .6);
-    color += vec3(.17, .016, .003) * inferno * exp(-abs(h - .025) * 13.);
+    float band = smoothstep(.008, .055, h) * (1. - smoothstep(.78, .97, h));
+    float mass = smoothstep(.30, .60, cloud) * band;
+    color = mix(color, vec3(.012,.013,.018), mass * .94);
+    float rim = exp(-abs(cloud-.40)*38.) * band * exp(-max(h,0.)*9.);
+    color += vec3(.30,.036,.009) * rim * (.65 + inferno*.35);
 
     // Angular forked lightning and a local glow inside the cloud bank.
     float boltX = strike + .028 * sin(h * 37.) + .014 * sin(h * 91.);
@@ -70,10 +65,10 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     dusk: { value: 0 }, inferno: { value: 0 }, thunder: { value: 0 }, pulse: { value: 0 }, strike: { value: .32 }, drift: { value: 0 },
   }), []);
   const colors = useMemo(() => ({
-    fogStart: new Color('#b59c84'), fogDusk: new Color('#847579'), fogHell: new Color('#82130b'),
-    sunStart: new Color('#ffe0b1'), sunDusk: new Color('#e7a079'), sunHell: new Color('#ff4b16'),
-    skyStart: new Color('#c7d4dd'), skyDusk: new Color('#a9abc1'), skyHell: new Color('#f79150'),
-    groundStart: new Color('#796047'), groundDusk: new Color('#403b43'), groundHell: new Color('#351522'),
+    fogStart: new Color('#342126'), fogDusk: new Color('#291b25'), fogHell: new Color('#82130b'),
+    sunStart: new Color('#ee9870'), sunDusk: new Color('#cc6550'), sunHell: new Color('#ff4b16'),
+    skyStart: new Color('#7e829a'), skyDusk: new Color('#68677f'), skyHell: new Color('#f79150'),
+    groundStart: new Color('#352729'), groundDusk: new Color('#28232c'), groundHell: new Color('#351522'),
   }), []);
   useEffect(() => {
     const update = event => {
@@ -123,19 +118,19 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     fog.current.color.copy(colors.fogStart).lerp(colors.fogDusk, dusk).lerp(colors.fogHell, inferno);
     fog.current.far = ghostActive ? 1500 : 325 - inferno * 95;
     sun.current.color.copy(colors.sunStart).lerp(colors.sunDusk, dusk).lerp(colors.sunHell, inferno);
-    sun.current.intensity = 2.7 - dusk * .75 + inferno * 1.4;
+    sun.current.intensity = (.95 - dusk * .22) * (1 - inferno) + 3.35 * inferno;
     ambient.current.color.copy(colors.skyStart).lerp(colors.skyDusk, dusk).lerp(colors.skyHell, inferno);
     ambient.current.groundColor.copy(colors.groundStart).lerp(colors.groundDusk, dusk).lerp(colors.groundHell, inferno);
-    ambient.current.intensity = 1.15 - dusk * .1 + inferno * 1.05;
+    ambient.current.intensity = (.65 - dusk * .10) * (1 - inferno) + 2.1 * inferno;
   });
   return <>
     <mesh ref={sky} renderOrder={-1}>
       <sphereGeometry args={[700, 24, 16]} />
       <shaderMaterial ref={skyMaterial} side={BackSide} depthWrite={false} uniforms={uniforms} vertexShader={skyVertex} fragmentShader={skyFragment} />
     </mesh>
-    <fog ref={fog} attach="fog" args={['#b59c84', 80, 325]} />
-    <hemisphereLight ref={ambient} args={['#c7d4dd', '#796047', 1.15]} />
-    <directionalLight ref={sun} position={[-60, 35, -100]} intensity={2.7} color="#ffe0b1" />
+    <fog ref={fog} attach="fog" args={['#342126', 80, 325]} />
+    <hemisphereLight ref={ambient} args={['#7e829a', '#352729', .65]} />
+    <directionalLight ref={sun} position={[-60, 35, -100]} intensity={.95} color="#ffe0b1" />
     <DesertLandscape />
   </>;
 }
