@@ -22,3 +22,11 @@
 .history-timeline{bottom:102px}
 .trunk-credits{position:absolute;bottom:32px;left:4.6%;padding:12px;background:#171414d9;border:1px solid #bb91604d;color:#d7b78f;font-size:9px;letter-spacing:1.2px;z-index:5}
 @media(max-width:760px){.site-music{bottom:max(12px,env(safe-area-inset-bottom))}.mini-player{width:320px;column-gap:9px;padding-right:12px}.history-timeline{bottom:96px}.history-open{bottom:153px}.trunk-credits{bottom:112px;left:6%}}
+/* Low-profile transport leaves the car above the chapter rail unobstructed. */
+.site-music{bottom:max(8px,env(safe-area-inset-bottom))}
+.mini-player{grid-template-columns:30px minmax(0,1fr) 60px;grid-template-rows:14px 14px;width:320px;padding:5px 11px 5px 6px;column-gap:9px;border-radius:23px}
+.mini-player .mini-play{width:30px;height:30px}.mini-play svg{width:14px;height:14px}
+.mini-track strong{font-size:10px}.mini-track>span{font-size:8px}.mini-progress{font-size:7px;gap:4px}
+.mini-volume button{height:28px;min-width:24px;width:24px}.mini-volume svg{width:12px;height:12px}
+.history-timeline{bottom:65px}
+@media(max-width:760px){.mini-player{width:300px}.history-timeline{bottom:65px}.history-open{bottom:119px}}
