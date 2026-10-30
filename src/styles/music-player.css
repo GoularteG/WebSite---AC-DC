@@ -13,3 +13,13 @@
 .trunk-credits{position:absolute;bottom:32px;left:4.6%;padding:12px;background:#171414d9;border:1px solid #bb91604d;color:#d7b78f;font-size:9px;letter-spacing:1.2px;z-index:5}
 @media(max-width:760px){.site-music{right:6%;bottom:12px}.mini-player{width:260px;padding:9px 12px;gap:3px 10px}.mini-volume{grid-column:1/-1;height:20px}.mini-art{font-size:26px}.trunk-credits{bottom:145px;left:6%}.history-timeline{bottom:150px}}
 @media(min-width:761px){.history-timeline{bottom:160px}}
+/* Compact transport centered beneath the journey markers. */
+.site-music{left:50%;right:auto;bottom:14px;transform:translateX(-50%)}
+.mini-player{width:280px;max-width:calc(100vw - 28px);grid-template-columns:minmax(0,1fr) 30px 59px;gap:3px 9px;padding:8px 11px;border-radius:9px}
+.mini-art{display:none}
+.mini-track{grid-column:1;grid-row:1;gap:2px}.mini-track strong{font-size:11px}.mini-track>span{font-size:9px}
+.mini-player .mini-play{grid-column:2;grid-row:1;width:30px;height:30px;min-width:30px;min-height:30px}
+.mini-volume{grid-column:3;grid-row:1;gap:0;height:30px}.mini-volume button{min-width:24px;min-height:30px}.mini-volume input{width:35px;flex:1}
+.mini-progress{grid-row:2;margin-top:2px;font-size:8px;gap:5px}.mini-progress input{height:3px}
+.history-timeline{bottom:106px}
+@media(max-width:760px){.site-music{left:50%;right:auto;bottom:10px}.mini-player{width:260px}.history-timeline{bottom:103px}}
