@@ -11,6 +11,7 @@ import HistoryBillboards from '../components/roadside/HistoryBillboards';
 import GhostCamera from '../components/ghost/GhostCamera';
 import { TrunkCamera } from '../components/trunk/TrunkCamera';
 import Charger from '../components/car/Charger';
+import Headlights from '../components/car/Headlights';
 import { carAsset } from '../data/assets';
 import { distanceAtProgress, roadX } from '../data/journey';
 import { arrivalMix, FINAL_STOP_DISTANCE, infernoMix } from '../data/finale';
@@ -68,7 +69,7 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
   useEffect(() => { onArrival(false); return () => onArrival(false); }, [onArrival]);
   return <>
     <TrunkCamera phase={phase} car={car} roadLook={look} reduced={reduced} onZoomed={onZoomed} onReturned={onReturned}/>
-    <group name="journey-car" ref={car}><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
+    <group name="journey-car" ref={car}><Headlights distance={distance} /><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
     <spotLight ref={fill} intensity={125} distance={25} angle={.95} penumbra={.9} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
   </>;
 }
