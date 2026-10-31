@@ -6,6 +6,7 @@ import GhostHud from './components/ghost/GhostHud';
 import { useReducedMotion } from './hooks/usePreferences';
 import { chapters, chapterAt, clamp, upcomingBillboardAt } from './data/journey';
 import { advanceGhostSequence, initialGhostSequence } from './data/ghostUnlock';
+const EntryScene = lazy(() => import('./scenes/EntryScene'));
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
 const TrunkExperience = lazy(() => import('./components/trunk/TrunkExperience'));
 export default function App() {
@@ -105,8 +106,8 @@ export default function App() {
     if (next === 'making' && phase === 'road') {
       saved.current = scrollY;
       scrollTo({top:saved.current,behavior:'instant'});
-      setPhase('zooming');
-    } else if (next === 'highway' && phase !== 'road') setPhase('returning');
+      setPhase(started ? 'zooming' : 'trunk');
+    } else if (next === 'highway' && phase !== 'road') setPhase(started ? 'returning' : 'road');
   };
   const go = (p) => {
     setStarted(true);
@@ -120,12 +121,12 @@ export default function App() {
       <span className="site-authors">Feito por: <strong>Erik Carvalho, Gustavo Goularte e Gustavo Justo</strong></span>
     </header>
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''} ${ghostActive?'ghost-active':''}`} style={{height:started?'950vh':'100svh'}}>
-      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}>{pageVisible && <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>}</Suspense>{pageVisible && !modelReady && !modelError && <div className="car-loading" role="status">PREPARANDO O DODGE 3D <span aria-hidden="true">ϟ</span></div>}<div className="vignette"/><div className="film-grain"/></div>
+      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}>{pageVisible && (!started ? <EntryScene onReady={onModelReady} /> : <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>)}</Suspense>{pageVisible && !modelReady && !modelError && <div className="car-loading" role="status">PREPARANDO O DODGE 3D <span aria-hidden="true">ϟ</span></div>}<div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening" aria-labelledby="opening-title">
         <div className="entry-brand"><img src="/images/acdc-logo-red-gold.webp" alt="AC/DC" width="320" height="140"/><h1 id="opening-title">HIGHWAY TO HELL</h1></div>
         <div className="entry-options" aria-label="Escolha sua experiência">
-          <button className="entry-option entry-road" onClick={()=>go(.015)}><span className="entry-number">01</span><span className="entry-option-copy"><strong>Entrar na estrada</strong><small>Oito capítulos. Uma viagem pelo AC/DC.</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
-          <button className="entry-option entry-backstage" onClick={()=>navigate('making')}><span className="entry-number">02</span><span className="entry-option-copy"><strong>Explorar The Making Of</strong><small>Abra o porta-malas e descubra os bastidores.</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          <button className="entry-option entry-road" onClick={()=>go(.015)}><span className="entry-option-copy"><strong>Entrar na estrada</strong></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          <button className="entry-option entry-backstage" onClick={()=>navigate('making')}><span className="entry-option-copy"><strong>Explorar The Making Of</strong></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
         </div>
       </section> : ghostActive ? null : <>
         {!atDestination && value >= .02 && nextBillboard && <button className="history-open" onClick={() => setSelectedChapter(nextBillboard)} aria-label={`Abrir capítulo ${nextBillboard.marker}: ${nextBillboard.title}`}><span>{nextBillboard.period}</span><strong>{nextBillboard.title}</strong></button>}

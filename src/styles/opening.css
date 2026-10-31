@@ -16,3 +16,7 @@
 @media(max-width:760px){.entry-brand{top:15%;width:250px}.entry-brand img{height:100px}.opening .entry-brand h1{font-size:8px;letter-spacing:3.5px;margin-top:8px}.entry-options{bottom:74px;grid-template-columns:1fr;gap:7px;width:340px;max-width:calc(100vw - 40px)}.entry-option{min-height:56px;padding:11px 14px}.entry-option-copy strong{font-size:12px}.entry-option-copy small{font-size:9px}}
 @media(max-height:620px) and (min-width:761px){.entry-brand{top:9%;width:240px}.entry-brand img{height:95px}.entry-options{bottom:66px}.entry-option{min-height:56px;padding:10px 14px}.entry-option-copy small{display:none}}
 @media(max-height:640px) and (max-width:760px){.entry-brand{top:14%;width:190px}.entry-brand img{height:70px}.opening .entry-brand h1{margin-top:4px}.entry-options{bottom:62px}.entry-option{min-height:45px;padding:8px 12px}.entry-option-copy small{display:none}}
+.highway:not(.is-started) .stage:after{background:linear-gradient(180deg,#0a080b9c,transparent 36%,transparent 68%,#0a080bd9)}
+.entry-option{border-radius:30px;justify-content:center;min-height:52px;padding:15px 22px;text-align:center}
+.entry-option-copy{flex:0 1 auto}.entry-option-copy strong{font-size:13px}.entry-option svg{display:none}
+@media(max-width:760px){.entry-option{min-height:45px;padding:12px 18px}}

@@ -62,7 +62,7 @@ function LightingTower() {
     <group position={[0, 4.9, .25]}><Bolt /></group>
   </group>;
 }
-function Landmark({ asset }) {
+export function Landmark({ asset }) {
   const { kind } = asset;
   return <group name={`roadside-${asset.id}`}
     position={[roadX(asset.distance) + asset.side * asset.offset, -.08, -asset.distance]}
