@@ -10,14 +10,14 @@ const mesaTones=['#b19a82','#9a806b','#baa084','#897364'];
 const random=(i,salt)=>{const value=Math.sin(i*127.1+salt*311.7)*43758.5453;return value-Math.floor(value);};
 const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
 export function entrySandHeight(x,z){
-  const rise=smooth(8,32,z);
+  const rise=smooth(6,28,Math.max(Math.abs(x),Math.abs(z)*.65));
   return -.105+rise*(.5+1.3*Math.sin(x*.09+z*.1)**2+.65*Math.sin(x*.18-z*.07)**2);
 }
 function scatter(count,salt,width,height){
   return Array.from({length:count},(_,i)=>{
-    // Separate small clusters, leaving the three band exhibits on the apron clear.
-    const z=9+random(i,salt)*29;
-    const x=(i%2?-1:1)*(3.5+random(i,salt+1)*25);
+    // Desert surrounds the stage, including the foreground; preserve its footprint.
+    const z=-19+random(i,salt)*57;
+    const x=(i%2?-1:1)*((z < 7 ? 7 : 4.8)+random(i,salt+1)*23);
     const scale=width*(.55+random(i,salt+2));
     return {position:[x,entrySandHeight(x,z)-.035,z],width:scale,height:height*(.65+random(i,salt+3)),depth:.7+random(i,salt+4)*.35,rotation:random(i,salt+5)*Math.PI*2,tone:i%4};
   });
@@ -30,8 +30,8 @@ const formations=[{position:[-25,entrySandHeight(-25,29)-.4,29],width:8,height:6
 
 export default function EntryDesert(){
   const assets=useMemo(()=>{
-    const terrain=new PlaneGeometry(140,92,100,72);
-    terrain.rotateX(-Math.PI/2);terrain.translate(0,0,52);
+    const terrain=new PlaneGeometry(180,180,120,120);
+    terrain.rotateX(-Math.PI/2);terrain.translate(0,0,10);
     const positions=terrain.attributes.position,colors=[],tone=new Color();
     for(let i=0;i<positions.count;i++){
       const x=positions.getX(i),z=positions.getZ(i);

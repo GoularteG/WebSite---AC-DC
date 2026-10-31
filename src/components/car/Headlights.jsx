@@ -129,7 +129,7 @@ function createAlignedGroundGradientTexture() {
   return texture;
 }
 
-export default function Headlights({ distance }) {
+export default function Headlights({ distance, groundProjection = true }) {
   const leftSpot = useRef();
   const rightSpot = useRef();
   const leftTarget = useMemo(() => new Object3D(), []);
@@ -238,7 +238,7 @@ export default function Headlights({ distance }) {
       ))}
 
       {/* Ground light projection starting right at the front bumper (z = -2.6) aligned with both headlights */}
-      <mesh
+      {groundProjection && <mesh
         position={[0, 0.008, -(2.6 + GROUND_PLANE_LENGTH / 2)]}
         rotation={[-Math.PI / 2, 0, 0]}
         renderOrder={1}
@@ -255,7 +255,7 @@ export default function Headlights({ distance }) {
           polygonOffsetFactor={-2}
           polygonOffsetUnits={-2}
         />
-      </mesh>
+      </mesh>}
     </group>
   );
 }

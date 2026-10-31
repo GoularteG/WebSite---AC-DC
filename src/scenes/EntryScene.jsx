@@ -4,15 +4,15 @@ import { Environment, Lightformer } from '@react-three/drei';
 import Charger from '../components/car/Charger';
 import SceneReady from '../components/loading/SceneReady';
 import Headlights from '../components/car/Headlights';
-import { EntryGround, EntryBackdrop, EntryLighting } from './EntryEnvironment';
+import { EntryGround, EntryBackdrop, EntryLighting, ENTRY_STAGE_LIFT } from './EntryEnvironment';
 import EntryDesert from './EntryDesert';
 import { Landmark } from '../components/roadside/Scenery';
 
 // Local stage coordinates: independent of the highway's curves.
 const props = [
-  { id:'entry-guitar', kind:'model', modelPath:'/models/guitar-electric.glb', finish:'cherry', position:[-4.1,0,3.6], height:4.2, rotation:[0,Math.PI-.2,-.12] },
-  { id:'entry-amps', kind:'amps', position:[0,0,6], scale:.65, rotation:[0,Math.PI,0] },
-  { id:'entry-bell', kind:'bell', position:[4.2,0,4.8], scale:.46, rotation:[0,Math.PI,0] },
+  { id:'entry-guitar', kind:'model', modelPath:'/models/guitar-electric.glb', finish:'cherry', position:[-4.1,-.105,3.6], height:4.2, rotation:[0,Math.PI-.2,-.12] },
+  { id:'entry-amps', kind:'amps', position:[0,-.105,6], scale:.65, rotation:[0,Math.PI,0] },
+  { id:'entry-bell', kind:'bell', position:[4.2,-.105,4.8], scale:.46, rotation:[0,Math.PI,0] },
 ];
 class EntryBoundary extends Component {
   state={failed:false};
@@ -57,12 +57,12 @@ function Showcase({onReady}) {
       <Lightformer position={[-8,3,5]} rotation={[0,Math.PI/2,0]} scale={[8,2,1]} intensity={4} color="#ff5c2e"/>
     </Environment>
     <EntryGround/><EntryDesert/><EntryBackdrop/>
-    <group name="entry-car" rotation={[0,-.38,0]}>
+    <group name="entry-car" position={[0,ENTRY_STAGE_LIFT,0]} rotation={[0,-.38,0]}>
       <Charger distance={distance}/>
-      <Headlights distance={distance}/>
+      <Headlights distance={distance} groundProjection={false}/>
     </group>
     {/* A soft contact patch grounds the car without a real-time shadow pass. */}
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.075,0]}>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,.399,0]}>
       <planeGeometry args={[5.6,7.4]}/><shaderMaterial transparent depthWrite={false}
         vertexShader={'varying vec2 v;void main(){v=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}'}
         fragmentShader={'varying vec2 v;void main(){float a=1.-smoothstep(.18,.52,length((v-.5)*vec2(1.2,1.)));gl_FragColor=vec4(0.,0.,0.,a*.72);}'}/>

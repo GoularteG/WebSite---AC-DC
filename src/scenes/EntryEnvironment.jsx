@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace, BufferGeometry, Float32BufferAttribute, Object3D } from 'three';
 
-// Generated once, shared by the whole turnout, and released with the entry scene.
-function makeAsphalt() {
+// Generated once, shared by the stage deck, and released with the entry scene.
+function makeStageDeck() {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 512;
   const ctx = canvas.getContext('2d');
@@ -10,45 +10,41 @@ function makeAsphalt() {
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const pixels = ctx.createImageData(512, 512);
   for (let i = 0; i < pixels.data.length; i += 4) {
-    const grain = 26 + random() * 23;
+    const grain = 20 + random() * 13;
     pixels.data[i] = grain; pixels.data[i + 1] = grain; pixels.data[i + 2] = grain + 2; pixels.data[i + 3] = 255;
   }
   ctx.putImageData(pixels, 0, 0);
-  // Hairline weathering, with no large repeating motifs.
-  for (let n = 0; n < 14; n++) {
-    let x = random() * 512, y = random() * 512;
-    ctx.beginPath(); ctx.moveTo(x, y);
-    for (let j = 0; j < 7; j++) { x += (random() - .5) * 24; y += random() * 14; ctx.lineTo(x, y); }
-    ctx.strokeStyle = '#14141680'; ctx.lineWidth = .6; ctx.stroke();
-  }
+  // Modular stage panels: fine joints and flush fasteners, rather than asphalt.
+  ctx.strokeStyle = '#090a0d'; ctx.lineWidth = 3; ctx.strokeRect(1,1,510,510);
+  ctx.fillStyle = '#687078';
+  for (const x of [12,500]) for (const y of [12,500]) { ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill(); }
   const map = new CanvasTexture(canvas);
   map.colorSpace = SRGBColorSpace;
-  map.wrapS = map.wrapT = RepeatWrapping; map.repeat.set(9, 12); map.anisotropy = 4;
+  map.wrapS = map.wrapT = RepeatWrapping; map.repeat.set(4, 4); map.anisotropy = 4;
   const bump = map.clone(); bump.colorSpace = ''; bump.needsUpdate = true;
   return { map, bump };
 }
+export const ENTRY_STAGE_LIFT = .48;
 export function EntryGround() {
-  const textures = useMemo(makeAsphalt, []);
+  const textures = useMemo(makeStageDeck, []);
   useEffect(() => () => { textures.map.dispose(); textures.bump.dispose(); }, [textures]);
-  return <group name="desert-turnout">
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.12,0]}>
-      <planeGeometry args={[180,180]}/><meshStandardMaterial color="#382b26" roughness={1}/>
+  return <group name="desert-show-stage">
+    <mesh position={[0,.14,0]}>
+      <boxGeometry args={[7.8,.5,7.8]}/><meshStandardMaterial color="#101216" roughness={.78} metalness={.35}/>
     </mesh>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.09,-6]}>
-      <planeGeometry args={[26,28]}/><meshStandardMaterial map={textures.map} bumpMap={textures.bump} bumpScale={.035} roughness={.6} metalness={.16}/>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,.392,0]}>
+      <planeGeometry args={[7.8,7.8]}/><meshStandardMaterial map={textures.map} bumpMap={textures.bump} bumpScale={.009} roughness={.48} metalness={.45}/>
     </mesh>
-    {/* Worn parking edge lines give the car a believable place to stand. */}
-    {[-1,1].map(side => <group key={side}>
-      <mesh rotation={[-Math.PI/2,0,0]} position={[side*10.8,-.082,-6]}>
-        <planeGeometry args={[.085,27]}/><meshStandardMaterial color="#9c8870" roughness={.95}/>
-      </mesh>
-      <mesh position={[side*13,-.01,-6]}>
-        <boxGeometry args={[.18,.18,28]}/><meshStandardMaterial color="#4a3d35" roughness={.95}/>
-      </mesh>
+    {/* Aluminium perimeter and touring-stage fascia panels. */}
+    {[-1,1].map(side=><group key={side}>
+      <mesh position={[side*3.88,.365,0]}><boxGeometry args={[.06,.07,7.8]}/><meshStandardMaterial color="#75787d" roughness={.4} metalness={.8}/></mesh>
+      <mesh position={[0,.365,side*3.88]}><boxGeometry args={[7.8,.07,.06]}/><meshStandardMaterial color="#75787d" roughness={.4} metalness={.8}/></mesh>
     </group>)}
-    {/* Tire wear is restrained and stays beneath the vehicle. */}
-    {[-.73,.73].map(x => <mesh key={x} rotation={[-Math.PI/2,0,-.38]} position={[x,-.079,1]}>
-      <planeGeometry args={[.23,7]}/><meshBasicMaterial color="#080809" transparent opacity={.15} depthWrite={false}/>
+    {[-3.1,-1.55,0,1.55,3.1].map(x=><mesh key={x} position={[x,.13,-3.905]}>
+      <boxGeometry args={[1.45,.33,.025]}/><meshStandardMaterial color="#202228" roughness={.7} metalness={.3}/>
+    </mesh>)}
+    {[-1,1].map(side=><mesh key={side} position={[side*3.4,.31,-3.93]}>
+      <boxGeometry args={[.34,.025,.015]}/><meshBasicMaterial color="#d07c39"/>
     </mesh>)}
   </group>;
 }
