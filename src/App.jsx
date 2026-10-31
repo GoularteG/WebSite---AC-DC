@@ -161,6 +161,6 @@ export default function App() {
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
     {phase==='trunk'&&<Suspense fallback={null}><TrunkExperience onReady={onTrunkReady} onCredits={()=>setCredits(true)} reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
     </div>
-    <LoadingScreen active={loading} onUnavailable={onUnavailable}/>
+    <LoadingScreen loadKey={sceneKey} active={loading} onUnavailable={onUnavailable}/>
   </>;
 }
