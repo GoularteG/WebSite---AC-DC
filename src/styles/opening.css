@@ -1,19 +1,18 @@
-/* Real vehicle on the left; two distinct routes on the right. */
-.highway:not(.is-started) .stage:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#0b0b1008 25%,#100e1270 57%,#100e12e6 100%)}
-.opening{position:absolute;top:50%;left:60%;right:5%;transform:translateY(-50%);z-index:2;text-align:left;display:flex;flex-direction:column;align-items:flex-start;padding:0;margin:0}
-.opening .eyebrow{display:flex;gap:9px;color:#d4ad7d;font:700 8px/1.6 Arial,sans-serif;letter-spacing:2px}
-.opening .eyebrow i{width:5px;height:5px;background:#eb6b38;box-shadow:0 0 12px #eb6b38;align-self:center}
-.opening h1{font-family:var(--rock-title);font-weight:400;font-size:clamp(38px,4.8vw,78px);line-height:1.02;letter-spacing:-.035em;margin:18px 0 0;transform:none;color:#f1e4ce;text-shadow:0 4px 24px #0008}
-.opening .title-second{display:block;color:#e9643b;margin-top:3px}.opening .title-second em{font-size:.4em;color:#d4b48a;vertical-align:middle;margin-right:.15em}
-.opening p.opening-intro{font:12px/1.6 Arial,sans-serif;letter-spacing:.2px;margin:19px 0 23px;color:#bbaa97}
-.entry-options{display:grid;gap:12px;width:100%;max-width:390px}
-.entry-option{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:18px 16px;min-height:80px;border:1px solid #b9956945;background:#201b1ad9;color:#eddfc8;transition:background .2s,border-color .2s,transform .2s}
-.entry-road{background:linear-gradient(110deg,#8f301edb,#4b231bbf);border-color:#ed794a9c}
-.entry-option:hover{transform:translateX(3px);background:#45271fe8;border-color:#efac71}.entry-option:focus-visible{outline:2px solid #ffd5a1;outline-offset:4px}
-.entry-number{align-self:flex-start;font:9px/1.5 Arial,sans-serif;color:#d78d60;letter-spacing:1px;margin-top:3px}
-.entry-option-copy{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}.entry-option-copy strong{font:600 14px/1.3 Arial,sans-serif}.entry-option-copy small{font:10px/1.5 Arial,sans-serif;color:#c3ae96}
-.entry-option svg{width:19px;height:19px;flex-shrink:0;fill:none;stroke:#eab181;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-@media(max-width:760px){.highway:not(.is-started) .stage:after{background:linear-gradient(0deg,#100e12f5 5%,#100e1288 45%,transparent 70%)}.opening{top:auto;left:7%;right:7%;bottom:80px;transform:none}.opening .eyebrow{font-size:7px}.opening h1{font-size:38px;margin:10px 0 0;line-height:1}.opening .title-second{display:inline;margin-left:8px}.opening p.opening-intro{margin:10px 0 13px;font-size:11px}.entry-options{max-width:none;gap:8px}.entry-option{min-height:63px;padding:12px 14px}.entry-option-copy strong{font-size:13px}.entry-option-copy small{font-size:9px}}
-@media(max-height:640px) and (min-width:761px){.opening{top:53%}.opening h1{font-size:44px;margin-top:9px}.opening p.opening-intro{margin:11px 0 14px}.entry-option{min-height:65px;padding:12px 14px}}
-@media(max-height:680px) and (max-width:760px){.opening h1{font-size:30px}.opening .eyebrow,.opening p.opening-intro{display:none}.entry-options{margin-top:12px}.opening{bottom:71px}.entry-option{min-height:56px;padding:9px 12px}}
-.highway[inert] .opening{opacity:0;pointer-events:none}
+/* Centered band mark / vehicle / destinations, inspired by the supplied stage composition. */
+.entry-header .wordmark,.entry-header nav{visibility:hidden;pointer-events:none}
+.highway:not(.is-started) .stage:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#08080bf5 0%,#08080bc9 26%,#08080b30 51%,#08080b0a 65%,#08080bda 100%)}
+.opening{position:absolute;inset:0;transform:none;display:block;text-align:center;z-index:2;padding:0;margin:0;pointer-events:none}
+.entry-brand{position:absolute;left:50%;top:13%;transform:translateX(-50%);width:320px;max-width:70vw}
+.entry-brand img{display:block;width:100%;height:130px;object-fit:contain;filter:drop-shadow(0 5px 20px #0008)}
+.opening .entry-brand h1{font:500 10px/1.5 Arial,sans-serif;color:#d2b89b;letter-spacing:5px;transform:none;text-shadow:none;margin:13px 0 0;white-space:nowrap}
+.entry-options{position:absolute;left:50%;bottom:82px;transform:translateX(-50%);display:grid;grid-template-columns:1fr 1fr;gap:12px;width:590px;max-width:calc(100vw - 48px);pointer-events:auto}
+.entry-option{display:flex;align-items:center;gap:12px;min-height:68px;width:100%;text-align:left;padding:15px 18px;border:1px solid #c39a6e50;background:#151315db;color:#eee0cd;transition:background .2s,border-color .2s,transform .2s}
+.entry-road{background:linear-gradient(110deg,#7c2d20dc,#35201bd9);border-color:#d1754c8c}
+.entry-option:hover{transform:translateY(-3px);background:#42261fe8;border-color:#efac71}.entry-option:focus-visible{outline:2px solid #ffd5a1;outline-offset:4px}
+.entry-number{align-self:flex-start;font:9px/1.5 Arial,sans-serif;color:#d78d60;margin-top:2px}
+.entry-option-copy{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}.entry-option-copy strong{font:600 13px/1.3 Arial,sans-serif}.entry-option-copy small{font:9px/1.4 Arial,sans-serif;color:#bda994}
+.entry-option svg{width:18px;height:18px;flex-shrink:0;fill:none;stroke:#eab181;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.highway[inert] .opening{opacity:0;pointer-events:none}.highway[inert] .entry-options{pointer-events:none}
+@media(max-width:760px){.entry-brand{top:15%;width:250px}.entry-brand img{height:100px}.opening .entry-brand h1{font-size:8px;letter-spacing:3.5px;margin-top:8px}.entry-options{bottom:74px;grid-template-columns:1fr;gap:7px;width:340px;max-width:calc(100vw - 40px)}.entry-option{min-height:56px;padding:11px 14px}.entry-option-copy strong{font-size:12px}.entry-option-copy small{font-size:9px}}
+@media(max-height:620px) and (min-width:761px){.entry-brand{top:9%;width:240px}.entry-brand img{height:95px}.entry-options{bottom:66px}.entry-option{min-height:56px;padding:10px 14px}.entry-option-copy small{display:none}}
+@media(max-height:640px) and (max-width:760px){.entry-brand{top:14%;width:190px}.entry-brand img{height:70px}.opening .entry-brand h1{margin-top:4px}.entry-options{bottom:62px}.entry-option{min-height:45px;padding:8px 12px}.entry-option-copy small{display:none}}

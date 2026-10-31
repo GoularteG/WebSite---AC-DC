@@ -58,9 +58,9 @@ function JourneyRig({ started, phase, onZoomed, onReturned, distance, progress, 
       if (Math.abs(introMix.current-introTarget)<.001) introMix.current=introTarget;
       else invalidate();
       const mobile = width < 761;
-      introPosition.current.set(roadX(s)+2.5-4.5, 2.5, -s-6.5);
-      introLook.current.set(roadX(s)+2.5-(mobile?0:1.85), mobile ? -.75 : 1.05, -s+(mobile?0:1.3));
-      if (mobile) introPosition.current.set(roadX(s)+2.5-5.2, 3.2, -s-8.2);
+      introPosition.current.set(roadX(s)+2.5-3.8, 2.2, -s-7.5);
+      introLook.current.set(roadX(s)+2.5, mobile ? 1.8 : 1.9, -s);
+      if (mobile) introPosition.current.set(roadX(s)+2.5-4.2, 2.5, -s-9.2);
       position.current.lerp(introPosition.current,introMix.current);
       camera.position.copy(position.current);
       look.current.set(roadX(s + 10) + 2.5, 1.2, -s - 10);

@@ -114,7 +114,7 @@ export default function App() {
   };
   return <>
     <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
-    <header className="site-header">
+    <header className={`site-header ${!started && phase === 'road' ? 'entry-header' : ''}`}>
       <a className="wordmark" href="#highway" onClick={(event)=>{event.preventDefault();navigate('highway');}} aria-label="AC/DC — início"><img src="/images/acdc-logo-red-gold.webp" alt="" width="150" height="58" onError={event=>{event.currentTarget.hidden=true;event.currentTarget.nextElementSibling.hidden=false;}}/><span className="wordmark-fallback" hidden>AC<span>ϟ</span>DC</span></a>
       <nav aria-label="Áreas principais"><button className={tab==='highway'?'active':''} aria-current={tab==='highway'?'page':undefined} onClick={()=>navigate('highway')}><small>01</small> THE HIGHWAY</button><button className={tab==='making'?'active':''} aria-current={tab==='making'?'page':undefined} onClick={()=>navigate('making')}><small>02</small> THE MAKING OF</button></nav>
       <span className="site-authors">Feito por: <strong>Erik Carvalho, Gustavo Goularte e Gustavo Justo</strong></span>
@@ -122,9 +122,7 @@ export default function App() {
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''} ${ghostActive?'ghost-active':''}`} style={{height:started?'950vh':'100svh'}}>
       <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}>{pageVisible && <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>}</Suspense>{pageVisible && !modelReady && !modelError && <div className="car-loading" role="status">PREPARANDO O DODGE 3D <span aria-hidden="true">ϟ</span></div>}<div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening" aria-labelledby="opening-title">
-        <span className="eyebrow"><i aria-hidden="true"/> AC/DC · UMA VIAGEM PELO ROCK</span>
-        <h1 id="opening-title">HIGHWAY<span className="title-second"><em>TO</em> HELL</span></h1>
-        <p className="opening-intro">Escolha o seu caminho.</p>
+        <div className="entry-brand"><img src="/images/acdc-logo-red-gold.webp" alt="AC/DC" width="320" height="140"/><h1 id="opening-title">HIGHWAY TO HELL</h1></div>
         <div className="entry-options" aria-label="Escolha sua experiência">
           <button className="entry-option entry-road" onClick={()=>go(.015)}><span className="entry-number">01</span><span className="entry-option-copy"><strong>Entrar na estrada</strong><small>Oito capítulos. Uma viagem pelo AC/DC.</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
           <button className="entry-option entry-backstage" onClick={()=>navigate('making')}><span className="entry-number">02</span><span className="entry-option-copy"><strong>Explorar The Making Of</strong><small>Abra o porta-malas e descubra os bastidores.</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
