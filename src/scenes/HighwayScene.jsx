@@ -28,10 +28,12 @@ export class SceneBoundary extends Component {
   static getDerivedStateFromError() { return { error: true }; }
   render() { return this.state.error ? <div className="scene-fallback"><span>O horizonte continua aqui.</span><p>Não foi possível iniciar a cena 3D. Se houver outras abas do site abertas, feche-as e tente novamente.</p><button className="scene-retry" onClick={() => this.setState({ error: false })}>Tentar novamente ↻</button></div> : this.props.children; }
 }
-function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetProgress, reduced, onModelError, onModelReady, onArrival, quality, ghostActive }) {
+function JourneyRig({ started, phase, onZoomed, onReturned, distance, progress, targetProgress, reduced, onModelError, onModelReady, onArrival, quality, ghostActive }) {
   const invalidate = useThree(state => state.invalidate);
   const width = useThree(state => state.size.width);
-  useEffect(() => { invalidate(); }, [phase, targetProgress, reduced, quality, width, ghostActive, invalidate]);
+  useEffect(() => { invalidate(); }, [started, phase, targetProgress, reduced, quality, width, ghostActive, invalidate]);
+  const introMix = useRef(1);
+  const introPosition = useRef(new Vector3()), introLook = useRef(new Vector3());
   const car = useRef(), fill = useRef(), arrived = useRef(false);
   const look = useRef(new Vector3()), position = useRef(new Vector3()), finalPosition = useRef(new Vector3());
   useFrame(({ camera }, dt) => {
@@ -51,16 +53,27 @@ function JourneyRig({ phase, onZoomed, onReturned, distance, progress, targetPro
       const fov=MathUtils.lerp(55,width<761?65:55,arrival);
       if(Math.abs(camera.fov-fov)>.001){camera.fov=fov;camera.updateProjectionMatrix();}
       position.current.lerp(finalPosition.current, arrival);
+      const introTarget = started ? 0 : 1;
+      introMix.current = reduced ? introTarget : MathUtils.damp(introMix.current, introTarget, 4, Math.min(dt,.05));
+      if (Math.abs(introMix.current-introTarget)<.001) introMix.current=introTarget;
+      else invalidate();
+      const mobile = width < 761;
+      introPosition.current.set(roadX(s)+2.5-4.5, 2.5, -s-6.5);
+      introLook.current.set(roadX(s)+2.5-(mobile?0:1.85), mobile ? -.75 : 1.05, -s+(mobile?0:1.3));
+      if (mobile) introPosition.current.set(roadX(s)+2.5-5.2, 3.2, -s-8.2);
+      position.current.lerp(introPosition.current,introMix.current);
       camera.position.copy(position.current);
       look.current.set(roadX(s + 10) + 2.5, 1.2, -s - 10);
       if (width < 761) look.current.set(roadX(s) + 2.5, 1.2, -s - 3);
       finalPosition.current.set(roadX(s + 22) + 1, 6.1, -s - 22);
       look.current.lerp(finalPosition.current, arrival);
+      look.current.lerp(introLook.current,introMix.current);
       camera.lookAt(look.current);
     }
     car.current.position.set(roadX(s) + 2.5, .025, -s);
     car.current.rotation.y = -Math.atan((roadX(s + .1) - roadX(s - .1)) / .2);
-    fill.current.position.set(roadX(s) + 1, 7, -s + 2);
+    fill.current.position.set(roadX(s) + 1, 7 - introMix.current * 2, -s + 2 - introMix.current * 4);
+    fill.current.intensity = 80 + introMix.current * 55;
     fill.current.target = car.current;
     fill.current.color.setRGB(1, .77 - infernoMix(s) * .23, .53 - infernoMix(s) * .3);
     const nextArrived = s >= FINAL_STOP_DISTANCE - .4;
@@ -98,7 +111,7 @@ export default function HighwayScene({ phase, started, onZoomed, onReturned, pro
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
     {ghostActive && <ModelBoundary><Suspense fallback={null}><GhostFinale /></Suspense></ModelBoundary>}
     <Environment resolution={64} environmentIntensity={.22}><color attach="background" args={['#141219']} /><Lightformer intensity={1.2} color="#a9aec6" scale={[18, 9, 1]} position={[2, 5, 12]} rotation={[0, Math.PI, 0]} /><Lightformer form="rect" intensity={1.3} color="#ce826d" scale={[15, 6, 1]} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} /><Lightformer intensity={2} color="#ff592d" scale={[20, 4, 1]} position={[-10, 3, -8]} rotation={[0, Math.PI / 2, 0]} /></Environment>
-    <JourneyRig phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} ghostActive={ghostActive} />
+    <JourneyRig started={started} phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} ghostActive={ghostActive} />
     {started && onQualitySample && <QualitySampler onSample={onQualitySample} />}
     {ghostActive && <GhostCamera controls={ghostControls} onExit={onGhostExit} reduced={reduced} />}
   </Canvas></SceneBoundary>;

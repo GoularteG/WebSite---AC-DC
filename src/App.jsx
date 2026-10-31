@@ -124,9 +124,11 @@ export default function App() {
       {!started ? <section className="opening" aria-labelledby="opening-title">
         <span className="eyebrow"><i aria-hidden="true"/> AC/DC · UMA VIAGEM PELO ROCK</span>
         <h1 id="opening-title">HIGHWAY<span className="title-second"><em>TO</em> HELL</span></h1>
-        <p className="opening-intro">Oito capítulos. Uma estrada até o inferno.</p>
-        <button className="start-button" onClick={()=>{setStarted(true);go(.015);}}>Iniciar a viagem<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
-        <span className="start-note">{reduced?'Explore pelos capítulos da estrada':'Role para avançar · Volte para redescobrir'}</span>
+        <p className="opening-intro">Escolha o seu caminho.</p>
+        <div className="entry-options" aria-label="Escolha sua experiência">
+          <button className="entry-option entry-road" onClick={()=>go(.015)}><span className="entry-number">01</span><span className="entry-option-copy"><strong>Entrar na estrada</strong><small>Oito capítulos. Uma viagem pelo AC/DC.</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          <button className="entry-option entry-backstage" onClick={()=>navigate('making')}><span className="entry-number">02</span><span className="entry-option-copy"><strong>Explorar The Making Of</strong><small>Abra o porta-malas e descubra os bastidores.</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+        </div>
       </section> : ghostActive ? null : <>
         {!atDestination && value >= .02 && nextBillboard && <button className="history-open" onClick={() => setSelectedChapter(nextBillboard)} aria-label={`Abrir capítulo ${nextBillboard.marker}: ${nextBillboard.title}`}><span>{nextBillboard.period}</span><strong>{nextBillboard.title}</strong></button>}
         {!atDestination && value > chapters.at(-1).progress - .006 && <section className="chapter-caption inferno-approach" style={{opacity:clamp((value - chapters.at(-1).progress + .006) / .006)}}><span className="eyebrow">09 / HIGHWAY TO HELL</span><h1>THE GATES OF HELL.</h1><p>O horizonte já não é o mesmo.</p></section>}
