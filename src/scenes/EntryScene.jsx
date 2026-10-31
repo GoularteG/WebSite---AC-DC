@@ -2,6 +2,8 @@ import { Component, Suspense, useRef, useLayoutEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import Charger from '../components/car/Charger';
+import Headlights from '../components/car/Headlights';
+import { EntryGround, EntryBackdrop, EntryLighting } from './EntryEnvironment';
 import { Landmark } from '../components/roadside/Scenery';
 
 // Local stage coordinates: independent of the highway's curves.
@@ -46,16 +48,17 @@ function Showcase({onReady}) {
           c*=1.-smoothstep(.38,.72,cloud)*.78*smoothstep(-.04,.12,h);
           gl_FragColor=vec4(c,1.);
         }` }/></mesh>
-    <hemisphereLight args={['#ffd2ac','#17151e',.55]}/>
-    <directionalLight position={[-8,9,-4]} intensity={2.8} color="#ffd4a5"/>
-    <directionalLight position={[5,5,10]} intensity={3} color="#ff5426"/>
-    <Environment resolution={64} environmentIntensity={.45}>
-      <color attach="background" args={['#23171a']}/>
-      <Lightformer position={[0,5,-6]} scale={[12,4,1]} intensity={2} color="#f5d9b7"/>
-      <Lightformer position={[-8,3,5]} rotation={[0,Math.PI/2,0]} scale={[10,4,1]} intensity={2.5} color="#ff5c2e"/>
+    <EntryLighting/>
+    <Environment resolution={64} environmentIntensity={.6}>
+      <color attach="background" args={['#100f17']}/>
+      <Lightformer position={[-3,5,-4]} rotation={[.4,0,.3]} scale={[3,7,1]} intensity={3} color="#dce5ff"/>
+      <Lightformer position={[-8,3,5]} rotation={[0,Math.PI/2,0]} scale={[8,2,1]} intensity={4} color="#ff5c2e"/>
     </Environment>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.09,0]}><planeGeometry args={[180,180]}/><meshStandardMaterial color="#19191b" roughness={.48} metalness={.3}/></mesh>
-    <group name="entry-car" rotation={[0,-.38,0]}><Suspense fallback={null}><Charger distance={distance} onReady={onReady}/></Suspense></group>
+    <EntryGround/><EntryBackdrop/>
+    <group name="entry-car" rotation={[0,-.38,0]}>
+      <Suspense fallback={null}><Charger distance={distance} onReady={onReady}/></Suspense>
+      <Headlights distance={distance}/>
+    </group>
     {/* A soft contact patch grounds the car without a real-time shadow pass. */}
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.075,0]}>
       <planeGeometry args={[5.6,7.4]}/><shaderMaterial transparent depthWrite={false}
