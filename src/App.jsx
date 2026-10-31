@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import Credits from './components/Credits';
+import BrightnessTuner from './components/BrightnessTuner';
 import LoadingScreen from './components/loading/LoadingScreen';
 import HistoryChapter from './components/history/HistoryChapter';
 import MusicPlayer from './components/MusicPlayer';
@@ -158,6 +159,7 @@ export default function App() {
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
     <div className="site-music"><MusicPlayer /></div>
+    <BrightnessTuner/>
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
     {phase==='trunk'&&<Suspense fallback={null}><TrunkExperience onReady={onTrunkReady} onCredits={()=>setCredits(true)} reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
     </div>
