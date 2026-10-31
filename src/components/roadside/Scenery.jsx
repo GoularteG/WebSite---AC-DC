@@ -65,7 +65,7 @@ function LightingTower() {
 export function Landmark({ asset }) {
   const { kind } = asset;
   return <group name={`roadside-${asset.id}`}
-    position={[roadX(asset.distance) + asset.side * asset.offset, -.08, -asset.distance]}
+    position={asset.position ?? [roadX(asset.distance) + asset.side * asset.offset, -.08, -asset.distance]}
     rotation={asset.rotation} scale={asset.scale ?? 1}>
     {kind === 'model' && <Suspense fallback={null}><RoadsideAsset asset={asset} /></Suspense>}
     {kind === 'stage' && <group>
