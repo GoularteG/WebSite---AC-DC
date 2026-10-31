@@ -34,16 +34,16 @@ export function EntryGround() {
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.12,0]}>
       <planeGeometry args={[180,180]}/><meshStandardMaterial color="#382b26" roughness={1}/>
     </mesh>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.09,0]}>
-      <planeGeometry args={[26,38]}/><meshStandardMaterial map={textures.map} bumpMap={textures.bump} bumpScale={.035} roughness={.6} metalness={.16}/>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.09,-6]}>
+      <planeGeometry args={[26,28]}/><meshStandardMaterial map={textures.map} bumpMap={textures.bump} bumpScale={.035} roughness={.6} metalness={.16}/>
     </mesh>
     {/* Worn parking edge lines give the car a believable place to stand. */}
     {[-1,1].map(side => <group key={side}>
-      <mesh rotation={[-Math.PI/2,0,0]} position={[side*10.8,-.082,-1]}>
-        <planeGeometry args={[.085,30]}/><meshStandardMaterial color="#9c8870" roughness={.95}/>
+      <mesh rotation={[-Math.PI/2,0,0]} position={[side*10.8,-.082,-6]}>
+        <planeGeometry args={[.085,27]}/><meshStandardMaterial color="#9c8870" roughness={.95}/>
       </mesh>
-      <mesh position={[side*13,-.01,1]}>
-        <boxGeometry args={[.18,.18,34]}/><meshStandardMaterial color="#4a3d35" roughness={.95}/>
+      <mesh position={[side*13,-.01,-6]}>
+        <boxGeometry args={[.18,.18,28]}/><meshStandardMaterial color="#4a3d35" roughness={.95}/>
       </mesh>
     </group>)}
     {/* Tire wear is restrained and stays beneath the vehicle. */}

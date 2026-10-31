@@ -5,6 +5,7 @@ import Charger from '../components/car/Charger';
 import SceneReady from '../components/loading/SceneReady';
 import Headlights from '../components/car/Headlights';
 import { EntryGround, EntryBackdrop, EntryLighting } from './EntryEnvironment';
+import EntryDesert from './EntryDesert';
 import { Landmark } from '../components/roadside/Scenery';
 
 // Local stage coordinates: independent of the highway's curves.
@@ -55,7 +56,7 @@ function Showcase({onReady}) {
       <Lightformer position={[-3,5,-4]} rotation={[.4,0,.3]} scale={[3,7,1]} intensity={3} color="#dce5ff"/>
       <Lightformer position={[-8,3,5]} rotation={[0,Math.PI/2,0]} scale={[8,2,1]} intensity={4} color="#ff5c2e"/>
     </Environment>
-    <EntryGround/><EntryBackdrop/>
+    <EntryGround/><EntryDesert/><EntryBackdrop/>
     <group name="entry-car" rotation={[0,-.38,0]}>
       <Charger distance={distance}/>
       <Headlights distance={distance}/>

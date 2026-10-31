@@ -12,7 +12,7 @@ const scrubTones = ['#a6a282', '#8e987a', '#b1a280', '#9a9e80'];
 const yuccaTones = ['#a3ad8c', '#b0b598', '#8f9f89', '#b8b394'];
 const mesaGroups = [0, 1, 2].map(shape => desertMesas.filter(formation => formation.shape === shape));
 
-function FormationInstances({ formations, geometry, material, tones }) {
+export function FormationInstances({ formations, geometry, material, tones }) {
   const mesh = useRef();
   const invalidate = useThree(state => state.invalidate);
   useLayoutEffect(() => {
