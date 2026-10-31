@@ -62,12 +62,12 @@ function LightingTower() {
     <group position={[0, 4.9, .25]}><Bolt /></group>
   </group>;
 }
-export function Landmark({ asset }) {
+export function Landmark({ asset, eager = false }) {
   const { kind } = asset;
   return <group name={`roadside-${asset.id}`}
     position={asset.position ?? [roadX(asset.distance) + asset.side * asset.offset, -.08, -asset.distance]}
     rotation={asset.rotation} scale={asset.scale ?? 1}>
-    {kind === 'model' && <Suspense fallback={null}><RoadsideAsset asset={asset} /></Suspense>}
+    {kind === 'model' && (eager ? <RoadsideAsset asset={asset}/> : <Suspense fallback={null}><RoadsideAsset asset={asset} /></Suspense>)}
     {kind === 'stage' && <group>
       <LightingTower />
       <group position={[-3.3, 0, .4]} scale={.82}><AmpStack /></group>

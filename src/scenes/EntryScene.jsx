@@ -2,6 +2,7 @@ import { Component, Suspense, useRef, useLayoutEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import Charger from '../components/car/Charger';
+import SceneReady from '../components/loading/SceneReady';
 import Headlights from '../components/car/Headlights';
 import { EntryGround, EntryBackdrop, EntryLighting } from './EntryEnvironment';
 import { Landmark } from '../components/roadside/Scenery';
@@ -56,7 +57,7 @@ function Showcase({onReady}) {
     </Environment>
     <EntryGround/><EntryBackdrop/>
     <group name="entry-car" rotation={[0,-.38,0]}>
-      <Suspense fallback={null}><Charger distance={distance} onReady={onReady}/></Suspense>
+      <Charger distance={distance}/>
       <Headlights distance={distance}/>
     </group>
     {/* A soft contact patch grounds the car without a real-time shadow pass. */}
@@ -65,11 +66,12 @@ function Showcase({onReady}) {
         vertexShader={'varying vec2 v;void main(){v=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}'}
         fragmentShader={'varying vec2 v;void main(){float a=1.-smoothstep(.18,.52,length((v-.5)*vec2(1.2,1.)));gl_FragColor=vec4(0.,0.,0.,a*.72);}'}/>
     </mesh>
-    <Suspense fallback={null}>{props.map(asset=><Landmark key={asset.id} asset={asset}/>)}</Suspense>
+    {props.map(asset=><Landmark key={asset.id} asset={asset} eager/>)}
+    <SceneReady onReady={onReady}/>
   </>;
 }
 export default function EntryScene({onReady}) {
   return <EntryBoundary><Canvas frameloop="demand" dpr={[1,1.3]} camera={{position:[5,2.1,-10.5],fov:36,near:.1,far:200}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({camera})=>camera.lookAt(0,1.7,0)} fallback={<div className="scene-fallback">Escolha seu caminho abaixo.</div>}>
-    <EntryCamera/><Showcase onReady={onReady}/>
+    <EntryCamera/><Suspense fallback={null}><Showcase onReady={onReady}/></Suspense>
   </Canvas></EntryBoundary>;
 }

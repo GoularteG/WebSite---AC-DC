@@ -7,7 +7,7 @@ class TrunkSceneBoundary extends Component {
   static getDerivedStateFromError(){return {failed:true};}
   render(){return this.state.failed?<p className="trunk-webgl-fallback">Explore a coleção pelos botões abaixo.</p>:this.props.children;}
 }
-export default function TrunkExperience({reduced,onReturn,onCredits}) {
+export default function TrunkExperience({reduced,onReturn,onCredits,onReady}) {
   const returnButton=useRef(null);
   useEffect(()=>{returnButton.current?.focus({preventScroll:true});},[]);
   const [selected,setSelected]=useState(null),[active,setActive]=useState(null),[opening,setOpening]=useState(false);
@@ -24,7 +24,7 @@ export default function TrunkExperience({reduced,onReturn,onCredits}) {
   return <section className="trunk-experience" id="main-content" role="main" aria-label="Porta-malas interativo">
     <div className="trunk-heading"><span className="eyebrow">UMA PAUSA NA ESTRADA</span><h1>THE BACKSTAGE<span>.</span></h1><p>Memorabilia de estrada. O livro guarda a história.</p></div>
     <button ref={returnButton} className="trunk-return" onClick={onReturn}>↶ VOLTAR À ESTRADA</button>
-    <div className="trunk-canvas"><TrunkSceneBoundary><Suspense fallback={<p className="trunk-webgl-fallback">ABRINDO O PORTA-MALAS…</p>}><TrunkScene paused={!!selected||opening} reduced={reduced} onSelect={select} active={active}/></Suspense></TrunkSceneBoundary></div>
+    <div className="trunk-canvas"><TrunkSceneBoundary><Suspense fallback={null}><TrunkScene onReady={onReady} paused={!!selected||opening} reduced={reduced} onSelect={select} active={active}/></Suspense></TrunkSceneBoundary></div>
     {opening&&<div className="trunk-book-opening" aria-hidden="true">
       <div className="trunk-book-opening__volume">
         <div className="trunk-book-opening__pages"><span>ϟ</span><strong>THE MAKING OF</strong><small>BASTIDORES DE UMA VIAGEM</small></div>

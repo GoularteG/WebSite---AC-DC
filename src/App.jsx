@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import Credits from './components/Credits';
+import LoadingScreen from './components/loading/LoadingScreen';
 import HistoryChapter from './components/history/HistoryChapter';
 import MusicPlayer from './components/MusicPlayer';
 import GhostHud from './components/ghost/GhostHud';
@@ -46,7 +47,14 @@ export default function App() {
     setGhostActive(false);
     requestAnimationFrame(() => document.querySelector('.history-timeline button[aria-current="step"]')?.focus({ preventScroll: true }));
   }, []);
-  const onModelReady = useCallback(() => setModelReady(true), []);
+  const [readyScenes, setReadyScenes] = useState({});
+  const sceneKey = phase === 'trunk' ? 'trunk' : started ? 'road' : 'entry';
+  const loading = !readyScenes[sceneKey] && !modelError;
+  const markReady = useCallback(key => setReadyScenes(current => current[key] ? current : { ...current, [key]: true }), []);
+  const onEntryReady = useCallback(() => markReady('entry'), [markReady]);
+  const onTrunkReady = useCallback(() => markReady('trunk'), [markReady]);
+  const onModelReady = useCallback(() => { setModelReady(true); markReady('road'); }, [markReady]);
+  const onUnavailable = useCallback(() => markReady(sceneKey), [markReady, sceneKey]);
   const progress = useRef(0), saved = useRef(0);
   const reduced = useReducedMotion();
   useEffect(() => {
@@ -104,6 +112,7 @@ export default function App() {
     setSelectedChapter(null);
     if (ghostActive) exitGhost();
     if (next === 'making' && phase === 'road') {
+      setReadyScenes(current => ({ ...current, trunk: false }));
       saved.current = scrollY;
       scrollTo({top:saved.current,behavior:'instant'});
       setPhase(started ? 'zooming' : 'trunk');
@@ -114,6 +123,7 @@ export default function App() {
     requestAnimationFrame(() => scrollTo({top:p*(document.documentElement.scrollHeight-innerHeight),behavior:reduced?'instant':'smooth'}));
   };
   return <>
+    <div inert={loading ? true : undefined} aria-busy={loading}>
     <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
     <header className={`site-header ${!started && phase === 'road' ? 'entry-header' : ''}`}>
       <a className="wordmark" href="#highway" onClick={(event)=>{event.preventDefault();navigate('highway');}} aria-label="AC/DC — início"><img src="/images/acdc-logo-red-gold.webp" alt="" width="150" height="58" onError={event=>{event.currentTarget.hidden=true;event.currentTarget.nextElementSibling.hidden=false;}}/><span className="wordmark-fallback" hidden>AC<span>ϟ</span>DC</span></a>
@@ -121,7 +131,7 @@ export default function App() {
       <span className="site-authors">Feito por: <strong>Erik Carvalho, Gustavo Goularte e Gustavo Justo</strong></span>
     </header>
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''} ${ghostActive?'ghost-active':''}`} style={{height:started?'950vh':'100svh'}}>
-      <div className="stage"><Suspense fallback={<div className="loading">PREPARANDO A ESTRADA <span>ϟ</span></div>}>{pageVisible && (!started ? <EntryScene onReady={onModelReady} /> : <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>)}</Suspense>{pageVisible && !modelReady && !modelError && <div className="car-loading" role="status">PREPARANDO O DODGE 3D <span aria-hidden="true">ϟ</span></div>}<div className="vignette"/><div className="film-grain"/></div>
+      <div className="stage"><Suspense fallback={null}>{pageVisible && (!started ? <EntryScene onReady={onEntryReady} /> : <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>)}</Suspense><div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening" aria-labelledby="opening-title">
         <div className="entry-brand"><img src="/images/acdc-logo-red-gold.webp" alt="AC/DC" width="320" height="140"/><h1 id="opening-title">HIGHWAY TO HELL</h1></div>
         <div className="entry-options" aria-label="Escolha sua experiência">
@@ -149,6 +159,8 @@ export default function App() {
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
     <div className="site-music"><MusicPlayer /></div>
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
-    {phase==='trunk'&&<Suspense fallback={<div className="loading trunk-loading">ABRINDO O PORTA-MALAS <span>ϟ</span></div>}><TrunkExperience onCredits={()=>setCredits(true)} reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
+    {phase==='trunk'&&<Suspense fallback={null}><TrunkExperience onReady={onTrunkReady} onCredits={()=>setCredits(true)} reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
+    </div>
+    <LoadingScreen active={loading} onUnavailable={onUnavailable}/>
   </>;
 }

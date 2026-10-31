@@ -1,3 +1,4 @@
+import SceneReady from '../loading/SceneReady';
 import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox } from '@react-three/drei';
@@ -225,20 +226,23 @@ function ProjectBook() {
     <mesh position={[-.62,.22,0]}><boxGeometry args={[.045,.2,2.43]}/><meshPhysicalMaterial color="#5b1714" roughness={.42} clearcoat={.4}/></mesh>
   </group>;
 }
-export default function TrunkScene({reduced,onSelect,active,paused}) {
+export default function TrunkScene({reduced,onSelect,active,paused,onReady}) {
   return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance'}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
+    <Suspense fallback={null}>
     <color attach="background" args={['#090a0c']}/><fog attach="fog" args={['#090a0c',13,23]}/>
     <hemisphereLight args={['#e2e8ef','#171316',1.3]}/>
     <directionalLight castShadow position={[-3,7,6]} intensity={2.6} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
     <directionalLight position={[5,3,-2]} intensity={1.25} color="#a5b4c2"/>
     <pointLight position={[0,2.8,2.7]} intensity={4} distance={9} color="#e7a36e" decay={2}/>
     <spotLight castShadow position={[0,5,3]} intensity={17} distance={10} angle={.53} penumbra={.85} color="#ffd6a7" shadow-mapSize={[512,512]}/>
-    <Suspense fallback={null}><Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment></Suspense>
+    <Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment>
     <InteriorCamera reduced={reduced}/><TrunkInterior/>
     <group position={[2.08,.02,.85]} scale={.74}><AlbumsObject/></group>
-    <group position={[-1.48,.18,.11]} rotation={[-Math.PI/2,0,-.2]}><Suspense fallback={null}><GuitarModel height={3.5} finish="cherry"/></Suspense></group>
+    <group position={[-1.48,.18,.11]} rotation={[-Math.PI/2,0,-.2]}><GuitarModel height={3.5} finish="cherry"/></group>
     <Memorabilia/><RoadGear/>
-    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.1,.045,.62]} highlight={[1.28,1.31]}><Suspense fallback={null}><ProjectBook/></Suspense></SelectableObject>
+    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.1,.045,.62]} highlight={[1.28,1.31]}><ProjectBook/></SelectableObject>
     <ContactShadows position={[0,.01,.1]} opacity={.45} scale={7.2} blur={2.5} far={4}/>
+    <SceneReady onReady={onReady}/>
+    </Suspense>
   </Canvas>;
 }

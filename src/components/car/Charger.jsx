@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { carAsset } from '../../data/assets';
+import SceneReady from '../loading/SceneReady';
 export default function Charger({ distance, onReady }) {
   const gltf = useGLTF(carAsset.url);
   const wheels = useRef([]);
@@ -49,9 +50,8 @@ export default function Charger({ distance, onReady }) {
     root.userData.ownedMaterials = [...materials.values()];
     return root;
   }, [gltf.scene]);
-  useEffect(() => { onReady(); }, [onReady]);
   useEffect(() => () => model.userData.ownedMaterials.forEach(material => material.dispose()), [model]);
   useEffect(() => { wheels.current = carAsset.wheelNames.map(name => model.getObjectByName(name)).filter(Boolean).map(object => ({ object, initial: object.rotation[carAsset.wheelAxis] })); }, [model]);
   useFrame(() => { wheels.current.forEach(({ object, initial }) => { object.rotation[carAsset.wheelAxis] = initial - distance.current / carAsset.wheelRadius; }); });
-  return <primitive object={model} dispose={null} />;
+  return <><primitive object={model} dispose={null} />{onReady && <SceneReady onReady={onReady}/>}</>;
 }
