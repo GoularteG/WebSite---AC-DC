@@ -8,6 +8,7 @@ import SceneReady from '../components/loading/SceneReady';
 import Headlights from '../components/car/Headlights';
 import { EntryGround, EntryBackdrop, EntryLighting, ENTRY_STAGE_LIFT } from './EntryEnvironment';
 import EntryDesert from './EntryDesert';
+import { horizonPulseGLSL } from '../components/environment/horizonPulse';
 import { Landmark } from '../components/roadside/Scenery';
 
 // Local stage coordinates: independent of the highway's curves.
@@ -43,6 +44,7 @@ function Showcase({onReady}) {
     <mesh><sphereGeometry args={[90,24,16]}/><shaderMaterial uniforms={audioUniforms} side={1} depthWrite={false}
       vertexShader={'varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}'}
       fragmentShader={`
+        ${horizonPulseGLSL}
         varying vec3 p;
         uniform float musicPulse;uniform float musicFlash;uniform float musicStrike;
         float hash(vec2 v){return fract(sin(dot(v,vec2(127.1,311.7)))*43758.5453);}
@@ -53,8 +55,7 @@ function Showcase({onReady}) {
           vec2 uv=vec2(atan(d.x,d.z)*2.,h*24.);
           float cloud=noise(uv)*.65+noise(uv*2.1)*.25+noise(uv*4.2)*.1;
           c*=1.-smoothstep(.38,.72,cloud)*.78*smoothstep(-.04,.12,h);
-          float horizon=exp(-abs(h-.12)*5.);
-          c+=vec3(.25,.075,.025)*musicPulse*horizon;
+          c+=horizonMusic(h,musicPulse);
           float angle=atan(d.x,d.z);
           float bank=exp(-pow((angle-musicStrike)*2.,2.));
           float bolt=1.-smoothstep(.002,.008,abs(angle-musicStrike-sin(h*75.)*.015));

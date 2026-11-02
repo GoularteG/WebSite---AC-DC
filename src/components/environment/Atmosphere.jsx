@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { BackSide, Color } from 'three';
 import { infernoMix } from '../../data/finale';
 import DesertLandscape from './DesertLandscape';
+import { horizonPulseGLSL } from './horizonPulse';
 
 const AUDIO_PULSE_EVENT = 'highway:audio-pulse';
 const smooth = (start, end, value) => {
@@ -12,7 +13,8 @@ const smooth = (start, end, value) => {
 
 const skyVertex = `varying vec3 vDirection;
   void main() { vDirection = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`;
-const skyFragment = `varying vec3 vDirection;
+const skyFragment = `${horizonPulseGLSL}
+varying vec3 vDirection;
   uniform float dusk; uniform float inferno; uniform float thunder; uniform float pulse; uniform float strike; uniform float drift;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float noise(vec2 p) {
@@ -51,8 +53,8 @@ const skyFragment = `varying vec3 vDirection;
     color += mix(vec3(.50,.60,.82),vec3(.85,.32,.18),inferno*.55)
       * (bolt * 1.25 + glow * .16) * thunder;
 
-    // Bass energy warms only the distant horizon; silence leaves a complete scene.
-    color += vec3(.24, .09, .032) * pulse * exp(-abs(h - .09) * 4.2);
+    // Bass expands the ember bank upward; high storm clouds stay dark.
+    color += horizonMusic(h, pulse);
     gl_FragColor = vec4(color, 1.);
   }`;
 
@@ -128,10 +130,11 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     skyMaterial.current.uniforms.dusk.value = dusk;
     skyMaterial.current.uniforms.inferno.value = inferno;
     skyMaterial.current.uniforms.thunder.value = thunder;
-    skyMaterial.current.uniforms.pulse.value = state.energy * .45 * (1 - inferno * .5);
+    skyMaterial.current.uniforms.pulse.value = state.energy;
     skyMaterial.current.uniforms.strike.value = state.x;
     skyMaterial.current.uniforms.drift.value = travelled * .0007;
     fog.current.color.copy(colors.fogStart).lerp(colors.fogDusk, dusk).lerp(colors.fogHell, inferno);
+    fog.current.color.lerp(colors.sunHell, Math.min(1, state.energy * 2.2) * .075);
     fog.current.far = ghostActive ? 1500 : 325 - inferno * 95;
     sun.current.color.copy(colors.sunStart).lerp(colors.sunDusk, dusk).lerp(colors.sunHell, inferno);
     sun.current.intensity = (.48 - dusk * .12) * (1 - inferno) + 2.65 * inferno;

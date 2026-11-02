@@ -9,3 +9,7 @@ O céu da estrada recebe pulsos e relâmpagos nos ataques. Durante a reproduçã
 Pausa, falha e buffering zeram o alvo visual; retomar o áudio restabelece a análise. Silenciar mantém o céu sem reação musical. Buscar outra posição reinicia o histórico. A renderização sob demanda acorda pelos sinais de áudio e apenas enquanto os efeitos estão decaindo.
 
 Testes cobrem taxas 44,1/48/96 kHz, ataques de graves/médios, notas sustentadas e silêncio. O teste de navegador usa o áudio real do player para verificar pulsos, pausa, retomada e mute, independentemente da disponibilidade de WebGL.
+
+## Pulsação visível no horizonte
+
+`horizonPulse.js` compartilha a faixa luminosa dos dois céus. O sinal expande a largura e a altura de uma faixa de brasa, varia de vermelho a laranja e mantém a parte alta do céu escura. A pulsação da estrada recebe o envelope completo, sem as antigas atenuações de 0,45 e até 0,5 perto do inferno. A névoa distante recebe uma contribuição de cor de até 7,5%. Relâmpagos, análise de áudio e preferências de movimento reduzido mantêm seus controles. O efeito não adiciona luzes, texturas ou passes de renderização.
