@@ -1,32 +1,16 @@
-/* One quiet transport bar, aligned under the nine chapter markers. */
-.site-music{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:22}
-.mini-player{display:grid;grid-template-columns:40px minmax(0,1fr) 66px;grid-template-rows:18px 20px;align-items:center;column-gap:12px;width:340px;max-width:calc(100vw - 32px);padding:9px 14px 9px 9px;border:1px solid #cfa77b38;border-radius:30px;background:linear-gradient(115deg,#26201ef5,#131315f5);box-shadow:0 8px 24px #0005,inset 0 1px #ffffff08;color:#ece4d7}
-.mini-track{grid-column:2;grid-row:1;display:flex;align-items:baseline;gap:7px;min-width:0;white-space:nowrap}
-.mini-track strong{font:600 11px/1.3 Arial,sans-serif;letter-spacing:.05px}.mini-track>span{font:9px/1.3 Arial,sans-serif;color:#a49b92}
-.mini-player button{display:grid;place-items:center;padding:0;background:none;color:inherit;cursor:pointer}
-.mini-player .mini-play{grid-column:1;grid-row:1/3;width:40px;height:40px;border-radius:50%;background:#e7d4b7;color:#211b18;box-shadow:inset 0 1px #fff8;transition:background .18s,transform .18s}
-.mini-player .mini-play:hover{background:#ffe4bb;transform:scale(1.04)}.mini-player .mini-play:active{transform:scale(.96)}
-.mini-player.is-playing .mini-play{background:#e78656;color:#201714}
-.mini-player svg{width:18px;height:18px;fill:currentColor}.mini-play svg{width:17px;height:17px}
-.mini-progress{grid-column:2;grid-row:2;display:flex;align-items:center;gap:5px;color:#aaa095;font:8px/1 Arial,sans-serif;font-variant-numeric:tabular-nums;min-width:0}
-.mini-progress span{min-width:21px}.mini-progress span:last-child{text-align:right}
-.mini-player input[type=range]{appearance:none;-webkit-appearance:none;min-width:0;width:100%;height:20px;margin:0;cursor:pointer;background:transparent;--fill:0%}
-.mini-player input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(to right,#d2b28e var(--fill),#ffffff24 var(--fill))}
-.mini-player input[type=range]::-moz-range-track{height:3px;border-radius:3px;background:linear-gradient(to right,#d2b28e var(--fill),#ffffff24 var(--fill))}
-.mini-player input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:7px;height:7px;border-radius:50%;margin-top:-2px;background:#ead5b9;border:0}
-.mini-player input[type=range]::-moz-range-thumb{width:7px;height:7px;border-radius:50%;background:#ead5b9;border:0}
-.mini-player input:disabled{opacity:.4;cursor:default}.mini-player input:focus-visible{outline:1px solid #e3ac78;outline-offset:2px;border-radius:3px}
-.mini-volume{grid-column:3;grid-row:1/3;display:flex;align-items:center;gap:3px;padding-left:5px;border-left:1px solid #ffffff12}
-.mini-volume button{width:28px;min-width:28px;height:38px;color:#b8afa5}.mini-volume button:hover{color:#fff1db}.mini-volume svg{width:14px;height:14px}
-.mini-error{grid-column:1/-1;font:10px/1.4 Arial;color:#f6ad8d;padding:5px 8px}
-.history-timeline{bottom:102px}
-.trunk-credits{position:absolute;bottom:32px;left:4.6%;padding:12px;background:#171414d9;border:1px solid #bb91604d;color:#d7b78f;font-size:9px;letter-spacing:1.2px;z-index:5}
-@media(max-width:760px){.site-music{bottom:max(12px,env(safe-area-inset-bottom))}.mini-player{width:320px;column-gap:9px;padding-right:12px}.history-timeline{bottom:96px}.history-open{bottom:153px}.trunk-credits{bottom:112px;left:6%}}
-/* Low-profile transport leaves the car above the chapter rail unobstructed. */
-.site-music{bottom:max(8px,env(safe-area-inset-bottom))}
-.mini-player{grid-template-columns:30px minmax(0,1fr) 60px;grid-template-rows:14px 14px;width:320px;padding:5px 11px 5px 6px;column-gap:9px;border-radius:23px}
-.mini-player .mini-play{width:30px;height:30px}.mini-play svg{width:14px;height:14px}
-.mini-track strong{font-size:10px}.mini-track>span{font-size:8px}.mini-progress{font-size:7px;gap:4px}
-.mini-volume button{height:28px;min-width:24px;width:24px}.mini-volume svg{width:12px;height:12px}
+/* Compact charcoal capsule: track title and a single transport control. */
+.site-music{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:22}
+.mini-player{position:relative;display:flex;align-items:center;justify-content:space-between;gap:18px;width:246px;max-width:calc(100vw - 32px);min-height:48px;padding:2px 4px 2px 20px;border:1px solid #ffffff1c;border-radius:999px;background:linear-gradient(140deg,#333334,#242425);box-shadow:0 6px 22px #0006,inset 0 1px #ffffff0a;color:#f4f0e8}
+.mini-track{min-width:0;flex:1}
+.mini-track strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 12px/1.4 Arial,sans-serif;letter-spacing:.1px}
+.mini-player .mini-play{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:5px;border:0;border-radius:50%;background:transparent;color:#29292a;cursor:pointer;transition:transform .18s}
+.mini-play:before{content:'';grid-area:1/1;width:34px;height:34px;border-radius:50%;background:#f7f5ee;box-shadow:0 1px 4px #0003;transition:background .18s}
+.mini-play svg{position:relative;grid-area:1/1;width:19px;height:19px;fill:currentColor}
+.mini-player .mini-play:hover:before{background:#ffe4bd}.mini-player .mini-play:active{transform:scale(.93)}
+.mini-player .mini-play:focus-visible{outline:2px solid #f1b678;outline-offset:2px}
+.mini-player .mini-play:disabled{opacity:.4;cursor:default}
+.mini-error{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);padding:8px 12px;border:1px solid #ab684755;border-radius:8px;background:#211a17;color:#f6c2a5;font:11px/1.4 Arial,sans-serif;text-align:center}
 .history-timeline{bottom:65px}
-@media(max-width:760px){.mini-player{width:300px}.history-timeline{bottom:65px}.history-open{bottom:119px}}
+.trunk-credits{position:absolute;bottom:32px;left:4.6%;padding:12px;background:#171414d9;border:1px solid #bb91604d;color:#d7b78f;font-size:9px;letter-spacing:1.2px;z-index:5}
+@media(max-width:760px){.mini-player{width:232px}.history-open{bottom:119px}.trunk-credits{bottom:112px;left:6%}}
+@media(prefers-reduced-motion:reduce){.mini-player .mini-play,.mini-play:before{transition:none}}
