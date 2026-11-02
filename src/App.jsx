@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import Credits from './components/Credits';
+import EntryMenuButton from './components/EntryMenuButton';
 import BrightnessTuner from './components/BrightnessTuner';
 import LoadingScreen from './components/loading/LoadingScreen';
 import HistoryChapter from './components/history/HistoryChapter';
@@ -136,8 +137,8 @@ export default function App() {
       {!started ? <section className="opening" aria-labelledby="opening-title">
         <div className="entry-brand"><img src="/images/acdc-logo-red-gold.webp" alt="AC/DC" width="320" height="140"/><h1 id="opening-title">HIGHWAY TO HELL</h1></div>
         <div className="entry-options" aria-label="Escolha sua experiência">
-          <button className="entry-option entry-road" onClick={()=>go(.015)}><span className="entry-option-copy"><strong>Entrar na estrada</strong></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
-          <button className="entry-option entry-backstage" onClick={()=>navigate('making')}><span className="entry-option-copy"><strong>Explorar The Making Of</strong></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          <EntryMenuButton variant="road" onClick={()=>go(.015)}>Entrar na estrada</EntryMenuButton>
+          <EntryMenuButton variant="backstage" onClick={()=>navigate('making')}>Explorar The Making Of</EntryMenuButton>
         </div>
       </section> : ghostActive ? null : <>
         {!atDestination && value >= .02 && nextBillboard && <button className="history-open" onClick={() => setSelectedChapter(nextBillboard)} aria-label={`Abrir capítulo ${nextBillboard.marker}: ${nextBillboard.title}`}><span>{nextBillboard.period}</span><strong>{nextBillboard.title}</strong></button>}

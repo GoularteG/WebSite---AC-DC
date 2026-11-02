@@ -22,3 +22,28 @@
 }
 @media(max-height:620px) and (min-width:761px){.entry-brand{top:38px;width:250px}.entry-brand img{max-height:20vh}.opening .entry-brand h1{margin-top:8px;font-size:8px}.entry-options{bottom:65px}.entry-option{min-height:44px;padding:12px 18px}}
 @media(prefers-reduced-motion:reduce){.entry-option{transition:none}.entry-option:hover{transform:none}}
+/* Charged metal controls: stage hardware, warm voltage and tactile feedback. */
+.entry-options{width:650px;gap:18px}
+.entry-option{--charge:#ffd18c;position:relative;isolation:isolate;overflow:hidden;gap:13px;min-height:64px;padding:15px 23px;border:1px solid #f7b15f;border-radius:18px;background:linear-gradient(165deg,#ff792e 0%,#d73c12 43%,#9d1c0f 100%);color:#fff3d7;box-shadow:inset 0 1px 0 #ffe6adab,inset 0 -3px 0 #68180b,0 5px 0 #451008,0 9px 28px #d740102b;text-shadow:0 2px 2px #5c190bb3;transition:transform .2s,box-shadow .2s,border-color .2s}
+.entry-backstage{--charge:#ffe0a5;background:linear-gradient(165deg,#514237 0%,#282321 45%,#19191b 100%);border-color:#c79c68;box-shadow:inset 0 1px 0 #ffe4bb55,inset 0 -3px 0 #111014,0 5px 0 #08080b,0 9px 28px #0008;color:#f6dfba;text-shadow:0 2px 2px #000a}
+.entry-option:before{content:'';position:absolute;z-index:-1;inset:4px;border:1px solid #fff0c733;border-radius:13px;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 3px,#ffffff04 3px 4px)}
+.entry-option:after{content:'';position:absolute;z-index:2;top:-70%;left:-45%;width:32%;height:240%;pointer-events:none;background:linear-gradient(90deg,transparent,#fff3ce33,transparent);transform:translateX(-150%) rotate(22deg);animation:entry-metal-sweep 6s ease-in-out infinite}
+.entry-backstage:after{animation-delay:1.2s}
+.entry-option-copy{position:relative;z-index:1;flex:1;min-width:0;text-align:left}
+.entry-option-copy strong{font:400 18px/1.2 var(--rock-title);letter-spacing:.1px;white-space:nowrap}
+.entry-option .entry-bolt{display:grid;place-items:center;flex:none;width:23px;height:32px;filter:drop-shadow(0 0 7px #ffb64c55);transition:transform .25s}
+.entry-option .entry-bolt svg{display:block;fill:var(--charge);width:21px;height:29px;stroke:#fff2c233;stroke-width:.5}
+.entry-option .entry-arrow{display:block;flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.65;transition:transform .2s,opacity .2s}
+.entry-energy{position:absolute;z-index:0;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle 130px at var(--pointer-x,50%) var(--pointer-y,50%),#ffe7ab40,transparent);transition:opacity .25s}
+.entry-option:hover,.entry-option:focus-visible{background:linear-gradient(165deg,#ff913c,#df4215 48%,#ad2410);border-color:#ffe2a5;transform:translateY(-3px);box-shadow:inset 0 1px #fff1c9,inset 0 -3px #86220e,0 7px 0 #451008,0 13px 35px #ff6b223d}
+.entry-backstage:hover,.entry-backstage:focus-visible{background:linear-gradient(165deg,#6c5140,#352824 48%,#201d1f);box-shadow:inset 0 1px #ffe4bb88,inset 0 -3px #111014,0 7px 0 #08080b,0 13px 35px #bc6b2626}
+.entry-option:hover .entry-energy,.entry-option:focus-visible .entry-energy{opacity:1}
+.entry-option:hover .entry-bolt,.entry-option:focus-visible .entry-bolt{animation:entry-voltage 1.6s ease-in-out infinite}
+.entry-option:hover .entry-arrow,.entry-option:focus-visible .entry-arrow{transform:translateX(3px);opacity:1}
+.entry-option:active{transform:translateY(3px) scale(.99);box-shadow:inset 0 2px 8px #0005,0 1px 0 #30130d,0 4px 15px #0004}
+.entry-option:focus-visible{outline:2px solid #ffe9b7;outline-offset:5px}
+@keyframes entry-metal-sweep{0%,65%{transform:translateX(-150%) rotate(22deg)}95%,100%{transform:translateX(650%) rotate(22deg)}}
+@keyframes entry-voltage{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.12)}}
+@media(max-width:760px){.entry-options{width:315px;gap:13px}.entry-option{min-height:55px;padding:12px 20px;border-radius:16px}.entry-option-copy strong{font-size:17px}.entry-option .entry-bolt{width:20px;height:27px}.entry-option .entry-bolt svg{height:25px}.entry-option:before{border-radius:11px}}
+@media(max-height:620px) and (min-width:761px){.entry-option{min-height:53px;padding:11px 20px}.entry-option-copy strong{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.entry-option,.entry-option:after,.entry-option .entry-bolt,.entry-option .entry-arrow,.entry-energy{animation:none!important;transition:none!important}.entry-option:hover,.entry-option:focus-visible,.entry-option:active{transform:none}.entry-option:after{display:none}}
