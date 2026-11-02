@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Instance, Instances } from '@react-three/drei';
 import { BufferGeometry, CatmullRomCurve3, Float32BufferAttribute, Shape, Vector3 } from 'three';
 import HellLandscape from './HellLandscape';
+import { lavaSurfaceHeight } from './lavaGeometry';
 import { roadX } from '../../data/journey';
 import { FINAL_GATE_DISTANCE, FINAL_STOP_DISTANCE, infernoMix } from '../../data/finale';
 
@@ -62,7 +63,7 @@ function LavaChannels({ material }) {
       for(let i=0;i<=44;i++) {
         const s=550+i*6, offset=side*(9+branch*9+Math.sin(i*.83+branch*1.7)*(branch*1.5+.8)+(hash(i*3+branch+6)-.5)*(1.5+branch*2));
         const width=.12+branch*.12+hash(i+branch)*.35;
-        points.push(roadX(s)+offset-width,.035,-s,roadX(s)+offset+width,.035,-s);
+        points.push(roadX(s)+offset-width,lavaSurfaceHeight(offset-width,s)+.025,-s,roadX(s)+offset+width,lavaSurfaceHeight(offset+width,s)+.025,-s);
         if(i<44) {const a=base+i*2; indices.push(a,a+1,a+2,a+1,a+3,a+2);}
       }
     }
