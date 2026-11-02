@@ -58,7 +58,7 @@ const skyFragment = `varying vec3 vDirection;
 
 export default function Atmosphere({ distance, ghostActive = false, reduced = false }) {
   const sky = useRef(), skyMaterial = useRef(), fog = useRef(), sun = useRef(), ambient = useRef();
-  const pulse = useRef(0);
+  const pulse = useRef(0), musicActive = useRef(false);
   const storm = useRef({ flash: 0, lastStrike: -10000, zone: -1, x: .32, energy: 0 });
   const invalidate = useThree(state => state.invalidate);
   const uniforms = useMemo(() => ({
@@ -72,21 +72,23 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
   }), []);
   useEffect(() => {
     const update = event => {
+      if (event.detail > 0) musicActive.current = true;
       pulse.current = reduced ? 0 : (Number.isFinite(event.detail) ? event.detail : 0);
       invalidate();
     };
-    const beat = () => {
+    const audioState = event => { musicActive.current = Boolean(event.detail); };
+    const beat = event => {
       const now = performance.now();
       const state = storm.current;
-      if (reduced || document.hidden || now - state.lastStrike < 2200) return;
-      state.flash = .55;
+      if (reduced || document.hidden || now - state.lastStrike < 1400 || (event.detail?.strength ?? 1) < .3) return;
+      state.flash = .3 + Math.min(1, event.detail?.strength ?? 1) * .3;
       state.lastStrike = now;
       state.x = Math.sin(distance.current * .037) * .48;
       invalidate();
     };
     // Wake the demand renderer only for an occasional storm flash, also without music.
     const stormTimer = reduced ? null : setInterval(() => {
-      if (document.hidden || distance.current < 25) return;
+      if (musicActive.current || document.hidden || distance.current < 25) return;
       const state = storm.current;
       const now = performance.now();
       const mix = infernoMix(distance.current);
@@ -99,7 +101,8 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     }, 800);
     addEventListener(AUDIO_PULSE_EVENT, update);
     addEventListener('highway:audio-beat', beat);
-    return () => { clearInterval(stormTimer); removeEventListener(AUDIO_PULSE_EVENT, update); removeEventListener('highway:audio-beat', beat); };
+    addEventListener('highway:audio-state', audioState);
+    return () => { clearInterval(stormTimer); removeEventListener(AUDIO_PULSE_EVENT, update); removeEventListener('highway:audio-beat', beat); removeEventListener('highway:audio-state', audioState); };
   }, [invalidate, reduced]);
   useFrame(({ camera, scene }, delta) => {
     const travelled = ghostActive ? -camera.position.z : distance.current;
@@ -110,7 +113,7 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
     const now = performance.now();
     if (zone !== state.zone) {
       state.zone = zone;
-      if (!reduced && travelled > 30 && now - state.lastStrike > 2200) {
+      if (!reduced && !musicActive.current && travelled > 30 && now - state.lastStrike > 2200) {
         state.flash = .38 + dusk * .25 + inferno * .18;
         state.lastStrike = now;
         state.x = Math.sin(zone * 2.37) * .5;

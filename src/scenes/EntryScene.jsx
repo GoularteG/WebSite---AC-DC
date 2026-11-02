@@ -2,6 +2,8 @@ import { Component, Suspense, useRef, useLayoutEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import Charger from '../components/car/Charger';
+import { useSkyAudio } from '../hooks/useSkyAudio';
+import { useReducedMotion } from '../hooks/usePreferences';
 import SceneReady from '../components/loading/SceneReady';
 import Headlights from '../components/car/Headlights';
 import { EntryGround, EntryBackdrop, EntryLighting, ENTRY_STAGE_LIFT } from './EntryEnvironment';
@@ -33,13 +35,16 @@ function EntryCamera() {
 }
 function Showcase({onReady}) {
   const distance=useRef(0);
+  const reduced=useReducedMotion();
+  const audioUniforms=useSkyAudio(reduced);
   return <>
     <color attach="background" args={['#180d0c']}/>
     <fog attach="fog" args={['#64291b',25,85]}/>
-    <mesh><sphereGeometry args={[90,24,16]}/><shaderMaterial side={1} depthWrite={false}
+    <mesh><sphereGeometry args={[90,24,16]}/><shaderMaterial uniforms={audioUniforms} side={1} depthWrite={false}
       vertexShader={'varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}'}
       fragmentShader={`
         varying vec3 p;
+        uniform float musicPulse;uniform float musicFlash;uniform float musicStrike;
         float hash(vec2 v){return fract(sin(dot(v,vec2(127.1,311.7)))*43758.5453);}
         float noise(vec2 v){vec2 i=floor(v),f=fract(v);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
         void main(){
@@ -48,6 +53,12 @@ function Showcase({onReady}) {
           vec2 uv=vec2(atan(d.x,d.z)*2.,h*24.);
           float cloud=noise(uv)*.65+noise(uv*2.1)*.25+noise(uv*4.2)*.1;
           c*=1.-smoothstep(.38,.72,cloud)*.78*smoothstep(-.04,.12,h);
+          float horizon=exp(-abs(h-.12)*5.);
+          c+=vec3(.25,.075,.025)*musicPulse*horizon;
+          float angle=atan(d.x,d.z);
+          float bank=exp(-pow((angle-musicStrike)*2.,2.));
+          float bolt=1.-smoothstep(.002,.008,abs(angle-musicStrike-sin(h*75.)*.015));
+          c+=musicFlash*(vec3(.45,.28,.23)*bank+vec3(.7,.65,.55)*bolt*smoothstep(.01,.08,h)*(1.-smoothstep(.28,.45,h)));
           gl_FragColor=vec4(c,1.);
         }` }/></mesh>
     <EntryLighting/>

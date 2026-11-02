@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { audioAsset } from '../data/assets';
+import { analyseAudio, createAudioAnalysis } from '../audio/audioAnalysis';
 
 export function useAudio() {
   const player = useRef(null);
@@ -12,7 +13,7 @@ export function useAudio() {
   const [error, setError] = useState('');
 
   const emitPulse = value => dispatchEvent(new CustomEvent('highway:audio-pulse', { detail: value }));
-  const stopMeter = () => { clearInterval(meter.current); meter.current = null; emitPulse(0); };
+  const stopMeter = () => { clearInterval(meter.current); meter.current = null; emitPulse(0); dispatchEvent(new CustomEvent('highway:audio-state', { detail: false })); };
 
   useEffect(() => {
     if (!audioAsset.url) return;
@@ -22,16 +23,21 @@ export function useAudio() {
     audio.volume = 0.5;
     player.current = audio;
 
+    const quiet = () => emitPulse(0);
     const failed = () => { stopMeter(); setPlaying(false); setError('Áudio indisponível.'); };
     const update = () => { setPosition(audio.currentTime); setDuration(Number.isFinite(audio.duration) ? audio.duration : 0); };
     audio.addEventListener('timeupdate', update);
     audio.addEventListener('loadedmetadata', update);
     audio.addEventListener('error', failed);
+    audio.addEventListener('pause', stopMeter);
+    audio.addEventListener('waiting', quiet);
 
     return () => {
       stopMeter();
       audio.pause();
       audio.removeEventListener('error', failed);
+      audio.removeEventListener('pause', stopMeter);
+      audio.removeEventListener('waiting', quiet);
       audio.removeEventListener('timeupdate', update);
       audio.removeEventListener('loadedmetadata', update);
       graph.current?.context.close();
@@ -56,46 +62,30 @@ export function useAudio() {
         const context = new (window.AudioContext || window.webkitAudioContext)();
         const source = context.createMediaElementSource(player.current);
         const analyser = context.createAnalyser();
-        analyser.fftSize = 1024;
-        analyser.smoothingTimeConstant = 0.42;
+        analyser.fftSize = 2048;
+        analyser.smoothingTimeConstant = 0.15;
         source.connect(analyser);
         analyser.connect(context.destination);
-        graph.current = { context, analyser, data: new Uint8Array(analyser.frequencyBinCount), avg: 0, pulse: 0, lastBeat: 0 };
+        graph.current = { context, analyser, data: new Uint8Array(analyser.frequencyBinCount), waveform: new Uint8Array(analyser.fftSize), analysis: createAudioAnalysis() };
       }
       await graph.current?.context.resume();
       await player.current.play();
       setPlaying(true);
       setError('');
       if (graph.current) {
-        graph.current.analyser.smoothingTimeConstant = 0.42;
+        stopMeter();
+        graph.current.analysis = createAudioAnalysis();
+        dispatchEvent(new CustomEvent('highway:audio-state', { detail: true }));
         meter.current = setInterval(() => {
-          const { analyser, data } = graph.current;
-          analyser.getByteFrequencyData(data);
-          // Focus on kick drum and bass fundamental (bins 1..6: ~45Hz-280Hz)
-          let bass = 0;
-          for (let i = 1; i <= 6; i++) bass += data[i];
-          const level = bass / (6 * 255);
-
-          const prevAvg = Number.isFinite(graph.current.avg) && graph.current.avg > 0 ? graph.current.avg : level;
-          const avg = prevAvg * 0.82 + level * 0.18;
-          graph.current.avg = avg;
-          const now = performance.now();
-          if (level > .18 && level > prevAvg * 1.14 && now - graph.current.lastBeat > 500) {
-            graph.current.lastBeat = now;
-            dispatchEvent(new CustomEvent('highway:audio-beat'));
-          }
-
-          // Keep a gentle base warmth while music plays + strong rhythmic spike on drum/chord hits
-          const base = Math.min(0.18, Math.max(0, (level - 0.06) * 0.35));
-          const beat = Math.max(0, (level - avg * 0.90) / Math.max(0.02, avg * 0.10));
-          const target = Math.min(1, base + Math.min(1, beat) * 0.92);
-
-          const prevPulse = Number.isFinite(graph.current.pulse) ? graph.current.pulse : 0;
-          const nextPulse = target > prevPulse ? target : prevPulse * 0.55 + target * 0.45;
-          graph.current.pulse = nextPulse;
-
-          emitPulse(Number.isFinite(nextPulse) ? nextPulse : 0);
-        }, 50);
+          const graphData = graph.current;
+          if (!graphData || player.current.paused || player.current.readyState < 3 || graphData.context.state !== 'running') { emitPulse(0); return; }
+          graphData.analyser.getByteFrequencyData(graphData.data);
+          graphData.analyser.getByteTimeDomainData(graphData.waveform);
+          const signal = analyseAudio(graphData.data, graphData.waveform, graphData.context.sampleRate, graphData.analyser.fftSize, performance.now(), graphData.analysis);
+          const audible = !player.current.muted && player.current.volume > 0 && !document.hidden;
+          emitPulse(audible ? signal.pulse : 0);
+          if (audible && signal.beat) dispatchEvent(new CustomEvent('highway:audio-beat', { detail: signal }));
+        }, 33);
       }
     } catch {
       stopMeter();
@@ -103,6 +93,6 @@ export function useAudio() {
     }
   };
 
-  const seek = value => { if (player.current && duration > 0) { player.current.currentTime = Math.max(0, Math.min(duration, Number(value))); setPosition(player.current.currentTime); } };
+  const seek = value => { if (player.current && duration > 0) { player.current.currentTime = Math.max(0, Math.min(duration, Number(value))); if (graph.current) graph.current.analysis = createAudioAnalysis(); emitPulse(0); setPosition(player.current.currentTime); } };
   return { position, duration, seek, playing, toggle, volume, setVolume, error, available: Boolean(audioAsset.url) };
 }
