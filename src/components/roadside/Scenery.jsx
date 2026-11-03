@@ -28,7 +28,7 @@ function AmpCab({ width = 2.8 }) {
     {[-.75, -.38, 0, .38, .75].map((x, i) => <Cylinder key={x} position={[x, 2.17, .82]} rotation={[Math.PI / 2, 0, 0]} args={[.055, .055, .045, 12]} color={i === 2 ? '#d7a84c' : '#a99572'} metalness={.7} />)}
   </group>;
 }
-function AmpStack() {
+export function AmpStack() {
   return <group>
     <AmpCab width={3.2} />
     <group position={[0, 2.25, 0]}>
@@ -42,7 +42,7 @@ function Bolt() {
   const shape = useMemo(() => { const s = new Shape(); [[.25,3.3],[-.9,.1],[-.1,.1],[-.8,-2.7],[1.1,.7],[.2,.7],[.9,3.3]].forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y)); s.closePath(); return s; }, []);
   return <mesh castShadow><extrudeGeometry args={[shape, { depth: .25, bevelEnabled: true, bevelSize: .06, bevelThickness: .04, bevelSegments: 2 }]} /><meshStandardMaterial color="#f6b643" emissive="#ff6012" emissiveIntensity={.65} metalness={.6} roughness={.25} /></mesh>;
 }
-function MicrophoneStand() {
+export function MicrophoneStand() {
   return <group>
     <Cylinder position={[0, 2.05, 0]} args={[.035, .055, 4.1, 10]} color="#b7aa95" metalness={.82} />
     {[-1, 1].map(side => <group key={side} rotation={[0, 0, side * .45]}><Cylinder position={[side * .43, .06, 0]} args={[.026, .026, .9, 8]} color="#938674" /></group>)}
@@ -52,7 +52,7 @@ function MicrophoneStand() {
     <Cylinder position={[0, .16, 0]} args={[.1, .12, .18, 12]} color="#26211e" />
   </group>;
 }
-function LightingTower() {
+export function LightingTower() {
   return <group>
     {[-2.6, 2.6].map(x => <group key={x}>
       <Box position={[x, 3.3, 0]} scale={[.18, 6.6, .18]} color="#61594e" />

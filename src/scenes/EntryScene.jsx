@@ -9,13 +9,13 @@ import { SceneLoading, ScenePending } from '../components/loading/SceneLoading';
 import Headlights from '../components/car/Headlights';
 import { EntryGround, EntryBackdrop, EntryLighting, ENTRY_STAGE_LIFT } from './EntryEnvironment';
 import EntryDesert from './EntryDesert';
+import EntryBackline from './EntryBackline';
 import { horizonPulseGLSL } from '../components/environment/horizonPulse';
 import { Landmark } from '../components/roadside/Scenery';
 
 // Local stage coordinates: independent of the highway's curves.
 const props = [
   { id:'entry-guitar', kind:'model', modelPath:'/models/guitar-electric.glb', finish:'cherry', position:[-4.1,-.105,3.6], height:4.2, rotation:[0,Math.PI-.2,-.12] },
-  { id:'entry-amps', kind:'amps', position:[0,-.105,6], scale:.65, rotation:[0,Math.PI,0] },
   { id:'entry-bell', kind:'bell', position:[4.2,-.105,4.8], scale:.46, rotation:[0,Math.PI,0] },
 ];
 class EntryBoundary extends Component {
@@ -69,7 +69,7 @@ function Showcase({onReady}) {
       <Lightformer position={[-3,5,-4]} rotation={[.4,0,.3]} scale={[3,7,1]} intensity={3} color="#dce5ff"/>
       <Lightformer position={[-8,3,5]} rotation={[0,Math.PI/2,0]} scale={[8,2,1]} intensity={4} color="#ff5c2e"/>
     </Environment>
-    <EntryGround/><EntryDesert/><EntryBackdrop/>
+    <EntryGround/><EntryDesert/><EntryBackdrop/><EntryBackline/>
     <group name="entry-car" position={[0,ENTRY_STAGE_LIFT,0]} rotation={[0,-.38,0]}>
       <Charger distance={distance}/>
       <Headlights distance={distance} groundProjection={false}/>
