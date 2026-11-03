@@ -1,0 +1,6 @@
+/* Scene brightness approved at 110%; interface contrast stays unchanged. */
+.stage canvas,
+.trunk-canvas canvas,
+.guitar-viewport canvas {
+  filter: brightness(1.1);
+}

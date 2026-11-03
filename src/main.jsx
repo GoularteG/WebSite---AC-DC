@@ -16,3 +16,5 @@ import './styles/typography.css';
 import './styles/performance.css';
 import './styles/music-player.css';
 import './styles/opening.css';
+
+import './styles/scene-appearance.css';
