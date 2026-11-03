@@ -1,6 +1,7 @@
 import { Suspense, useMemo } from 'react';
 import { ScenePending } from '../loading/SceneLoading';
 import { Shape } from 'three';
+import { SceneryResources, useSceneryResources } from './SceneryResources';
 import { distanceAtProgress, roadX } from '../../data/journey';
 import { roadsideAssets } from '../../data/roadsideAssets';
 import RoadsideAsset from './RoadsideAsset';
@@ -8,10 +9,14 @@ import HellsBell from './HellsBell';
 
 const darkMetal = '#211c1a';
 function Box({ position, scale, color = darkMetal, metalness = .25, roughness = .55 }) {
-  return <mesh position={position} scale={scale} castShadow receiveShadow><boxGeometry /><meshStandardMaterial color={color} metalness={metalness} roughness={roughness} /></mesh>;
+  const resources = useSceneryResources();
+  return <mesh position={position} scale={scale} castShadow receiveShadow dispose={null}
+    geometry={resources.box()} material={resources.material(color, metalness, roughness)} />;
 }
 function Cylinder({ position, rotation, args, color = darkMetal, metalness = .35 }) {
-  return <mesh position={position} rotation={rotation} castShadow><cylinderGeometry args={args} /><meshStandardMaterial color={color} metalness={metalness} roughness={.48} /></mesh>;
+  const resources = useSceneryResources();
+  return <mesh position={position} rotation={rotation} castShadow dispose={null}
+    geometry={resources.cylinder(args)} material={resources.material(color, metalness, .48)} />;
 }
 
 function AmpCab({ width = 2.8 }) {
@@ -91,7 +96,7 @@ export function Landmark({ asset, eager = false }) {
 export default function Scenery({ started, targetProgress }) {
   const position = distanceAtProgress(targetProgress);
   if (!started) return null;
-  return <group name="curated-roadside-landmarks">
+  return <SceneryResources><group name="curated-roadside-landmarks">
     {roadsideAssets.filter(asset => asset.distance > position - 100 && asset.distance < position + 210).map(asset => <Landmark key={asset.id} asset={asset} />)}
-  </group>;
+  </group></SceneryResources>;
 }

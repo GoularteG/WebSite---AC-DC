@@ -1,9 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Color, DoubleSide, MeshStandardMaterial, Object3D } from 'three';
 import { desertCacti, desertMesas, desertRocks, desertScrub, desertYucca, desertPebbles, desertVergeScrub } from '../../data/desert';
 import { basinTerrainGeometry, creosoteGeometry, desertStoneGeometry, erodedFormationGeometry, rootedYuccaGeometry } from './desertGeometry';
 
+import { partitionFormations } from './spatialGroups';
 import { cactusGeometry } from './cactusGeometry';
 
 const mesaTones = ['#ffffff', '#e3d7c8', '#eee0ca', '#d8cec4', '#f3e6d1'];
@@ -33,7 +34,7 @@ export function FormationInstances({ formations, geometry, material, tones }) {
   return <instancedMesh ref={mesh} args={[geometry, material, formations.length]} receiveShadow />;
 }
 
-export default function DesertLandscape() {
+function DesertLandscape() {
   const assets = useMemo(() => ({
     mesas: [0,1,2].map(erodedFormationGeometry),
     basin: basinTerrainGeometry(),
@@ -52,11 +53,19 @@ export default function DesertLandscape() {
   return <group name="mojave-basin-landscape">
     <mesh geometry={assets.basin} material={assets.terrainMaterial} receiveShadow />
     {mesaGroups.map((formations, shape) => <FormationInstances key={shape} formations={formations} geometry={assets.mesas[shape]} material={assets.stoneMaterial} tones={mesaTones} />)}
-    <FormationInstances formations={desertRocks} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
-    <FormationInstances formations={desertPebbles} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
-    <FormationInstances formations={desertScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />
-    <FormationInstances formations={desertVergeScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />
-    <FormationInstances formations={desertCacti} geometry={assets.cactus} material={assets.stoneMaterial} tones={yuccaTones} />
-    <FormationInstances formations={desertYucca} geometry={assets.yucca} material={assets.plantMaterial} tones={yuccaTones} />
+    <SpatialFormations formations={desertRocks} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
+    <SpatialFormations formations={desertPebbles} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
+    <SpatialFormations formations={desertScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />
+    <SpatialFormations formations={desertVergeScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />
+    <SpatialFormations formations={desertCacti} geometry={assets.cactus} material={assets.stoneMaterial} tones={yuccaTones} />
+    <SpatialFormations formations={desertYucca} geometry={assets.yucca} material={assets.plantMaterial} tones={yuccaTones} />
   </group>;
 }
+
+// Keep exact geometry, transforms and colors. Each block has its own bounding
+// sphere, so Three.js can reject off-camera blocks without distance popping.
+function SpatialFormations({ formations, ...props }) {
+  const groups = useMemo(() => partitionFormations(formations), [formations]);
+  return groups.map(([key, items]) => <FormationInstances key={key} formations={items} {...props}/>);
+}
+export default memo(DesertLandscape);

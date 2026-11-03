@@ -11,6 +11,7 @@ import { EntryGround, EntryBackdrop, EntryLighting, ENTRY_STAGE_LIFT } from './E
 import EntryDesert from './EntryDesert';
 import EntryBackline from './EntryBackline';
 import { horizonPulseGLSL } from '../components/environment/horizonPulse';
+import { SceneryResources } from '../components/roadside/SceneryResources';
 import { Landmark } from '../components/roadside/Scenery';
 
 // Local stage coordinates: independent of the highway's curves.
@@ -88,6 +89,6 @@ function Showcase({onReady}) {
 }
 export default function EntryScene({onReady}) {
   return <EntryBoundary><Canvas frameloop="demand" dpr={[1,1.3]} camera={{position:[5,2.1,-10.5],fov:36,near:.1,far:200}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({camera})=>camera.lookAt(0,1.7,0)} fallback={<div className="scene-fallback">Escolha seu caminho abaixo.</div>}>
-    <SceneLoading><EntryCamera/><Suspense fallback={<ScenePending/>}><Showcase onReady={onReady}/></Suspense></SceneLoading>
+    <SceneLoading><EntryCamera/><Suspense fallback={<ScenePending/>}><SceneryResources><Showcase onReady={onReady}/></SceneryResources></Suspense></SceneLoading>
   </Canvas></EntryBoundary>;
 }
