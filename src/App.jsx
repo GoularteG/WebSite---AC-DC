@@ -161,7 +161,7 @@ export default function App() {
       {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>
     {(phase==='zooming'||phase==='returning')&&<div className="trunk-transition" role="status"><span>{phase==='zooming'?'APROXIMANDO DO PORTA-MALAS':'RETOMANDO A VIAGEM'}</span></div>}
-    <div className="site-music"><MusicPlayer /></div>
+    <div className="site-music" hidden={tab === 'making'}><MusicPlayer /></div>
     {credits&&<Credits onClose={()=>setCredits(false)}/>}
     {phase==='trunk'&&<Suspense fallback={null}><TrunkExperience onReady={onTrunkReady} onCredits={()=>setCredits(true)} reduced={reduced} onReturn={()=>navigate('highway')}/></Suspense>}
     </div>
