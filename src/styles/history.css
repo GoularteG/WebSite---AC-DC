@@ -69,41 +69,9 @@
 .history-timeline button.selected::before {background: #f48b48; box-shadow: 0 0 13px #f37034, 0 0 0 3px #1d1110}
 .timeline-number {font: 400 15px/1 'Metal Mania', Impact, sans-serif}
 .timeline-period {overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; letter-spacing: .5px}
-.history-archive {
-  position: fixed;
-  inset: 0;
-  width: min(1100px, calc(100vw - 40px));
-  max-height: min(840px, calc(100svh - 40px));
-  margin: auto;
-  padding: 0;
-  overflow: auto;
-  border: 1px solid #a57754;
-  background: radial-gradient(circle at 10% 0%, #39241f, #181516 62%);
-  color: #f4e6d2;
-  box-shadow: 0 30px 100px #000e;
-}
-.history-archive::backdrop {background: #080809cc; backdrop-filter: blur(6px)}
-.history-archive-header {position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px clamp(20px, 4vw, 48px); border-bottom: 1px solid #b27d563e; background: #181516f2; color: #e2ac83; font-size: 10px; font-weight: 800; letter-spacing: 1.8px}
-.history-archive-header button {flex-shrink: 0; min-height: 44px; padding: 0 12px; border: 1px solid #a57754; background: #30231f; color: #fff2db; font-size: 10px; font-weight: 800; letter-spacing: 1px}
-.history-archive-heading {padding: 28px clamp(20px, 4vw, 48px) 18px}
-.history-archive-heading > span {color: #efa06a; font: 34px/1 'Metal Mania', Impact, sans-serif}
-.history-archive-heading h2 {margin: 8px 0 0; font: clamp(35px, 5vw, 62px)/.95 'Metal Mania', Impact, sans-serif}
-.history-archive-grid {display: grid; grid-template-columns: minmax(0, 47%) minmax(0, 53%); gap: 34px; padding: 0 clamp(20px, 4vw, 48px) 42px}
-.history-archive-photo {min-width: 0; margin: 0}
-.history-archive-photo img, .history-photo-placeholder {display: block; width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #0d0c0e; border: 1px solid #9f765a; box-shadow: 0 20px 40px #0008}
-.history-photo-placeholder {display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; background: repeating-linear-gradient(110deg, #282020, #282020 14px, #211a1a 15px)}
-.history-photo-placeholder strong {font: 45px/1 'Metal Mania', Impact, sans-serif; color: #e9a778}
-.history-photo-placeholder small {font-size: 11px; letter-spacing: 1px}
-.history-archive-photo figcaption {margin-top: 12px; color: #d6c2ad; font-size: 12px; line-height: 1.5}
 .photo-credits {display: grid; gap: 9px; padding-left: 19px; line-height: 1.6}
 .photo-credits li {font-size: 12px; color: #e4d1bc}
 .photo-credits a {text-decoration: underline; text-underline-offset: 3px}
-.history-archive-story p {margin: 0 0 22px; color: #f1e4d0; font-size: 16px; line-height: 1.7}
-.history-archive-story h3 {margin: 26px 0 12px; color: #e9a778; font-size: 11px; letter-spacing: 2px}
-.history-archive-story ol {display: grid; gap: 10px; margin: 0 0 24px; padding-left: 21px; color: #e8d3bc; font-size: 14px; line-height: 1.55}
-.history-archive-story li strong, .history-archive-story .history-curiosity strong {color: #ffc186}
-.history-archive-story .history-curiosity {padding: 14px 18px; border-left: 2px solid #e06d3d; background: #e06d3d10; font-size: 14px}
-.history-archive-story .history-context-note {font-size: 12px; color: #c6a995}
 @media(max-width: 760px) {
   .history-open {left: 7%; right: 7%; bottom: 143px; max-width: none; justify-content: space-between; min-height: 52px}
   .history-open strong {font-size: 20px}
@@ -112,13 +80,4 @@
   .history-timeline::before {top: 7px}
   .timeline-number {font-size: 13px}
   .timeline-period {display: none}
-  .history-archive {width: calc(100vw - 20px); max-height: calc(100svh - 20px)}
-  .history-archive-header {padding: 10px 16px; font-size: 8px; letter-spacing: .8px}
-  .history-archive-header button span {display: none}
-  .history-archive-heading {padding: 18px 18px 14px}
-  .history-archive-heading > span {font-size: 27px}
-  .history-archive-heading h2 {font-size: 36px}
-  .history-archive-grid {grid-template-columns: 1fr; gap: 20px; padding: 0 18px 28px}
-  .history-archive-photo img, .history-photo-placeholder {aspect-ratio: 16/9}
-  .history-archive-story p {font-size: 15px}
 }

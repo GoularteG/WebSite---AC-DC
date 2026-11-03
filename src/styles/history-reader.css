@@ -1,0 +1,64 @@
+.history-reader{--archive-paper:#f1e6d6;--archive-muted:#b5a99b;--archive-accent:#efa16e;position:fixed;inset:0;margin:auto;width:min(1190px,calc(100vw - 48px));height:min(880px,calc(100svh - 48px));max-width:none;max-height:none;padding:0;overflow:hidden;border:1px solid #78604b;border-radius:16px;background:#171615;color:var(--archive-paper);box-shadow:0 30px 110px #000b}
+.history-reader[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.history-reader::backdrop{background:#070709cf}
+.history-reader button,.history-reader a,.history-reader summary{-webkit-tap-highlight-color:transparent}
+.history-reader button:focus-visible,.history-reader a:focus-visible,.history-reader summary:focus-visible{outline:2px solid var(--archive-accent);outline-offset:3px}
+.archive-topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 28px;border-bottom:1px solid #ffffff13;background:#131312}
+.archive-brand{display:flex;align-items:center;gap:16px;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--archive-muted)}
+.archive-brand-mark{font:25px/1 'New Rocker',Georgia,serif;color:var(--archive-paper);letter-spacing:-1px;padding-right:16px;border-right:1px solid #ffffff24}
+.archive-close{display:flex;align-items:center;gap:16px;min-height:44px;padding:0 14px;border:1px solid #ffffff25;border-radius:7px;background:#ffffff05;color:var(--archive-paper);font-size:11px;transition:background .2s,border-color .2s}
+.archive-close:hover{background:#ffffff10;border-color:#b5a99b}
+.archive-scroll{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#665346 #171615;scrollbar-gutter:stable}
+.archive-article{padding:36px 36px 24px;animation:archive-reveal .3s ease-out}
+.archive-feature{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:38px;align-items:start}
+.archive-photo{margin:0;min-width:0;position:sticky;top:24px}
+.archive-photo-frame{position:relative;padding:36px 12px 12px;background:#0c0c0c;border:1px solid #514337;border-radius:3px;box-shadow:0 14px 28px #0003;min-height:270px}
+.archive-photo-stamp{position:absolute;top:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;font:9px/1 monospace;letter-spacing:2px;color:#a99d8c}
+.archive-photo-stamp b{color:#efa16e;font-weight:400}
+.archive-photo-frame img{display:block;position:relative;width:100%;height:clamp(270px,35vh,390px);object-fit:contain;opacity:0;transition:opacity .35s;background:#0c0c0c}
+.archive-photo-frame.is-loaded img{opacity:1}
+.archive-photo-loading{position:absolute;inset:50% 8px auto;text-align:center;color:#ad9e8e;font:9px monospace;letter-spacing:1.5px}
+.archive-photo-frame.is-loaded .archive-photo-loading{display:none}
+.archive-photo figcaption{margin-top:14px;color:var(--archive-muted);font-size:11px;line-height:1.65}
+.archive-photo-tag{display:block;color:var(--archive-accent);font-size:8px;letter-spacing:1.4px;font-weight:700;margin-bottom:6px}
+.archive-photo-credit{display:inline-block;margin-top:8px;color:#c9b6a0;font-size:10px;text-decoration:underline;text-underline-offset:3px;line-height:1.6}
+.archive-photo-unavailable{min-height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--archive-muted);text-align:center;font-size:13px}
+.archive-photo-unavailable strong{font:50px 'New Rocker',Georgia,serif;color:#efa16e}
+.archive-photo-unavailable small{font-size:11px}
+.archive-kicker{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--archive-accent)}
+.archive-kicker>span:first-child{font:26px/1.2 'Metal Mania',Impact,sans-serif}
+.archive-kicker>span:last-child{font-size:9px;letter-spacing:2px;color:var(--archive-muted)}
+.archive-story h2{font:clamp(36px,4.2vw,59px)/1.05 'New Rocker',Georgia,serif;letter-spacing:-1.2px;margin:14px 0 22px;text-wrap:balance;outline:none;overflow-wrap:break-word}
+.archive-rule{width:60px;height:3px;background:#f2783d;margin-bottom:23px;box-shadow:24px 0 #f2783d35}
+.archive-narrative{margin:0;color:#dfd6ca;font-size:15px;line-height:1.85}
+.archive-milestones{margin-top:36px;padding-top:23px;border-top:1px solid #ffffff16}
+.archive-milestones h3{display:flex;justify-content:space-between;gap:12px;margin:0 0 20px;font:700 9px/1.4 Arial,sans-serif;letter-spacing:2px;color:var(--archive-muted)}
+.archive-milestones h3 span:last-child{font-weight:400;color:#9b8b7a}
+.archive-milestones ol{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.archive-milestones li{display:flex;gap:14px;padding-top:15px;border-top:1px solid #a076523d}
+.archive-event-number{font:23px/1.2 'Metal Mania',Impact,sans-serif;color:#ab7654}
+.archive-milestones li strong{font-size:12px;color:#efb48d}
+.archive-milestones li p{font-size:12px;line-height:1.7;color:#cec3b5;margin:7px 0 0}
+.archive-curiosity{display:grid;grid-template-columns:150px 1fr;gap:20px;margin:28px 0 0;padding:20px 24px;border-left:2px solid #ef8c50;background:linear-gradient(90deg,#a45d2720,#a45d2705)}
+.archive-curiosity>span{font-size:8px;line-height:1.8;letter-spacing:1.7px;color:#c2997a}
+.archive-curiosity strong{font:22px/1.5 'New Rocker',Georgia,serif;color:#f1c8a7;letter-spacing:0}
+.archive-curiosity p{font-size:13px;line-height:1.75;margin:0;color:#dcd0c1}
+.archive-sources{margin-top:22px;border-top:1px solid #ffffff10;color:var(--archive-muted);font-size:11px;line-height:1.7}
+.archive-sources summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none}
+.archive-sources summary::-webkit-details-marker{display:none}
+.archive-sources summary span{font-size:20px}
+.archive-sources[open] summary span{transform:rotate(45deg)}
+.archive-sources a{text-underline-offset:3px;color:#d6b69a;overflow-wrap:anywhere}
+.archive-sources ul{padding-left:16px}.archive-sources p{margin:5px 0}
+.archive-navigation{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px;border-top:1px solid #ffffff19;background:#131312}
+.archive-navigation>button{min-height:44px;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;border-radius:7px;font-size:11px;font-weight:700;transition:background .2s,transform .2s}
+.archive-prev{background:transparent;color:#d1c2ae}.archive-prev:disabled{opacity:.3}.archive-prev:not(:disabled):hover{background:#ffffff0c}
+.archive-next{background:#efab7c;color:#241810}.archive-next:hover{background:#ffc699;transform:translateX(2px)}
+.archive-chapter-dots{display:flex;gap:0}.archive-chapter-dots button{position:relative;width:36px;min-height:44px;background:none;color:#9e9284;font:12px monospace}
+.archive-chapter-dots button[aria-current]{color:#f1c8a7}.archive-chapter-dots button[aria-current]::after{content:'';position:absolute;bottom:3px;left:13px;width:10px;height:2px;background:#ef8c50}
+.archive-chapter-dots button:hover{color:#fff}.archive-mobile-count{display:none}
+.archive-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@keyframes archive-reveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media(max-width:850px){.archive-feature{gap:25px}.archive-article{padding:28px}.archive-chapter-dots button{width:28px}.archive-chapter-dots button[aria-current]::after{left:9px}.archive-navigation{gap:8px;padding:10px 18px}.archive-navigation>button{padding:0 12px}}
+@media(max-width:700px){.history-reader{width:calc(100vw - 16px);height:calc(100svh - 16px);border-radius:12px}.archive-topbar{padding:8px 14px;gap:8px}.archive-brand{gap:10px;font-size:8px;letter-spacing:1px}.archive-brand-mark{font-size:22px;padding-right:10px}.archive-close{padding:0 10px;gap:8px}.archive-close>span{display:none}.archive-article{padding:22px 18px 12px}.archive-feature{grid-template-columns:1fr;gap:24px}.archive-photo{position:static}.archive-photo-frame{min-height:200px;padding-top:30px}.archive-photo-frame img{height:clamp(200px,35svh,310px)}.archive-photo-unavailable{min-height:200px}.archive-story h2{font-size:clamp(34px,9vw,48px);margin:12px 0 18px}.archive-kicker>span:first-child{font-size:25px}.archive-narrative{font-size:15px;line-height:1.8}.archive-milestones{margin-top:26px}.archive-milestones ol{grid-template-columns:1fr;gap:16px}.archive-milestones li{gap:18px;padding-top:14px}.archive-milestones li p{font-size:13px;margin-top:4px}.archive-curiosity{grid-template-columns:1fr;gap:12px;padding:18px}.archive-chapter-dots{display:none}.archive-mobile-count{display:block;font:12px monospace;color:#f1c8a7;white-space:nowrap}.archive-mobile-count span{color:#95897b}.archive-navigation{padding:9px 10px;padding-bottom:max(9px,env(safe-area-inset-bottom));gap:5px}.archive-navigation>button{gap:7px;font-size:10px;padding:0 9px}.archive-navigation svg{width:16px}.archive-sources{margin-top:18px}}
+@media(prefers-reduced-motion:reduce){.archive-article{animation:none}.history-reader *{transition:none!important}}
