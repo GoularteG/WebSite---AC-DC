@@ -5,6 +5,7 @@ import Charger from '../components/car/Charger';
 import { useSkyAudio } from '../hooks/useSkyAudio';
 import { useReducedMotion } from '../hooks/usePreferences';
 import SceneReady from '../components/loading/SceneReady';
+import { SceneLoading, ScenePending } from '../components/loading/SceneLoading';
 import Headlights from '../components/car/Headlights';
 import { EntryGround, EntryBackdrop, EntryLighting, ENTRY_STAGE_LIFT } from './EntryEnvironment';
 import EntryDesert from './EntryDesert';
@@ -85,6 +86,6 @@ function Showcase({onReady}) {
 }
 export default function EntryScene({onReady}) {
   return <EntryBoundary><Canvas frameloop="demand" dpr={[1,1.3]} camera={{position:[5,2.1,-10.5],fov:36,near:.1,far:200}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({camera})=>camera.lookAt(0,1.7,0)} fallback={<div className="scene-fallback">Escolha seu caminho abaixo.</div>}>
-    <EntryCamera/><Suspense fallback={null}><Showcase onReady={onReady}/></Suspense>
+    <SceneLoading><EntryCamera/><Suspense fallback={<ScenePending/>}><Showcase onReady={onReady}/></Suspense></SceneLoading>
   </Canvas></EntryBoundary>;
 }

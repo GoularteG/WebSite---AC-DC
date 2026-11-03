@@ -1,3 +1,4 @@
+import { SceneLoading, ScenePending } from '../loading/SceneLoading';
 import SceneReady from '../loading/SceneReady';
 import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
@@ -228,7 +229,7 @@ function ProjectBook() {
 }
 export default function TrunkScene({reduced,onSelect,active,paused,onReady}) {
   return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance'}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
-    <Suspense fallback={null}>
+    <SceneLoading><Suspense fallback={<ScenePending/>}>
     <color attach="background" args={['#090a0c']}/><fog attach="fog" args={['#090a0c',13,23]}/>
     <hemisphereLight args={['#e2e8ef','#171316',1.3]}/>
     <directionalLight castShadow position={[-3,7,6]} intensity={2.6} color="#fff1df" shadow-mapSize={[1024,1024]} shadow-bias={-.0004}/>
@@ -243,6 +244,6 @@ export default function TrunkScene({reduced,onSelect,active,paused,onReady}) {
     <SelectableObject id="book" active={active} onSelect={onSelect} position={[.1,.045,.62]} highlight={[1.28,1.31]}><ProjectBook/></SelectableObject>
     <ContactShadows position={[0,.01,.1]} opacity={.45} scale={7.2} blur={2.5} far={4}/>
     <SceneReady onReady={onReady}/>
-    </Suspense>
+    </Suspense></SceneLoading>
   </Canvas>;
 }

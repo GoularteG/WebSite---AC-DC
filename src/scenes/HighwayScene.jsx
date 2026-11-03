@@ -3,6 +3,8 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import { MathUtils, Vector3 } from 'three';
 import Road from '../components/environment/Road';
+import SceneReady from '../components/loading/SceneReady';
+import { SceneLoading, ScenePending } from '../components/loading/SceneLoading';
 import Atmosphere from '../components/environment/Atmosphere';
 import InfernoFinale from '../components/environment/InfernoFinale';
 import Scenery from '../components/roadside/Scenery';
@@ -82,7 +84,7 @@ function JourneyRig({ started, phase, onZoomed, onReturned, distance, progress, 
   useEffect(() => { onArrival(false); return () => onArrival(false); }, [onArrival]);
   return <>
     <TrunkCamera phase={phase} car={car} roadLook={look} reduced={reduced} onZoomed={onZoomed} onReturned={onReturned}/>
-    <group name="journey-car" ref={car}><Headlights distance={distance} /><ModelBoundary onError={onModelError}><Suspense fallback={null}>{carAsset.url && <Charger distance={distance} onReady={onModelReady} />}</Suspense></ModelBoundary></group>
+    <group name="journey-car" ref={car}><Headlights distance={distance} /><ModelBoundary onError={onModelError}>{carAsset.url && <Charger distance={distance}/>}</ModelBoundary></group>
     <spotLight ref={fill} intensity={80} distance={18} angle={.70} penumbra={.9} decay={2} color="#ffe3c0" castShadow={quality === 'high'} shadow-mapSize={[512,512]} />
   </>;
 }
@@ -107,6 +109,7 @@ function QualitySampler({ onSample }) {
 export default function HighwayScene({ phase, started, onZoomed, onReturned, progress, targetProgress, reduced, quality, onQualitySample, onModelError, onModelReady, onArrival, onSelectChapter, ghostActive, ghostControls, onGhostExit }) {
   const distance = useRef(0);
   return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={ghostActive ? 1 : quality === 'high' ? [1, 1.5] : quality === 'balanced' ? [1, 1.2] : 1} camera={cameraConfig} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
+    <SceneLoading><Suspense fallback={<ScenePending/>}>
     <Atmosphere distance={distance} ghostActive={ghostActive} reduced={reduced} /><Road distance={distance} ghostActive={ghostActive} /><Scenery started={started} targetProgress={targetProgress} /><RoadLighting distance={distance} ghostActive={ghostActive} />{started && <HistoryBillboards targetProgress={targetProgress} onSelect={ghostActive ? null : onSelectChapter} />}
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
     {ghostActive && <ModelBoundary><Suspense fallback={null}><GhostFinale /></Suspense></ModelBoundary>}
@@ -114,5 +117,7 @@ export default function HighwayScene({ phase, started, onZoomed, onReturned, pro
     <JourneyRig started={started} phase={phase} onZoomed={onZoomed} onReturned={onReturned} distance={distance} progress={progress} targetProgress={targetProgress} reduced={reduced} quality={quality} onModelError={onModelError} onModelReady={onModelReady} onArrival={onArrival} ghostActive={ghostActive} />
     {started && onQualitySample && <QualitySampler onSample={onQualitySample} />}
     {ghostActive && <GhostCamera controls={ghostControls} onExit={onGhostExit} reduced={reduced} />}
+    <SceneReady onReady={onModelReady}/>
+    </Suspense></SceneLoading>
   </Canvas></SceneBoundary>;
 }

@@ -50,7 +50,7 @@ export default function App() {
   }, []);
   const [readyScenes, setReadyScenes] = useState({});
   const sceneKey = phase === 'trunk' ? 'trunk' : started ? 'road' : 'entry';
-  const loading = !readyScenes[sceneKey] && !modelError;
+  const loading = !readyScenes[sceneKey];
   const markReady = useCallback(key => setReadyScenes(current => current[key] ? current : { ...current, [key]: true }), []);
   const onEntryReady = useCallback(() => markReady('entry'), [markReady]);
   const onTrunkReady = useCallback(() => markReady('trunk'), [markReady]);
@@ -59,7 +59,10 @@ export default function App() {
   const progress = useRef(0), saved = useRef(0);
   const reduced = useReducedMotion();
   useEffect(() => {
-    const update = () => setPageVisible(!document.hidden);
+    const update = () => {
+      setPageVisible(!document.hidden);
+      if (document.hidden) setReadyScenes(current => ({ ...current, entry: false, road: false }));
+    };
     document.addEventListener('visibilitychange', update);
     return () => document.removeEventListener('visibilitychange', update);
   }, []);
@@ -132,7 +135,7 @@ export default function App() {
       <span className="site-authors">Feito por: <strong>Erik Carvalho, Gustavo Goularte e Gustavo Justo</strong></span>
     </header>
     <main inert={phase !== 'road' ? true : undefined} aria-hidden={phase !== 'road' ? true : undefined} id={phase === 'trunk' ? 'road-content' : 'main-content'} className={`highway ${started?'is-started':''} ${reduced?'reduced':''} ${atDestination?'has-arrived':''} ${ghostActive?'ghost-active':''}`} style={{height:started?'950vh':'100svh'}}>
-      <div className="stage"><Suspense fallback={null}>{pageVisible && (!started ? <EntryScene onReady={onEntryReady} /> : <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>)}</Suspense><div className="vignette"/><div className="film-grain"/></div>
+      <div className="stage" data-loading-scene={started ? 'road' : 'entry'}><Suspense fallback={null}>{pageVisible && (!started ? <EntryScene onReady={onEntryReady} /> : <HighwayScene phase={phase} started={started} onZoomed={onZoomed} onReturned={onReturned} progress={progress} targetProgress={value} reduced={reduced} quality={quality} onQualitySample={onQualitySample} onModelError={setModelError} onModelReady={onModelReady} onArrival={setArrived} onSelectChapter={setSelectedChapter} ghostActive={ghostActive} ghostControls={ghostControls} onGhostExit={exitGhost}/>)}</Suspense><div className="vignette"/><div className="film-grain"/></div>
       {!started ? <section className="opening" aria-labelledby="opening-title">
         <div className="entry-brand"><img src="/images/acdc-logo-red-gold.webp" alt="AC/DC" width="320" height="140"/><h1 id="opening-title">HIGHWAY TO HELL</h1></div>
         <div className="entry-options" aria-label="Escolha sua experiência">

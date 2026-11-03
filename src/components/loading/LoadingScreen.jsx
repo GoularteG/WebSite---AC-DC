@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '@react-three/drei';
+import { hasVisibleSceneFailure } from './sceneFailure';
 import '../../styles/loading-screen.css';
 
 export default function LoadingScreen({ active, onUnavailable, loadKey }) {
@@ -26,7 +27,8 @@ export default function LoadingScreen({ active, onUnavailable, loadKey }) {
     screen.current?.focus({ preventScroll: true });
     // A WebGL/error fallback is a terminal result, never an endless loader.
     const check = () => {
-      if (document.querySelector('.scene-fallback,.trunk-webgl-fallback')) onUnavailable();
+      const scene = document.querySelector(`[data-loading-scene="${loadKey}"]`);
+      if (hasVisibleSceneFailure(scene)) onUnavailable();
     };
     const observer = new MutationObserver(check);
     observer.observe(document.getElementById('root'), { childList: true, subtree: true });
@@ -35,7 +37,7 @@ export default function LoadingScreen({ active, onUnavailable, loadKey }) {
       observer.disconnect();
       if (previous?.isConnected) previous.focus?.({ preventScroll: true });
     };
-  }, [active, onUnavailable]);
+  }, [active, onUnavailable, loadKey]);
   if (!visible && !active) return null;
   return <div ref={screen} className={`rock-loader ${active ? '' : 'rock-loader--ready'}`} role="status" aria-live="polite" aria-label="Carregando a experiência 3D" tabIndex={-1}>
     <div className="rock-loader__art" style={{ '--load': active ? colorProgress : 1 }} aria-hidden="true">

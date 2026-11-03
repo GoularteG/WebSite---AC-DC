@@ -3,6 +3,7 @@ import { CanvasTexture, Object3D, SRGBColorSpace } from 'three';
 import { useThree } from '@react-three/fiber';
 import { chapters, billboardDistance, distanceAtProgress, roadX } from '../../data/journey';
 import { licensedPhotoSources } from '../../data/historyPhotos';
+import { useSceneTask } from '../loading/SceneLoading';
 
 function BillboardFloodlights({ active }) {
   const lights = useRef([]);
@@ -148,37 +149,37 @@ function Billboard({ chapter, index, onSelect, loadPhoto, activeLighting }) {
   const mobile = useThree(state => state.size.width < 761);
   const invalidate = useThree(state => state.invalidate);
   const poster = useMemo(() => makePoster(chapter), [chapter]);
+  const begin = useSceneTask();
   useEffect(() => () => poster.texture.dispose(), [poster]);
   useEffect(() => {
-    let active = true;
-    let loadedPhoto = null;
+    let active = true, loadedPhoto = null, fontsDone = false, photoDone = !loadPhoto;
+    const finish = begin?.() ?? (() => {});
+    let image = null;
     const redraw = () => {
       if (!active) return;
       paintPoster(poster.canvas, chapter, loadedPhoto);
-      poster.texture.needsUpdate = true;
-      invalidate();
+      poster.texture.needsUpdate = true; invalidate();
+      if (fontsDone && photoDone) finish();
     };
     Promise.all([
       document.fonts.load('86px "Metal Mania"'),
       document.fonts.load('63px "New Rocker"'),
-    ]).then(redraw).catch(() => {});
-    if (!loadPhoto) return () => { active = false; };
-    const sources = licensedPhotoSources(chapter.image);
-    const load = index => {
-      if (index >= sources.length) return;
-      const photo = new Image();
-      photo.crossOrigin = 'anonymous';
-      photo.onload = () => {
+    ]).catch(() => {}).then(() => { fontsDone = true; redraw(); });
+    if (loadPhoto) {
+      const sources = licensedPhotoSources(chapter.image);
+      const load = index => {
         if (!active) return;
-        loadedPhoto = photo;
-        redraw();
+        if (index >= sources.length) { photoDone = true; redraw(); return; }
+        image = new Image(); image.crossOrigin = 'anonymous';
+        const photo = image;
+        photo.onload = () => { if (active) { loadedPhoto = photo; photoDone = true; redraw(); } };
+        photo.onerror = () => load(index + 1);
+        photo.src = sources[index];
       };
-      photo.onerror = () => { if (active) load(index + 1); };
-      photo.src = sources[index];
-    };
-    load(0);
-    return () => { active = false; };
-  }, [chapter, invalidate, poster, loadPhoto]);
+      load(0);
+    }
+    return () => { active = false; if (image) { image.onload = null; image.onerror = null; } finish(); };
+  }, [chapter, invalidate, poster, loadPhoto, begin]);
   const distance = billboardDistance(chapter, mobile);
   const side = mobile ? (index === 0 ? -1 : 1) : index % 2 ? 1 : -1;
   return <group position={[roadX(distance) + side * (mobile ? 9.5 : 14), 0, -distance]} rotation={[0, side * -.11, 0]} scale={mobile ? .72 : 1.12}>

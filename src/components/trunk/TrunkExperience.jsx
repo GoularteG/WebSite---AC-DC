@@ -21,7 +21,7 @@ export default function TrunkExperience({reduced,onReturn,onCredits,onReady}) {
     document.querySelector(`[data-object="${id}"]`)?.focus({preventScroll:true});
     if(reduced)setSelected('book');else setOpening(true);
   };
-  return <section className="trunk-experience" id="main-content" role="main" aria-label="Porta-malas interativo">
+  return <section data-loading-scene="trunk" className="trunk-experience" id="main-content" role="main" aria-label="Porta-malas interativo">
     <div className="trunk-heading"><span className="eyebrow">UMA PAUSA NA ESTRADA</span><h1>THE BACKSTAGE<span>.</span></h1><p>Memorabilia de estrada. O livro guarda a história.</p></div>
     <button ref={returnButton} className="trunk-return" onClick={onReturn}>↶ VOLTAR À ESTRADA</button>
     <div className="trunk-canvas"><TrunkSceneBoundary><Suspense fallback={null}><TrunkScene onReady={onReady} paused={!!selected||opening} reduced={reduced} onSelect={select} active={active}/></Suspense></TrunkSceneBoundary></div>
