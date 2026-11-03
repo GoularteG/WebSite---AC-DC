@@ -38,11 +38,12 @@ function EntryCamera() {
 function Showcase({onReady}) {
   const distance=useRef(0);
   const reduced=useReducedMotion();
-  const audioUniforms=useSkyAudio(reduced);
+  const skyMaterial=useRef(null);
+  const audioUniforms=useSkyAudio(reduced,skyMaterial);
   return <>
     <color attach="background" args={['#180d0c']}/>
     <fog attach="fog" args={['#64291b',25,85]}/>
-    <mesh><sphereGeometry args={[90,24,16]}/><shaderMaterial uniforms={audioUniforms} side={1} depthWrite={false}
+    <mesh><sphereGeometry args={[90,24,16]}/><shaderMaterial ref={skyMaterial} uniforms={audioUniforms} side={1} depthWrite={false}
       vertexShader={'varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}'}
       fragmentShader={`
         ${horizonPulseGLSL}
@@ -58,7 +59,8 @@ function Showcase({onReady}) {
           c*=1.-smoothstep(.38,.72,cloud)*.78*smoothstep(-.04,.12,h);
           c+=horizonMusic(h,musicPulse);
           float angle=atan(d.x,d.z);
-          float bank=exp(-pow((angle-musicStrike)*2.,2.));
+          float bankOffset=(angle-musicStrike)*2.;
+          float bank=exp(-bankOffset*bankOffset);
           float bolt=1.-smoothstep(.002,.008,abs(angle-musicStrike-sin(h*75.)*.015));
           c+=musicFlash*(vec3(.45,.28,.23)*bank+vec3(.7,.65,.55)*bolt*smoothstep(.01,.08,h)*(1.-smoothstep(.28,.45,h)));
           gl_FragColor=vec4(c,1.);

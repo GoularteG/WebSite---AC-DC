@@ -13,3 +13,9 @@ Testes cobrem taxas 44,1/48/96 kHz, ataques de graves/médios, notas sustentadas
 ## Pulsação visível no horizonte
 
 `horizonPulse.js` compartilha a faixa luminosa dos dois céus. O sinal expande a largura e a altura de uma faixa de brasa, varia de vermelho a laranja e mantém a parte alta do céu escura. A pulsação da estrada recebe o envelope completo, sem as antigas atenuações de 0,45 e até 0,5 perto do inferno. A névoa distante recebe uma contribuição de cor de até 7,5%. Relâmpagos, análise de áudio e preferências de movimento reduzido mantêm seus controles. O efeito não adiciona luzes, texturas ou passes de renderização.
+
+## Correção da reação no menu
+
+O React Three Fiber copia os descritores recebidos na prop `uniforms` para registros próprios do `ShaderMaterial`. O hook do menu alterava os descritores originais, que não eram os registros enviados ao WebGL. `useSkyAudio` agora recebe a ref do material e modifica diretamente seus uniforms vivos. O delta do envelope admite até 250 ms para não tornar o decaimento excessivamente lento em poucos FPS.
+
+A regressão foi reproduzida interceptando uploads `uniform1f` no Chromium WebGL2 com a faixa real: havia energia de áudio, mas `musicPulse` e `musicFlash` permaneciam em zero na API gráfica. Depois da correção, ambos recebem valores variáveis. A verificação inclui repouso ao pausar e desativação com movimento reduzido.
