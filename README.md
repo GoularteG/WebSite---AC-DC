@@ -53,7 +53,7 @@ Os modelos 3D permanecem creditados aos seus autores. As licenças declaradas no
 
 As fotografias históricas são carregadas de fontes externas, com autoria e licença indicadas nos capítulos e na seção **Créditos** do site. As artes dos estojos de CD são interpretações gráficas do projeto, não capas oficiais.
 
-`public/audio/highway-to-hell-user.mp3` é a gravação fornecida para este projeto. O arquivo está acessível publicamente no repositório e no site. A origem de uma gravação ao vivo, por si só, não comprova autorização para distribuir a composição, a apresentação ou o fonograma; confirme esses direitos antes de reutilizar ou republicar o áudio.
+`public/audio/highway-to-hell.mp3` é a gravação fornecida para este projeto. O arquivo está acessível publicamente no repositório e no site. A origem de uma gravação ao vivo, por si só, não comprova autorização para distribuir a composição, a apresentação ou o fonograma; confirme esses direitos antes de reutilizar ou republicar o áudio.
 
 O [briefing original](docs/briefing-original.md), que documenta o início do processo criativo, também está público no repositório.
 
