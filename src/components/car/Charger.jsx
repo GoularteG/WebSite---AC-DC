@@ -36,7 +36,7 @@ export default function Charger({ distance, onReady }) {
           material.color.set('#303a40'); material.roughness = .12; material.opacity = .48; material.depthWrite = false;
         }
         if (material.name === 'Color_A06') {
-          material.emissive.set('#ff1708'); material.emissiveIntensity = .85;
+          material.color.set('#ff2212'); material.emissive.set('#ff1405'); material.emissiveIntensity = 3.2; material.toneMapped = false;
         }
         if (material.name === 'Color_004') {
           material.emissive.set('#ffe2a8'); material.emissiveIntensity = .95;

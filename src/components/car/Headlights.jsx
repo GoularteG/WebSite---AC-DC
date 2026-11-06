@@ -9,7 +9,10 @@ import {
   Object3D,
   SRGBColorSpace,
 } from 'three';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { infernoMix } from '../../data/finale';
+
+RectAreaLightUniformsLib.init();
 
 // Exact headlight coordinates measured from charger-1970-original.glb (Mesh 12 lenses & Mesh 10 reflectors):
 // Outer-Left:  x = -0.6863, y = 0.5738, z = -2.472
@@ -22,6 +25,16 @@ const BEAM_ORIGIN_Z = -2.58;
 const LEFT_PAIR_X = -0.6;
 const RIGHT_PAIR_X = 0.605;
 const BULB_X = [-0.6863, -0.5139, 0.5187, 0.6911];
+
+// Exact rear taillight bar coordinates measured from Mesh 9 (Color_A06) of charger-1970-original.glb:
+// Left bar:  x in [-0.8007, -0.1468] (width 0.654m, center -0.474), y in [0.6657, 0.7145] (center 0.690)
+// Right bar: x in [ 0.1417,  0.7957] (width 0.654m, center  0.469), y in [0.6652, 0.7145] (center 0.690)
+const TAILLIGHT_Y = 0.69;
+const TAILLIGHT_Z = 2.524;
+const TAILLIGHT_BARS = [
+  { key: 'left', x: -0.474, rotY: -0.039 },
+  { key: 'right', x: 0.469, rotY: 0.039 },
+];
 
 const GROUND_PLANE_WIDTH = 16;
 const GROUND_PLANE_LENGTH = 28;
@@ -129,6 +142,59 @@ function createAlignedGroundGradientTexture() {
   return texture;
 }
 
+// Rectangular SDF (Signed Distance Field) glow texture:
+// Constant brightness along the entire horizontal bar width, with a soft rectangular box-fade at the 4 edges.
+function createTaillightGlowTexture() {
+  const width = 256;
+  const height = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  const image = ctx.createImageData(width, height);
+  const { data } = image;
+
+  const boxHalfW = 0.76;
+  const boxHalfH = 0.34;
+
+  for (let py = 0; py < height; py++) {
+    const v = (py / (height - 1)) * 2 - 1;
+    const dy = Math.max(0, Math.abs(v) - boxHalfH) / (1 - boxHalfH);
+
+    for (let px = 0; px < width; px++) {
+      const u = (px / (width - 1)) * 2 - 1;
+      const dx = Math.max(0, Math.abs(u) - boxHalfW) / (1 - boxHalfW);
+
+      // Rectangular distance from the uniform inner bar
+      const distSq = dx * dx + dy * dy;
+      const halo = Math.exp(-distSq * 3.1);
+
+      // Crisp inner rectangular plateau (uniform across the entire width of the lamp)
+      const coreX = 1 - smoothstep(boxHalfW - 0.04, boxHalfW + 0.09, Math.abs(u));
+      const coreY = 1 - smoothstep(boxHalfH - 0.08, boxHalfH + 0.18, Math.abs(v));
+      const core = coreX * coreY;
+
+      const combined = Math.min(1, halo * 0.72 + core * 0.96);
+
+      const r = 255;
+      const g = Math.round(24 * halo + 92 * core);
+      const b = Math.round(8 * halo + 32 * core);
+      const a = Math.round(255 * combined * 0.94);
+
+      const idx = (py * width + px) * 4;
+      data[idx] = r;
+      data[idx + 1] = g;
+      data[idx + 2] = b;
+      data[idx + 3] = a;
+    }
+  }
+
+  ctx.putImageData(image, 0, 0);
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
 export default function Headlights({ distance, groundProjection = true }) {
   const leftSpot = useRef();
   const rightSpot = useRef();
@@ -138,6 +204,7 @@ export default function Headlights({ distance, groundProjection = true }) {
   const hellColor = useMemo(() => new Color('#ffb870'), []);
 
   const groundTexture = useMemo(() => createAlignedGroundGradientTexture(), []);
+  const taillightGlowTexture = useMemo(() => createTaillightGlowTexture(), []);
 
   const beamConeGeo = useMemo(() => {
     const beamLength = 22;
@@ -163,9 +230,10 @@ export default function Headlights({ distance, groundProjection = true }) {
   useEffect(
     () => () => {
       groundTexture.dispose();
+      taillightGlowTexture.dispose();
       beamConeGeo.dispose();
     },
-    [groundTexture, beamConeGeo]
+    [groundTexture, taillightGlowTexture, beamConeGeo]
   );
 
   useFrame(() => {
@@ -236,6 +304,69 @@ export default function Headlights({ distance, groundProjection = true }) {
           />
         </mesh>
       ))}
+
+      {/* Rear Taillights Assembly: two uniform rectangular tail bars, strictly bounded inside the rear bezel so no light leaks to the sides */}
+      <group name="charger-taillights">
+        {TAILLIGHT_BARS.map(({ key, x, rotY }) => (
+          <group key={key} position={[x, TAILLIGHT_Y, TAILLIGHT_Z]} rotation={[0, rotY, 0]}>
+            {/* Outer rectangular crimson taillight lens */}
+            <mesh>
+              <boxGeometry args={[0.65, 0.054, 0.016]} />
+              <meshBasicMaterial color="#ff2008" toneMapped={false} />
+            </mesh>
+            {/* Uniform full-width inner bright rectangular filament bar */}
+            <mesh position={[0, 0, 0.002]}>
+              <boxGeometry args={[0.62, 0.03, 0.018]} />
+              <meshBasicMaterial color="#ff6e48" toneMapped={false} />
+            </mesh>
+            {/* Tight rectangular halo glow bounded strictly inside the rear bezel (width 0.70m stays within |x| <= 0.824m < 0.884m fender edge) */}
+            <mesh position={[0, 0, 0.014]} renderOrder={2}>
+              <planeGeometry args={[0.7, 0.14]} />
+              <meshBasicMaterial
+                map={taillightGlowTexture}
+                transparent
+                opacity={0.94}
+                blending={AdditiveBlending}
+                depthWrite={false}
+                toneMapped={false}
+              />
+            </mesh>
+            {/* Subtle rectangular reflection on the sloped lower bumper lip right below the taillight */}
+            <mesh position={[0, -0.035, 0.025]} rotation={[-0.78, 0, 0]} renderOrder={2}>
+              <planeGeometry args={[0.64, 0.046]} />
+              <meshBasicMaterial
+                map={taillightGlowTexture}
+                transparent
+                opacity={0.18}
+                blending={AdditiveBlending}
+                depthWrite={false}
+                toneMapped={false}
+              />
+            </mesh>
+            {/* Subtle rectangular reflection on the upper recessed bezel overhang */}
+            <mesh position={[0, 0.031, 0.022]} rotation={[0.72, 0, 0]} renderOrder={2}>
+              <planeGeometry args={[0.64, 0.032]} />
+              <meshBasicMaterial
+                map={taillightGlowTexture}
+                transparent
+                opacity={0.11}
+                blending={AdditiveBlending}
+                depthWrite={false}
+                toneMapped={false}
+              />
+            </mesh>
+            {/* Outward-only (+Z) low-intensity rectangular area light so light never bleeds forward into the side panels */}
+            <rectAreaLight
+              position={[0, 0, 0.015]}
+              rotation={[0.38, Math.PI, 0]}
+              width={0.6}
+              height={0.045}
+              intensity={2.2}
+              color="#ff1a0a"
+            />
+          </group>
+        ))}
+      </group>
 
       {/* Ground light projection starting right at the front bumper (z = -2.6) aligned with both headlights */}
       {groundProjection && <mesh

@@ -3,8 +3,11 @@ import SceneReady from '../loading/SceneReady';
 import { Suspense, useEffect, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox } from '@react-three/drei';
-import { CanvasTexture, CatmullRomCurve3, DoubleSide, RepeatWrapping, Shape, SRGBColorSpace, Vector3 } from 'three';
+import { AdditiveBlending, CanvasTexture, CatmullRomCurve3, DoubleSide, RepeatWrapping, Shape, SRGBColorSpace, Vector3 } from 'three';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import BookModel from './BookModel';
+
+RectAreaLightUniformsLib.init();
 import GuitarModel from './GuitarModel';
 import { InteriorCamera } from './TrunkCamera';
 import { SelectableObject } from './ObjectSelection';
@@ -120,6 +123,24 @@ function LidArchive() {
 }
 function TrunkInterior() {
   const carpet=useSurface('carpet');
+  const taillightGlow=useMemo(()=>{
+    const w=256,h=64,canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext('2d'),img=ctx.createImageData(w,h),d=img.data;
+    const bw=.78,bh=.36;
+    for(let py=0;py<h;py++){
+      const v=(py/(h-1))*2-1,dy=Math.max(0,Math.abs(v)-bh)/(1-bh);
+      for(let px=0;px<w;px++){
+        const u=(px/(w-1))*2-1,dx=Math.max(0,Math.abs(u)-bw)/(1-bw);
+        const halo=Math.exp(-(dx*dx+dy*dy)*2.8);
+        const core=Math.max(0,1-Math.max(0,Math.abs(u)-(bw-.04))/.14)*Math.max(0,1-Math.max(0,Math.abs(v)-(bh-.06))/.22);
+        const c=Math.min(1,halo*.75+core),i=(py*w+px)*4;
+        d[i]=255;d[i+1]=Math.round(28*halo+105*core);d[i+2]=Math.round(10*halo+42*core);d[i+3]=Math.round(255*c*.96);
+      }
+    }
+    ctx.putImageData(img,0,0);
+    const tex=new CanvasTexture(canvas);tex.colorSpace=SRGBColorSpace;return tex;
+  },[]);
+  useEffect(()=>()=>taillightGlow.dispose(),[taillightGlow]);
   return <group>
     <RoundedBox args={[7,.2,4.45]} position={[0,-.12,.1]} radius={.16} smoothness={4} receiveShadow><meshStandardMaterial map={carpet} color="#858487" roughness={1}/></RoundedBox>
     <CarPanel position={[0,.54,-2.12]} args={[7.15,1.25,.25]}/>
@@ -146,7 +167,15 @@ function TrunkInterior() {
     <SpareTire/>
     <group position={[0,-.12,2.53]}>
       <RoundedBox args={[7.05,.28,.18]} radius={.08} smoothness={3}><meshPhysicalMaterial {...paint}/></RoundedBox>
-      {[-1,1].map(side=><mesh key={side} position={[side*2.15,.12,.1]}><boxGeometry args={[1.65,.18,.08]}/><meshPhysicalMaterial color="#5b080b" emissive="#400206" emissiveIntensity={.45} roughness={.25}/></mesh>)}
+      {[-1,1].map(side=><group key={side} position={[side*2.15,.12,.1]}>
+        <mesh><boxGeometry args={[1.65,.18,.08]}/><meshBasicMaterial color="#ff240a" toneMapped={false}/></mesh>
+        <mesh position={[0,.014,.005]}><boxGeometry args={[1.58,.162,.088]}/><meshBasicMaterial color="#ff603b" toneMapped={false}/></mesh>
+        <mesh position={[0,.02,.01]}><boxGeometry args={[1.48,.11,.092]}/><meshBasicMaterial color="#ff9870" toneMapped={false}/></mesh>
+        <mesh position={[0,.11,.085]} rotation={[-.95,0,0]} renderOrder={2}><planeGeometry args={[1.95,.42]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.98} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
+        <mesh position={[0,.12,.095]} rotation={[-.95,0,0]} renderOrder={2}><planeGeometry args={[2.22,.58]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.58} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
+        <mesh position={[0,.145,-.085]} rotation={[-Math.PI/2,0,0]} renderOrder={2}><planeGeometry args={[1.66,.18]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.2} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
+        <rectAreaLight position={[0,.08,.12]} rotation={[.35,0,0]} width={1.55} height={.14} intensity={2.4} color="#ff1a0a"/>
+      </group>)}
       <mesh position={[0,.12,.11]}><boxGeometry args={[1.35,.2,.08]}/><meshStandardMaterial color="#9a9b98" metalness={.8} roughness={.25}/></mesh>
     </group>
   </group>;
