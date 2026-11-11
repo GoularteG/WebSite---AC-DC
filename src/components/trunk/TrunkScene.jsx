@@ -170,11 +170,11 @@ function TrunkInterior() {
       {[-1,1].map(side=><group key={side} position={[side*2.15,.12,.1]}>
         <mesh><boxGeometry args={[1.65,.18,.08]}/><meshBasicMaterial color="#ff240a" toneMapped={false}/></mesh>
         <mesh position={[0,.014,.005]}><boxGeometry args={[1.58,.162,.088]}/><meshBasicMaterial color="#ff603b" toneMapped={false}/></mesh>
-        <mesh position={[0,.02,.01]}><boxGeometry args={[1.48,.11,.092]}/><meshBasicMaterial color="#ff9870" toneMapped={false}/></mesh>
-        <mesh position={[0,.11,.085]} rotation={[-.95,0,0]} renderOrder={2}><planeGeometry args={[1.95,.42]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.98} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
-        <mesh position={[0,.12,.095]} rotation={[-.95,0,0]} renderOrder={2}><planeGeometry args={[2.22,.58]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.58} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
-        <mesh position={[0,.145,-.085]} rotation={[-Math.PI/2,0,0]} renderOrder={2}><planeGeometry args={[1.66,.18]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.2} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
-        <rectAreaLight position={[0,.08,.12]} rotation={[.35,0,0]} width={1.55} height={.14} intensity={2.4} color="#ff1a0a"/>
+        <mesh position={[0,.02,.01]}><boxGeometry args={[1.48,.11,.092]}/><meshBasicMaterial color="#ff855c" toneMapped={false}/></mesh>
+        <mesh position={[0,.11,.085]} rotation={[-.95,0,0]} renderOrder={2}><planeGeometry args={[1.95,.42]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.78} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
+        <mesh position={[0,.12,.095]} rotation={[-.95,0,0]} renderOrder={2}><planeGeometry args={[2.22,.58]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.44} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
+        <mesh position={[0,.145,-.085]} rotation={[-Math.PI/2,0,0]} renderOrder={2}><planeGeometry args={[1.66,.18]}/><meshBasicMaterial map={taillightGlow} transparent opacity={.16} blending={AdditiveBlending} depthWrite={false} toneMapped={false}/></mesh>
+        <rectAreaLight position={[0,.08,.12]} rotation={[.35,0,0]} width={1.55} height={.14} intensity={1.9} color="#ff1a0a"/>
       </group>)}
       <mesh position={[0,.12,.11]}><boxGeometry args={[1.35,.2,.08]}/><meshStandardMaterial color="#9a9b98" metalness={.8} roughness={.25}/></mesh>
     </group>
@@ -190,9 +190,9 @@ function AlbumCase({kind,position,rotation}) {
 }
 function AlbumsObject() {
   return <group>
-    <AlbumCase kind="black" position={[-.64,.03,-.35]} rotation={[0,-.08,0]}/>
-    <AlbumCase kind="hell" position={[.52,.03,-.35]} rotation={[0,.08,0]}/>
-    <AlbumCase kind="razor" position={[.03,.12,.62]} rotation={[0,-.06,0]}/>
+    <AlbumCase kind="black" position={[-.72,.045,-.52]} rotation={[0,-.08,0]}/>
+    <AlbumCase kind="hell" position={[.76,.045,.14]} rotation={[0,.09,0]}/>
+    <AlbumCase kind="razor" position={[-.62,.045,.88]} rotation={[0,-.06,0]}/>
   </group>;
 }
 function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
@@ -201,6 +201,30 @@ function PaperCard({kind,position,rotation=[0,0,0],size=[.72,1.05]}) {
     <mesh castShadow><boxGeometry args={[size[0],.025,size[1]]}/><meshStandardMaterial color="#a89d88" roughness={.9}/></mesh>
     <mesh position={[0,.014,0]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[size[0]*.96,size[1]*.96]}/><meshStandardMaterial map={texture} roughness={.82}/></mesh>
     <mesh position={[0,.02,0]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.012,size[1]*.94]}/><meshBasicMaterial color="#766c5c" transparent opacity={.45}/></mesh>
+  </group>;
+}
+function CassetteTape({position,rotation=[0,0,0],scale=1.22}) {
+  return <group position={position} rotation={rotation} scale={scale}>
+    <RoundedBox position={[0,.024,0]} args={[.48,.048,.3]} radius={.014} smoothness={3} castShadow><meshStandardMaterial color="#1b1c20" roughness={.55} metalness={.2}/></RoundedBox>
+    <mesh position={[0,.05,-.02]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.41,.18]}/><meshStandardMaterial color="#e49a52" roughness={.75}/></mesh>
+    <mesh position={[0,.051,-.07]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.38,.045]}/><meshBasicMaterial color="#9b201d"/></mesh>
+    <mesh position={[0,.052,-.02]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.24,.065]}/><meshStandardMaterial color="#121316" roughness={.4}/></mesh>
+    {[-.085,.085].map(x=><mesh key={x} position={[x,.053,-.02]}><cylinderGeometry args={[.026,.026,.008,16]}/><meshStandardMaterial color="#e6dec8" roughness={.5}/></mesh>)}
+  </group>;
+}
+function Drumsticks({position,rotation=[0,0,0]}) {
+  const sticks=[
+    {pos:[0,.038,0],rot:[0,.26,Math.PI/2]},
+    {pos:[.02,.088,.02],rot:[.02,-.3,Math.PI/2]},
+  ];
+  return <group position={position} rotation={rotation}>
+    {sticks.map((s,i)=><group key={i} position={s.pos} rotation={s.rot}>
+      <mesh castShadow receiveShadow><cylinderGeometry args={[.024,.035,1.16,16]}/><meshStandardMaterial color="#e8c285" roughness={.42}/></mesh>
+      <mesh position={[0,-.35,0]} castShadow><cylinderGeometry args={[.037,.037,.36,16]}/><meshStandardMaterial color="#a81e1b" roughness={.55}/></mesh>
+      {[-.18,-.51].map(y=><mesh key={y} position={[0,y,0]}><cylinderGeometry args={[.038,.038,.026,16]}/><meshBasicMaterial color="#f0e7d5"/></mesh>)}
+      <mesh position={[0,.35,0]}><cylinderGeometry args={[.026,.028,.04,14]}/><meshBasicMaterial color="#1f1916"/></mesh>
+      <mesh position={[0,.59,0]} scale={[1,1.45,1]} castShadow><sphereGeometry args={[.031,14,12]}/><meshStandardMaterial color="#f4d89e" roughness={.38}/></mesh>
+    </group>)}
   </group>;
 }
 function Picks() {
@@ -214,7 +238,7 @@ function Picks() {
   },[]);
   return <group>
     {[
-      [-.24,.03,-.09,'#9e2924'],[.05,.035,.05,'#d7b05c'],[.28,.03,-.1,'#252428'],
+      [-.09,.03,-.06,'#9e2924'],[.04,.035,.04,'#d7b05c'],[.12,.03,-.05,'#252428'],
     ].map(([x,y,z,color],i)=><mesh key={i} position={[x,y,z]} rotation={[-Math.PI/2,0,i*.45]} scale={.55} castShadow>
       <shapeGeometry args={[pick,12]}/><meshPhysicalMaterial color={color} roughness={.35} clearcoat={.65} side={DoubleSide}/>
     </mesh>)}
@@ -222,22 +246,63 @@ function Picks() {
 }
 function Memorabilia() {
   return <group>
-    <PaperCard kind="poster" position={[-1.93,.037,-1.05]} rotation={[0,-.18,0]} size={[.9,1.25]}/>
-    <PaperCard kind="setlist" position={[-1.05,.065,-1.15]} rotation={[0,.12,0]} size={[.7,1.03]}/>
-    <PaperCard kind="pass" position={[1.18,.055,-.58]} rotation={[0,-.12,0]} size={[.66,.96]}/>
-    <PaperCard kind="ticket" position={[1.61,.08,-.42]} rotation={[0,.18,0]} size={[.45,.73]}/>
-    <PaperCard kind="flyer" position={[2.22,.045,-.55]} rotation={[0,.14,0]} size={[.72,.95]}/>
-    <group position={[.76,.025,2.02]}><Picks/></group>
+    <PaperCard kind="setlist" position={[-2.02,.114,.44]} rotation={[0,.12,0]} size={[.56,.8]}/>
+    <CassetteTape position={[-1.25,.103,.42]} rotation={[0,.24,0]}/>
+    <Drumsticks position={[-1.28,.103,1.26]} rotation={[0,Math.PI/2+.08,0]}/>
+    <PaperCard kind="ticket" position={[1.26,.114,-.02]} rotation={[0,.16,0]} size={[.42,.64]}/>
+    <PaperCard kind="pass" position={[2.02,.114,.06]} rotation={[0,-.12,0]} size={[.5,.72]}/>
+    <group position={[2.24,.105,1.72]}><Picks/></group>
+  </group>;
+}
+function CablePlug({position,rotation=[0,0,0]}) {
+  return <group position={position} rotation={rotation}>
+    {/* Rubber strain relief boot wrapping directly around cable endpoint at x=0 */}
+    <mesh position={[0,0,0]} rotation={[0,0,Math.PI/2]} castShadow><cylinderGeometry args={[.034,.042,.11,14]}/><meshStandardMaterial color="#18191c" roughness={.65}/></mesh>
+    {/* Knurled chrome P10 barrel */}
+    <mesh position={[.115,0,0]} rotation={[0,0,Math.PI/2]} castShadow><cylinderGeometry args={[.044,.044,.13,16]}/><meshStandardMaterial color="#c6cbd0" metalness={.9} roughness={.2}/></mesh>
+    {/* Red collar ring */}
+    <mesh position={[.06,0,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.045,.045,.022,16]}/><meshBasicMaterial color="#a81e1b"/></mesh>
+    {/* P10 1/4" jack shaft & tip */}
+    <mesh position={[.235,0,0]} rotation={[0,0,Math.PI/2]} castShadow><cylinderGeometry args={[.018,.018,.12,12]}/><meshStandardMaterial color="#e2c675" metalness={.92} roughness={.16}/></mesh>
+    <mesh position={[.27,0,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.019,.019,.018,12]}/><meshBasicMaterial color="#151618"/></mesh>
+    <mesh position={[.305,0,0]} scale={[1.3,1,1]} castShadow><sphereGeometry args={[.02,12,10]}/><meshStandardMaterial color="#e2c675" metalness={.92} roughness={.16}/></mesh>
+  </group>;
+}
+function CoiledCable({center,radius=.29,turns=5.5,tubeRadius=.031,color='#262930',rotOffset=0}) {
+  const {curve,startPlug,endPlug}=useMemo(()=>{
+    const pts=[],total=76;
+    const a0=rotOffset,r0=radius;
+    const p0=new Vector3(center[0]+Math.cos(a0)*r0,center[1],center[2]+Math.sin(a0)*r0);
+    const tx0=Math.sin(a0),tz0=-Math.cos(a0);
+    const startPos=new Vector3(p0.x+tx0*.2,center[1],p0.z+tz0*.2);
+    const startMid=new Vector3(p0.x+tx0*.1,center[1],p0.z+tz0*.1);
+    pts.push(startPos,startMid);
+    for(let i=0;i<=total;i++){
+      const t=i/total,a=rotOffset+t*Math.PI*2*turns,r=radius-t*.045;
+      pts.push(new Vector3(center[0]+Math.cos(a)*r,center[1]+t*.012,center[2]+Math.sin(a)*r));
+    }
+    const a1=rotOffset+Math.PI*2*turns;
+    const p1=pts[pts.length-1];
+    const tx1=-Math.sin(a1),tz1=Math.cos(a1);
+    const endMid=new Vector3(p1.x+tx1*.1,p1.y,p1.z+tz1*.1);
+    const endPos=new Vector3(p1.x+tx1*.2,p1.y,p1.z+tz1*.2);
+    pts.push(endMid,endPos);
+    return {
+      curve:new CatmullRomCurve3(pts),
+      startPlug:{pos:[startPos.x,startPos.y,startPos.z],rot:[0,Math.atan2(-tz0,tx0),0]},
+      endPlug:{pos:[endPos.x,endPos.y,endPos.z],rot:[0,Math.atan2(-tz1,tx1),0]},
+    };
+  },[center,radius,turns,rotOffset]);
+  return <group>
+    <mesh castShadow receiveShadow><tubeGeometry args={[curve,110,tubeRadius,8,false]}/><meshStandardMaterial color={color} roughness={.48} metalness={.16}/></mesh>
+    <CablePlug position={startPlug.pos} rotation={startPlug.rot}/>
+    <CablePlug position={endPlug.pos} rotation={endPlug.rot}/>
   </group>;
 }
 function RoadGear() {
-  const cable=useMemo(()=>new CatmullRomCurve3(Array.from({length:78},(_,i)=>{
-    const t=i/77,a=t*Math.PI*7,r=.28-t*.045;
-    return new Vector3(-1.99+Math.cos(a)*r,.075+t*.008,-1.28+Math.sin(a)*r);
-  })),[]);
   return <group name="road-gear">
-    <mesh castShadow><tubeGeometry args={[cable,100,.028,7,false]}/><meshStandardMaterial color="#151618" roughness={.78}/></mesh>
-    <group position={[2.02,.145,-1.46]} rotation={[0,.14,0]}>
+    <CoiledCable center={[-2.24,.146,1.38]} radius={.26} turns={5.5} tubeRadius={.032} color="#282b32" rotOffset={1.1}/>
+    <group position={[1.82,.215,-1.46]} rotation={[0,.14,0]}>
       <RoundedBox args={[.78,.22,.48]} radius={.045} smoothness={4} castShadow><meshPhysicalMaterial color="#202227" metalness={.55} roughness={.38}/></RoundedBox>
       <mesh position={[0,.119,.035]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.6,.25]}/><meshBasicMaterial color="#81241e"/></mesh>
       <mesh position={[0,.121,-.15]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.61,.015]}/><meshBasicMaterial color="#e49a52"/></mesh>
@@ -248,7 +313,7 @@ function RoadGear() {
 }
 function ProjectBook() {
   const label=useSurface('archive');
-  return <group rotation={[0,-.08,0]}>
+  return <group rotation={[0,-.06,0]} scale={.78}>
     <BookModel length={2.5}/>
     <mesh position={[0,.405,0]} rotation={[-Math.PI/2,0,0]} castShadow>
       <planeGeometry args={[1.13,1.47]}/><meshStandardMaterial map={label} roughness={.48}/>
@@ -267,11 +332,11 @@ export default function TrunkScene({reduced,onSelect,active,paused,onReady}) {
     <spotLight castShadow position={[0,5,3]} intensity={17} distance={10} angle={.53} penumbra={.85} color="#ffd6a7" shadow-mapSize={[512,512]}/>
     <Environment resolution={64}><Lightformer intensity={3.5} color="#fff4e5" position={[-2,5,4]} scale={[7,2,1]} rotation={[-.7,0,0]}/><Lightformer intensity={1.5} color="#8da0b5" position={[5,1,-4]} scale={[3,5,1]} rotation={[0,Math.PI,0]}/></Environment>
     <InteriorCamera reduced={reduced}/><TrunkInterior/>
-    <group position={[2.08,.02,.85]} scale={.74}><AlbumsObject/></group>
-    <group position={[-1.48,.18,.11]} rotation={[-Math.PI/2,0,-.2]}><GuitarModel height={3.5} finish="cherry"/></group>
+    <group position={[1.84,.1,1.05]} scale={.56}><AlbumsObject/></group>
+    <group position={[-.06,.26,-.66]} rotation={[-Math.PI/2,0,-Math.PI/2+.06]}><GuitarModel height={4.15} finish="cherry"/></group>
     <Memorabilia/><RoadGear/>
-    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.1,.045,.62]} highlight={[1.28,1.31]}><ProjectBook/></SelectableObject>
-    <ContactShadows position={[0,.01,.1]} opacity={.45} scale={7.2} blur={2.5} far={4}/>
+    <SelectableObject id="book" active={active} onSelect={onSelect} position={[.02,.103,.82]} highlight={[1.02,1.05]}><ProjectBook/></SelectableObject>
+    <ContactShadows position={[0,.101,.1]} opacity={.45} scale={7.2} blur={2.5} far={4}/>
     <SceneReady onReady={onReady}/>
     </Suspense></SceneLoading>
   </Canvas>;
