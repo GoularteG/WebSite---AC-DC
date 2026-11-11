@@ -18,9 +18,9 @@ export function desertHeight(offset, distance) {
   const fan = smooth(18, 66, lateral) * (2.15 + .85 * Math.sin(distance * .037 + lateral * .053)
     + .3 * Math.sin(distance * .081 - lateral * .11));
   const ridge = Math.exp(-Math.pow((lateral - 189) / 54, 2))
-    * (9.5 + 5.5 * Math.sin(distance * .022 + side * 1.7) + 3 * Math.sin(distance * .063 + side));
+    * (5.5 + 3 * Math.sin(distance * .022 + side * 1.7) + 1.8 * Math.sin(distance * .063 + side));
   const farRidge = Math.exp(-Math.pow((lateral - 310) / 48, 2))
-    * (15 + 6.5 * Math.sin(distance * .016 - side * 2) + 4 * Math.sin(distance * .049));
+    * (8.5 + 3.8 * Math.sin(distance * .016 - side * 2) + 2.2 * Math.sin(distance * .049));
   const drainage = .5 + .5 * Math.abs(Math.sin(distance * .097 + lateral * .041));
   return -.09 + fade * smooth(18, 60, lateral) * (fan + (ridge + farRidge) * (.82 + drainage * .18));
 }
