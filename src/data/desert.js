@@ -59,7 +59,7 @@ export const desertMesas = outcrops.flatMap((center, cluster) =>
     return {
       distance, side, width, offset,
       position: rooted(distance, side, offset, .4),
-      height: member === 1 ? 20 + random(index, 5) * 15 : 10 + random(index, 5) * 17,
+      height: member === 1 ? 12 + random(index, 5) * 8 : 7 + random(index, 5) * 8,
       depth: .55 + random(index, 6) * .38,
       rotation: random(index, 7) * Math.PI * 2,
       tone: index % 5,

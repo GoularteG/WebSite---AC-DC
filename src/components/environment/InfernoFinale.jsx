@@ -124,7 +124,7 @@ export default function InfernoFinale({ distance, quality, reduced, ghostActive 
   const world=useRef(), molten=useRef(), lava=useRef();
   useFrame(({ camera })=>{
     const mix=infernoMix(ghostActive ? -camera.position.z : distance.current);
-    world.current.visible=ghostActive || distance.current>270;
+    world.current.visible=true;
     molten.current.emissiveIntensity=.8+mix*1.7;
     lava.current.emissiveIntensity=.45+mix*1.35;
   });
