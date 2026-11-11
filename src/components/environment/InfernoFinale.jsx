@@ -48,7 +48,7 @@ function BasaltCliffs() {
       rotation:[hash(i)*.3,hash(i+1)*Math.PI,side*(hash(i+2)-.5)*.5],
       scale:[4+hash(i+3)*5,height,4+hash(i+4)*7], color:i%3?'#272127':'#3b2829'};
   }), []);
-  return <Instances limit={52} frames={1} castShadow receiveShadow>
+  return <Instances limit={52} frames={1} receiveShadow>
     <icosahedronGeometry args={[1,1]} /><meshStandardMaterial roughness={.98} metalness={.07} />
     {rocks.map((rock,i) => <Instance key={i} {...rock} />)}
   </Instances>;
@@ -128,7 +128,7 @@ export default function InfernoFinale({ distance, quality, reduced, ghostActive 
     molten.current.emissiveIntensity=.8+mix*1.7;
     lava.current.emissiveIntensity=.45+mix*1.35;
   });
-  return <group ref={world}>
+  return <group name="inferno-finale" ref={world}>
     <HellLandscape distance={distance} reduced={reduced} ghostActive={ghostActive}/><BasaltCliffs /><LavaChannels material={lava} /><Monument molten={molten} />
     <Atmospherics distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
   </group>;

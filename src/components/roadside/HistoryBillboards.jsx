@@ -5,7 +5,7 @@ import { chapters, billboardDistance, distanceAtProgress, roadX } from '../../da
 import { licensedPhotoSources } from '../../data/historyPhotos';
 import { useSceneTask } from '../loading/SceneLoading';
 
-function BillboardFloodlights({ active }) {
+function BillboardFloodlights({ active, hostLights, visible }) {
   const lights = useRef([]);
   const targets = useMemo(() => [-4,0,4].map(x => {
     const target = new Object3D();
@@ -16,22 +16,24 @@ function BillboardFloodlights({ active }) {
   useEffect(() => {
     lights.current.forEach((light, index) => { if (light) light.target = targets[index]; });
     invalidate();
-  }, [active, targets, invalidate]);
+  }, [active, hostLights, targets, invalidate]);
   return <group name="billboard-uplights">
-    {active && targets.map((target,index)=><group key={index}>
+    {hostLights && targets.map((target,index)=><group key={index}>
       <primitive object={target}/>
-      <spotLight ref={node=>{lights.current[index]=node;}} position={[[-4,0,4][index],1.93,1.756]} color="#ffe4bc" intensity={110} distance={13} angle={.56} penumbra={.65} decay={2} castShadow={false}/>
+      <spotLight ref={node=>{lights.current[index]=node;}} position={[[-4,0,4][index],1.93,1.756]} color="#ffe4bc" intensity={active ? 110 : 0} distance={13} angle={.56} penumbra={.65} decay={2} castShadow={false}/>
     </group>)}
-    {[-4,0,4].map(x=><group key={x}>
-      <mesh position={[x,2.25,.28]}><boxGeometry args={[.36,.2,.26]}/><meshStandardMaterial color="#38383b" metalness={.8} roughness={.38}/></mesh>
-      <mesh position={[x,2.02,1.04]} rotation={[1.87,0,0]}><boxGeometry args={[.085,1.65,.085]}/><meshStandardMaterial color="#67666a" metalness={.8} roughness={.35}/></mesh>
-      <group position={[x,1.8,1.85]} rotation={[-2.2,0,0]}>
-        <mesh><boxGeometry args={[.65,.48,.25]}/><meshStandardMaterial color="#313238" metalness={.7} roughness={.4}/></mesh>
-        <mesh position={[0,0,.135]}><boxGeometry args={[.53,.36,.025]}/><meshStandardMaterial color="#e5d5ae" emissive="#ffe4b4" emissiveIntensity={2.2} toneMapped={false}/></mesh>
-        <mesh position={[0,0,.16]}><boxGeometry args={[.38,.22,.015]}/><meshBasicMaterial color="#fff1d2" toneMapped={false}/></mesh>
-        {[-.35,.35].map(side=><mesh key={side} position={[side,0,-.035]}><boxGeometry args={[.055,.32,.26]}/><meshStandardMaterial color="#7b7770" metalness={.8} roughness={.4}/></mesh>)}
-      </group>
-    </group>)}
+    <group visible={visible}>
+      {[-4,0,4].map(x=><group key={x}>
+        <mesh position={[x,2.25,.28]}><boxGeometry args={[.36,.2,.26]}/><meshStandardMaterial color="#38383b" metalness={.8} roughness={.38}/></mesh>
+        <mesh position={[x,2.02,1.04]} rotation={[1.87,0,0]}><boxGeometry args={[.085,1.65,.085]}/><meshStandardMaterial color="#67666a" metalness={.8} roughness={.35}/></mesh>
+        <group position={[x,1.8,1.85]} rotation={[-2.2,0,0]}>
+          <mesh><boxGeometry args={[.65,.48,.25]}/><meshStandardMaterial color="#313238" metalness={.7} roughness={.4}/></mesh>
+          <mesh position={[0,0,.135]}><boxGeometry args={[.53,.36,.025]}/><meshStandardMaterial color="#e5d5ae" emissive="#ffe4b4" emissiveIntensity={2.2} toneMapped={false}/></mesh>
+          <mesh position={[0,0,.16]}><boxGeometry args={[.38,.22,.015]}/><meshBasicMaterial color="#fff1d2" toneMapped={false}/></mesh>
+          {[-.35,.35].map(side=><mesh key={side} position={[side,0,-.035]}><boxGeometry args={[.055,.32,.26]}/><meshStandardMaterial color="#7b7770" metalness={.8} roughness={.4}/></mesh>)}
+        </group>
+      </group>)}
+    </group>
   </group>;
 }
 
@@ -134,100 +136,163 @@ function paintPoster(canvas, chapter, photo) {
   ctx.fillText('OITO CAPÍTULOS. UMA ESTRADA.', 454, 466);
 }
 
-function makePoster(chapter) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 512;
-  paintPoster(canvas, chapter, null);
-  const texture = new CanvasTexture(canvas);
-  texture.colorSpace = SRGBColorSpace;
-  texture.anisotropy = 4;
-  return { canvas, texture };
+function getPoster(cache, chapter) {
+  let poster = cache.get(chapter.id);
+  if (!poster) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 512;
+    paintPoster(canvas, chapter, null);
+    const texture = new CanvasTexture(canvas);
+    texture.colorSpace = SRGBColorSpace;
+    texture.anisotropy = 4;
+    poster = {
+      canvas,
+      texture,
+      loadedPhoto: null,
+      fontsDone: false,
+      photoStarted: false,
+      photoDone: false,
+      disposed: false,
+    };
+    cache.set(chapter.id, poster);
+  }
+  return poster;
 }
 
-function Billboard({ chapter, index, onSelect, loadPhoto, activeLighting }) {
+function Billboard({ chapter, index, poster, onSelect, loadPhoto, activeLighting, hostLights, visible = true }) {
   const mobile = useThree(state => state.size.width < 761);
   const invalidate = useThree(state => state.invalidate);
-  const poster = useMemo(() => makePoster(chapter), [chapter]);
   const begin = useSceneTask();
-  useEffect(() => () => poster.texture.dispose(), [poster]);
   useEffect(() => {
-    let active = true, loadedPhoto = null, fontsDone = false, photoDone = !loadPhoto;
+    if (!visible) document.body.style.cursor = '';
+  }, [visible]);
+  useEffect(() => {
+    if (poster.fontsDone) return;
+    let active = true;
     const finish = begin?.() ?? (() => {});
-    let image = null;
-    const redraw = () => {
-      if (!active) return;
-      paintPoster(poster.canvas, chapter, loadedPhoto);
-      poster.texture.needsUpdate = true; invalidate();
-      if (fontsDone && photoDone) finish();
-    };
     Promise.all([
       document.fonts.load('86px "Metal Mania"'),
       document.fonts.load('63px "New Rocker"'),
-    ]).catch(() => {}).then(() => { fontsDone = true; redraw(); });
-    if (loadPhoto) {
-      const sources = licensedPhotoSources(chapter.image);
-      const load = index => {
-        if (!active) return;
-        if (index >= sources.length) { photoDone = true; redraw(); return; }
-        image = new Image(); image.crossOrigin = 'anonymous';
-        const photo = image;
-        photo.onload = () => { if (active) { loadedPhoto = photo; photoDone = true; redraw(); } };
-        photo.onerror = () => load(index + 1);
-        photo.src = sources[index];
-      };
-      load(0);
-    }
-    return () => { active = false; if (image) { image.onload = null; image.onerror = null; } finish(); };
+    ]).catch(() => {}).then(() => {
+      if (poster.disposed) { finish(); return; }
+      poster.fontsDone = true;
+      paintPoster(poster.canvas, chapter, poster.loadedPhoto);
+      poster.texture.needsUpdate = true;
+      if (active) invalidate();
+      finish();
+    });
+    return () => { active = false; finish(); };
+  }, [chapter, invalidate, poster, begin]);
+  useEffect(() => {
+    if (!loadPhoto || poster.photoStarted) return;
+    poster.photoStarted = true;
+    let active = true;
+    const finish = begin?.() ?? (() => {});
+    let image = null;
+    const sources = licensedPhotoSources(chapter.image);
+    const complete = photo => {
+      if (poster.disposed) { finish(); return; }
+      poster.loadedPhoto = photo;
+      poster.photoDone = true;
+      paintPoster(poster.canvas, chapter, photo);
+      poster.texture.needsUpdate = true;
+      if (active) invalidate();
+      finish();
+    };
+    const load = index => {
+      if (poster.disposed) { finish(); return; }
+      if (index >= sources.length) { complete(null); return; }
+      image = new Image(); image.crossOrigin = 'anonymous';
+      const photo = image;
+      photo.onload = () => complete(photo);
+      photo.onerror = () => load(index + 1);
+      photo.src = sources[index];
+    };
+    load(0);
+    return () => { active = false; finish(); };
   }, [chapter, invalidate, poster, loadPhoto, begin]);
   const distance = billboardDistance(chapter, mobile);
   const side = mobile ? (index === 0 ? -1 : 1) : index % 2 ? 1 : -1;
   return <group position={[roadX(distance) + side * (mobile ? 9.5 : 14), 0, -distance]} rotation={[0, side * -.11, 0]} scale={mobile ? .72 : 1.12}>
-    {[-4.5, 4.5].map(x => <mesh key={x} position={[x, 3.3, -.39]} castShadow>
-      <cylinderGeometry args={[.21, .27, 6.6, 8]} />
-      <meshStandardMaterial color="#332c2b" metalness={.72} roughness={.55} />
-    </mesh>)}
-    <mesh position={[0, 2.35, -.48]} castShadow>
-      <boxGeometry args={[11.85, .16, .25]} />
-      <meshStandardMaterial color="#675046" metalness={.74} roughness={.47} />
-    </mesh>
-    <mesh position={[0, 8.7, -.42]} castShadow>
-      <boxGeometry args={[12.5, .28, .42]} />
-      <meshStandardMaterial color="#201a1b" metalness={.78} roughness={.42} />
-    </mesh>
-    <mesh position={[0, 5.45, -.25]} castShadow receiveShadow>
-      <boxGeometry args={[12.3, 6.2, .44]} />
-      <meshStandardMaterial color="#1b1718" metalness={.62} roughness={.53} />
-    </mesh>
-    <mesh position={[0, 5.45, .008]} onClick={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = ''; onSelect(chapter); } : undefined} onPointerOver={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = 'pointer'; } : undefined} onPointerOut={onSelect ? () => { document.body.style.cursor = ''; } : undefined}>
-      <planeGeometry args={[11.8, 5.9]} />
-      <meshStandardMaterial map={poster.texture} emissiveMap={poster.texture} emissive="#ffffff" emissiveIntensity={.22} roughness={.95} metalness={0} />
-    </mesh>
-    {[-6.08, 6.08].map(x => <mesh key={x} position={[x, 5.45, .035]}>
-      <boxGeometry args={[.16, 6.2, .2]} />
-      <meshStandardMaterial color="#7f3f35" metalness={.72} roughness={.48} />
-    </mesh>)}
-    <mesh position={[0, 2.4, .035]}>
-      <boxGeometry args={[12.25, .14, .2]} />
-      <meshStandardMaterial color="#7f3f35" metalness={.72} roughness={.48} />
-    </mesh>
-    <BillboardFloodlights active={activeLighting} />
+    <group visible={visible}>
+      {[-4.5, 4.5].map(x => <mesh key={x} position={[x, 3.3, -.39]} castShadow>
+        <cylinderGeometry args={[.21, .27, 6.6, 8]} />
+        <meshStandardMaterial color="#332c2b" metalness={.72} roughness={.55} />
+      </mesh>)}
+      <mesh position={[0, 2.35, -.48]} castShadow>
+        <boxGeometry args={[11.85, .16, .25]} />
+        <meshStandardMaterial color="#675046" metalness={.74} roughness={.47} />
+      </mesh>
+      <mesh position={[0, 8.7, -.42]} castShadow>
+        <boxGeometry args={[12.5, .28, .42]} />
+        <meshStandardMaterial color="#201a1b" metalness={.78} roughness={.42} />
+      </mesh>
+      <mesh position={[0, 5.45, -.25]} castShadow receiveShadow>
+        <boxGeometry args={[12.3, 6.2, .44]} />
+        <meshStandardMaterial color="#1b1718" metalness={.62} roughness={.53} />
+      </mesh>
+      <mesh position={[0, 5.45, .008]} onClick={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = ''; onSelect(chapter); } : undefined} onPointerOver={onSelect ? event => { event.stopPropagation(); document.body.style.cursor = 'pointer'; } : undefined} onPointerOut={onSelect ? () => { document.body.style.cursor = ''; } : undefined}>
+        <planeGeometry args={[11.8, 5.9]} />
+        <meshStandardMaterial map={poster.texture} emissiveMap={poster.texture} emissive="#ffffff" emissiveIntensity={.22} roughness={.95} metalness={0} />
+      </mesh>
+      {[-6.08, 6.08].map(x => <mesh key={x} position={[x, 5.45, .035]}>
+        <boxGeometry args={[.16, 6.2, .2]} />
+        <meshStandardMaterial color="#7f3f35" metalness={.72} roughness={.48} />
+      </mesh>)}
+      <mesh position={[0, 2.4, .035]}>
+        <boxGeometry args={[12.25, .14, .2]} />
+        <meshStandardMaterial color="#7f3f35" metalness={.72} roughness={.48} />
+      </mesh>
+    </group>
+    <BillboardFloodlights active={activeLighting} hostLights={hostLights} visible={visible} />
   </group>;
 }
 
 export default function HistoryBillboards({ onSelect, targetProgress }) {
   const distance = distanceAtProgress(targetProgress);
   const mobile = useThree(state => state.size.width < 761);
+  const postersRef = useRef(null);
+  if (!postersRef.current) postersRef.current = new Map();
+  const visitedRef = useRef(null);
+  if (!visitedRef.current) visitedRef.current = new Set([chapters[0].id]);
+  useEffect(() => {
+    const cache = postersRef.current;
+    return () => {
+      cache.forEach(poster => {
+        poster.disposed = true;
+        poster.texture.dispose();
+      });
+      cache.clear();
+    };
+  }, []);
   // Only the board being approached owns real lights: at most three spotlights.
+  // Keeping those three spotlights mounted (at intensity 0 when past the last board)
+  // keeps NUM_SPOT_LIGHTS constant so Three.js never recompiles shaders at the lava entry.
   const illuminated = chapters.slice(0,8).find(chapter => {
     const s = billboardDistance(chapter, mobile);
     return s > distance - 25 && s < distance + 140;
   });
+  const lightHostId = illuminated?.id ?? chapters[0].id;
   return <group name="historical-roadside-billboards">
-    {chapters.slice(0, 8).map((chapter, index) => ({chapter, index})).filter(({chapter}) => {
-      // Keep the next boards inside the fog range while releasing textures behind the car.
+    {chapters.slice(0, 8).map((chapter, index) => {
+      // Keep visited boards and their textures in memory while hiding boards outside the fog range.
       const board = billboardDistance(chapter);
-      return board > distance - 90 && board < distance + 260;
-    }).map(({chapter, index}) => <Billboard key={chapter.id} chapter={chapter} index={index} onSelect={onSelect} activeLighting={chapter.id === illuminated?.id} loadPhoto={billboardDistance(chapter) < distance + 215} />)}
+      const inRange = board > distance - 90 && board < distance + 260;
+      if (inRange) visitedRef.current.add(chapter.id);
+      if (!visitedRef.current.has(chapter.id)) return null;
+      const poster = getPoster(postersRef.current, chapter);
+      return <Billboard
+        key={chapter.id}
+        chapter={chapter}
+        index={index}
+        poster={poster}
+        visible={inRange}
+        onSelect={inRange ? onSelect : null}
+        activeLighting={inRange && chapter.id === illuminated?.id}
+        hostLights={chapter.id === lightHostId}
+        loadPhoto={board < distance + 215}
+      />;
+    })}
   </group>;
 }

@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import { ScenePending } from '../loading/SceneLoading';
 import { Shape } from 'three';
 import { SceneryResources, useSceneryResources } from './SceneryResources';
@@ -68,9 +68,10 @@ export function LightingTower() {
     <group position={[0, 4.9, .25]}><Bolt /></group>
   </group>;
 }
-export function Landmark({ asset, eager = false }) {
+export function Landmark({ asset, eager = false, visible = true }) {
   const { kind } = asset;
   return <group name={`roadside-${asset.id}`}
+    visible={visible}
     position={asset.position ?? [roadX(asset.distance) + asset.side * asset.offset, -.08, -asset.distance]}
     rotation={asset.rotation} scale={asset.scale ?? 1}>
     {kind === 'model' && (eager ? <RoadsideAsset asset={asset}/> : <Suspense fallback={<ScenePending/>}><RoadsideAsset asset={asset} /></Suspense>)}
@@ -95,8 +96,15 @@ export function Landmark({ asset, eager = false }) {
 }
 export default function Scenery({ started, targetProgress }) {
   const position = distanceAtProgress(targetProgress);
+  const visitedRef = useRef(null);
+  if (!visitedRef.current) visitedRef.current = new Set();
   if (!started) return null;
   return <SceneryResources><group name="curated-roadside-landmarks">
-    {roadsideAssets.filter(asset => asset.distance > position - 100 && asset.distance < position + 210).map(asset => <Landmark key={asset.id} asset={asset} />)}
+    {roadsideAssets.map(asset => {
+      const inRange = asset.distance > position - 100 && asset.distance < position + 210;
+      if (inRange) visitedRef.current.add(asset.id);
+      if (!visitedRef.current.has(asset.id)) return null;
+      return <Landmark key={asset.id} asset={asset} visible={inRange} />;
+    })}
   </group></SceneryResources>;
 }

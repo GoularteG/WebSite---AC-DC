@@ -27,18 +27,26 @@ function LavaRiver({side,travel,strength}){
 }
 function BandPhoto(){
   const [texture,setTexture]=useState(null),[failed,setFailed]=useState(false);
+  const gl=useThree(state=>state.gl);
   const invalidate=useThree(state=>state.invalidate);
+  const placeholder=useMemo(()=>{
+    const c=document.createElement('canvas');c.width=1;c.height=1;
+    const ctx=c.getContext('2d');ctx.fillStyle='#191719';ctx.fillRect(0,0,1,1);
+    const t=new CanvasTexture(c);t.colorSpace=SRGBColorSpace;return t;
+  },[]);
+  useEffect(()=>()=>placeholder.dispose(),[placeholder]);
   useEffect(()=>{
     let active=true;
     const image=new TextureLoader().load(photoUrl,loaded=>{
       if(!active)return;
-      loaded.colorSpace=SRGBColorSpace;setTexture(loaded);invalidate();
+      loaded.colorSpace=SRGBColorSpace;
+      gl.initTexture(loaded);
+      setTexture(loaded);invalidate();
     },undefined,()=>{if(active){setFailed(true);invalidate();}});
     return ()=>{active=false;image.dispose();};
-  },[invalidate]);
+  },[gl,invalidate]);
   if(failed)return <Html center transform position={[0,0,.28]} distanceFactor={10}><a className="band-photo-fallback" href="https://commons.wikimedia.org/wiki/File:ACDC_In_Tacoma_2009.jpg" target="_blank" rel="noreferrer">AC/DC<br/><small>Ver foto original ↗</small></a></Html>;
-  if(!texture)return null;
-  return <mesh position={[0,0,.26]}><planeGeometry args={[9,9*473/600]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>;
+  return <mesh position={[0,0,.26]} visible={Boolean(texture)}><planeGeometry args={[9,9*473/600]}/><meshBasicMaterial map={texture??placeholder} toneMapped={false}/></mesh>;
 }
 function BandMonument(){
   const title=useMemo(()=>{

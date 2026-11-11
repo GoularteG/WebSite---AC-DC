@@ -2,6 +2,23 @@ import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useSceneLoads } from './SceneLoading';
 
+function setWarmupVisibility(scene) {
+  const restored = [];
+  scene.traverse(node => {
+    if (!node.visible || node.frustumCulled) {
+      restored.push({ node, visible: node.visible, frustumCulled: node.frustumCulled });
+      node.visible = true;
+      node.frustumCulled = false;
+    }
+  });
+  return () => {
+    restored.forEach(({ node, visible, frustumCulled }) => {
+      node.visible = visible;
+      node.frustumCulled = frustumCulled;
+    });
+  };
+}
+
 // Asset completion is followed by shader compilation, texture upload and a GPU
 // fence after an actual render. Cached models still need this on each new Canvas.
 export default function SceneReady({onReady}) {
@@ -11,11 +28,12 @@ export default function SceneReady({onReady}) {
   const [error,setError]=useState(null);
   useEffect(()=>{
     if(loads.pending||reported.current)return;
-    const current={phase:'warm',frames:0,cancelled:false,raf:0,fence:null};
+    const current={phase:'warm',frames:0,cancelled:false,raf:0,fence:null,restore:null};
     job.current=current;
     invalidate();
     return()=>{
       current.cancelled=true;cancelAnimationFrame(current.raf);
+      current.restore?.();current.restore=null;
       if(current.fence)gl.getContext().deleteSync(current.fence);
       if(job.current===current)job.current=null;
     };
@@ -23,11 +41,15 @@ export default function SceneReady({onReady}) {
   useFrame(()=>{
     const current=job.current;
     if(!current||current.cancelled||reported.current)return;
-    const fail=err=>{if(!current.cancelled)setError(err);};
+    const fail=err=>{current.restore?.();current.restore=null;if(!current.cancelled)setError(err);};
     if(current.phase==='warm'){
       if(++current.frames<2){invalidate();return;}
+      // Temporarily unhide and un-cull distant finale groups so this warm-up frame
+      // and compileAsync upload all VBOs, VAOs and shaders before revealing the scene.
+      current.restore=setWarmupVisibility(scene);
       current.phase='compile';
       Promise.resolve().then(()=>{if(!current.cancelled)return gl.compileAsync(scene,camera);}).then(()=>{
+        current.restore?.();current.restore=null;
         if(current.cancelled)return;
         // Upload textures before revealing, including generated canvas maps.
         const textures=new Set();
