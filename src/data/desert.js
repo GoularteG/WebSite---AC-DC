@@ -59,7 +59,7 @@ export const desertMesas = outcrops.flatMap((center, cluster) =>
     return {
       distance, side, width, offset,
       position: rooted(distance, side, offset, .4),
-      height: member === 1 ? 12 + random(index, 5) * 8 : 7 + random(index, 5) * 8,
+      height: member === 1 ? 9.5 + random(index, 5) * 6 : 5.5 + random(index, 5) * 6,
       depth: .55 + random(index, 6) * .38,
       rotation: random(index, 7) * Math.PI * 2,
       tone: index % 5,
@@ -77,13 +77,13 @@ export const desertRocks = stonePatches.flatMap((center, patch) => {
     const index = patch * 17 + member;
     const distance = center + (random(index, 8) - .5) * 37;
     const spread = 12 + random(patch, 11) * 12 + (random(index, 9) - .5) * 7;
-    const width = member < 4 ? 1.6 + random(index, 10) * 1.65 : .32 + random(index, 10) * 1.05;
+    const width = member < 4 ? 1.25 + random(index, 10) * 1.25 : .26 + random(index, 10) * .85;
     const roadsideSpread = Math.max(11.5 + width, spread);
     const safeSpread = clearOfBoard(distance, side, roadsideSpread, width) ? roadsideSpread : 32 + width + random(index, 43) * 6;
     return {
       distance, side, width, offset: safeSpread,
       position: rooted(distance, side, safeSpread, .1),
-      height: width * (.45 + random(index, 12) * .6),
+      height: width * (.36 + random(index, 12) * .48),
       depth: .68 + random(index, 13) * .3,
       rotation: random(index, 14) * Math.PI * 2,
       tone: index % 4,

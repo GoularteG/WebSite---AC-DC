@@ -22,14 +22,26 @@ function createPage(entry, index) {
   label.append(element('span', '', entry.label.replace(/^\d+ \/ /, '')), element('span', 'paper-edition', 'CADERNO DE CRIAÇÃO'));
   content.append(label, element('h2', '', entry.title));
   const sketch = element('figure', 'paper-sketch');
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 280 84');
-  svg.setAttribute('aria-hidden', 'true');
-  art.paths.forEach(d => {
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', d); svg.append(path);
-  });
-  sketch.append(svg, element('figcaption', '', art.caption));
+  if (art.image) {
+    const img = element('img', 'paper-sketch-image');
+    img.src = art.image;
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.width = 800;
+    img.height = 450;
+    img.decoding = 'async';
+    img.draggable = false;
+    sketch.append(img, element('figcaption', '', art.caption));
+  } else {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 280 84');
+    svg.setAttribute('aria-hidden', 'true');
+    art.paths.forEach(d => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d); svg.append(path);
+    });
+    sketch.append(svg, element('figcaption', '', art.caption));
+  }
   content.append(sketch);
   entry.paragraphs.forEach(text => content.append(element('p', '', text)));
   const note = element('aside', 'paper-decision');

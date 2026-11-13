@@ -28,9 +28,10 @@
 .reader-room .paper-label{display:flex;justify-content:space-between;gap:8px;align-items:center;font:700 8px/1.4 Arial,sans-serif;letter-spacing:1.3px;color:#8b3328;border-bottom:1px solid #7c5d3633;padding-bottom:8px}
 .reader-room .paper-edition{font-size:6px;letter-spacing:1px;color:#8b7761;text-align:right;white-space:nowrap}
 .reader-room .paper-content h2{font:400 30px/1.12 var(--rock-title);letter-spacing:-.6px;color:#302621;margin:15px 0 12px;text-shadow:none;max-width:360px}
-.reader-room .paper-sketch{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 0 15px;padding:10px 8px 7px;background:repeating-linear-gradient(0deg,transparent 0 15px,#916d3c0a 15px 16px),#bba07b12;border-block:1px solid #93785829}
+.reader-room .paper-sketch{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 0 14px;padding:8px 8px 6px;background:repeating-linear-gradient(0deg,transparent 0 15px,#916d3c0a 15px 16px),#bba07b12;border-block:1px solid #93785829}
 .reader-room .paper-sketch svg{display:block;width:100%;max-width:260px;height:56px;fill:none;stroke:#7e4a34;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.reader-room .paper-sketch figcaption{align-self:flex-start;font:italic 10px/1.5 Georgia,serif;color:#89674b;margin:3px 0 0 6px}
+.reader-room .paper-sketch-image{display:block;width:100%;max-width:275px;height:128px;object-fit:contain;mix-blend-mode:multiply;pointer-events:none;user-select:none}
+.reader-room .paper-sketch figcaption{align-self:flex-start;font:italic 10px/1.5 Georgia,serif;color:#89674b;margin:4px 0 0 6px}
 .reader-room .paper-content p{font:14px/1.6 Georgia,'Times New Roman',serif;color:#43382f;margin:0 0 15px;text-wrap:pretty}
 .reader-room .paper-content p:first-of-type:first-letter{font-size:1.35em;color:#8d3429}
 .reader-room .paper-decision{margin-top:14px;padding:9px 12px;border-left:2px solid #a64532;background:#a97a4610;transform:rotate(-.5deg)}
@@ -72,7 +73,7 @@
  .reader-room .book-table,.reader-room.embedded .book-table{padding:0 3px 8px;margin-bottom:26px}
  .reader-room .paper-content{padding:26px 25px 64px}.reader-room .paper-content h2{font-size:28px}.reader-room .paper-content p{font-size:14px;line-height:1.7}
  .reader-room .paper-label{font-size:7px;letter-spacing:1px}.reader-room .paper-edition{font-size:5px;letter-spacing:.6px}
- .reader-room .paper-sketch svg{height:66px}.reader-room .paper-footer{left:25px;right:25px}
+ .reader-room .paper-sketch svg{height:66px}.reader-room .paper-sketch-image{max-width:250px;height:118px}.reader-room .paper-footer{left:25px;right:25px}
  .reader-dock{gap:8px;padding:6px}.reader-dock .reader-index{padding:10px;font-size:10px}.reader-position{min-width:73px}
  .reader-contents{grid-template-columns:1fr}.reader-room .reader-hint{font-size:8px;letter-spacing:0}
 }
