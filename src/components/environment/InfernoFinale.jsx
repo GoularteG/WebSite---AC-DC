@@ -43,7 +43,7 @@ function Monument({ molten }) {
 function BasaltCliffs() {
   const rocks = useMemo(() => Array.from({length:52},(_,i) => {
     const s=552+hash(i+6)*275, side=i%2?1:-1;
-    const height=5+hash(i+30)*17;
+    const height=4+hash(i+30)*11;
     return {position:[roadX(s)+side*(19+hash(i+11)*29),height*.42-2,-s],
       rotation:[hash(i)*.3,hash(i+1)*Math.PI,side*(hash(i+2)-.5)*.5],
       scale:[4+hash(i+3)*5,height,4+hash(i+4)*7], color:i%3?'#272127':'#3b2829'};

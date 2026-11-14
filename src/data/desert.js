@@ -15,12 +15,12 @@ export function desertHeight(offset, distance) {
   const lateral = Math.abs(offset);
   const side = Math.sign(offset);
   const fade = smooth(-145, -105, distance) * (1 - smooth(610, 680, distance));
-  const fan = smooth(18, 66, lateral) * (2.15 + .85 * Math.sin(distance * .037 + lateral * .053)
-    + .3 * Math.sin(distance * .081 - lateral * .11));
+  const fan = smooth(18, 66, lateral) * (1.45 + .45 * Math.sin(distance * .037 + lateral * .053)
+    + .18 * Math.sin(distance * .081 - lateral * .11));
   const ridge = Math.exp(-Math.pow((lateral - 189) / 54, 2))
-    * (5.5 + 3 * Math.sin(distance * .022 + side * 1.7) + 1.8 * Math.sin(distance * .063 + side));
+    * (3.8 + 1.4 * Math.sin(distance * .022 + side * 1.7) + .8 * Math.sin(distance * .063 + side));
   const farRidge = Math.exp(-Math.pow((lateral - 310) / 48, 2))
-    * (8.5 + 3.8 * Math.sin(distance * .016 - side * 2) + 2.2 * Math.sin(distance * .049));
+    * (5.8 + 1.8 * Math.sin(distance * .016 - side * 2) + 1.0 * Math.sin(distance * .049));
   const drainage = .5 + .5 * Math.abs(Math.sin(distance * .097 + lateral * .041));
   return -.09 + fade * smooth(18, 60, lateral) * (fan + (ridge + farRidge) * (.82 + drainage * .18));
 }
@@ -52,14 +52,14 @@ export const desertMesas = outcrops.flatMap((center, cluster) =>
     const index = cluster * 7 + member;
     const distance = center + (member - 1) * 22 + (random(index, 1) - .5) * 15;
     const side = member === 3 ? (cluster % 2 ? 1 : -1) : (cluster % 2 ? -1 : 1);
-    const width = member === 1 ? 26 + random(index, 3) * 9 : 15 + random(index, 3) * 13;
+    const width = member === 1 ? 21 + random(index, 3) * 7 : 12 + random(index, 3) * 10;
     // Keep the silhouette behind the exhibits, but let the rock wall visibly
     // approach the road instead of reading as a distant backdrop.
     const offset = width + 23 + random(index, 4) * 18 + (member === 0 ? 5 : 0);
     return {
       distance, side, width, offset,
       position: rooted(distance, side, offset, .4),
-      height: member === 1 ? 12 + random(index, 5) * 8 : 7 + random(index, 5) * 8,
+      height: member === 1 ? 7.5 + random(index, 5) * 4.5 : 4.5 + random(index, 5) * 4.5,
       depth: .55 + random(index, 6) * .38,
       rotation: random(index, 7) * Math.PI * 2,
       tone: index % 5,
@@ -77,13 +77,13 @@ export const desertRocks = stonePatches.flatMap((center, patch) => {
     const index = patch * 17 + member;
     const distance = center + (random(index, 8) - .5) * 37;
     const spread = 12 + random(patch, 11) * 12 + (random(index, 9) - .5) * 7;
-    const width = member < 4 ? 1.6 + random(index, 10) * 1.65 : .32 + random(index, 10) * 1.05;
+    const width = member < 4 ? 1.25 + random(index, 10) * 1.25 : .28 + random(index, 10) * .85;
     const roadsideSpread = Math.max(11.5 + width, spread);
     const safeSpread = clearOfBoard(distance, side, roadsideSpread, width) ? roadsideSpread : 32 + width + random(index, 43) * 6;
     return {
       distance, side, width, offset: safeSpread,
       position: rooted(distance, side, safeSpread, .1),
-      height: width * (.45 + random(index, 12) * .6),
+      height: width * (.36 + random(index, 12) * .45),
       depth: .68 + random(index, 13) * .3,
       rotation: random(index, 14) * Math.PI * 2,
       tone: index % 4,
