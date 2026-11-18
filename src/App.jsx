@@ -20,18 +20,25 @@ export default function App() {
   const [started, setStarted] = useState(false);
   const [value, setValue] = useState(0);
   const [mobile, setMobile] = useState(() => innerWidth < 761);
-  const [automaticQuality, setAutomaticQuality] = useState('balanced');
+  const [automaticQuality, setAutomaticQuality] = useState(() =>
+    typeof navigator !== 'undefined' && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4
+      ? 'performance'
+      : 'balanced'
+  );
   const quality = automaticQuality;
   const qualitySamples = useRef({ slow: 0, fast: 0 });
   const onQualitySample = useCallback(fps => {
     const samples = qualitySamples.current;
-    samples.slow = fps < 35 ? samples.slow + 1 : 0;
-    samples.fast = fps > 55 ? samples.fast + 1 : 0;
-    if (samples.slow >= 2) {
-      setAutomaticQuality(current => current === 'high' ? 'balanced' : 'performance');
-      samples.slow = 0;
-    } else if (samples.fast >= 3) {
-      setAutomaticQuality(current => current === 'performance' ? 'balanced' : 'high');
+    if (fps < 38) {
+      samples.fast = 0;
+      setAutomaticQuality(current => (fps < 25 || current !== 'high' ? 'performance' : 'balanced'));
+    } else if (fps > 56) {
+      samples.fast += 1;
+      if (samples.fast >= 4) {
+        setAutomaticQuality(current => (current === 'performance' ? 'balanced' : 'high'));
+        samples.fast = 0;
+      }
+    } else {
       samples.fast = 0;
     }
   }, []);
@@ -56,7 +63,7 @@ export default function App() {
   const onTrunkReady = useCallback(() => markReady('trunk'), [markReady]);
   const onModelReady = useCallback(() => { setModelReady(true); markReady('road'); }, [markReady]);
   const onUnavailable = useCallback(() => markReady(sceneKey), [markReady, sceneKey]);
-  const progress = useRef(0), saved = useRef(0);
+  const progress = useRef(0), saved = useRef(0), progressBar = useRef(null);
   const reduced = useReducedMotion();
   useEffect(() => {
     const update = () => {
@@ -92,7 +99,22 @@ export default function App() {
     // Reduced motion jumps directly to the sampled world state, but scroll
     // remains available in both directions alongside the chapter controls.
     let frame = 0;
-    const update = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { const max = document.documentElement.scrollHeight - innerHeight; progress.current = clamp(scrollY / Math.max(1,max)); setValue(previous => Math.abs(previous - progress.current) > .001 ? progress.current : previous); }); };
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        const next = clamp(scrollY / Math.max(1, max));
+        progress.current = next;
+        if (progressBar.current) progressBar.current.style.transform = `scaleX(${next})`;
+        progress.invalidate?.();
+        setValue(previous => {
+          if (next === 0 || next === 1 || next > .95 || (previous < .02) !== (next < .02)) {
+            return Math.abs(previous - next) > .0005 ? next : previous;
+          }
+          return Math.abs(previous - next) >= .004 ? next : previous;
+        });
+      });
+    };
     addEventListener('scroll',update,{passive:true}); addEventListener('resize',update); update();
     return () => { cancelAnimationFrame(frame); removeEventListener('scroll',update); removeEventListener('resize',update); };
   }, [phase,started,reduced,ghostActive]);
@@ -156,7 +178,7 @@ export default function App() {
       </>}
       {modelError && <p className="audio-error" role="alert">{modelError}</p>}
 
-      <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span style={{transform:`scaleX(${value})`}}/></div>
+      <div className="journey-progress" role="progressbar" aria-label="Progresso na estrada" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value*100)}><span ref={progressBar} style={{transform:`scaleX(${value})`}}/></div>
       {ghostActive && <GhostHud controls={ghostControls} onExit={exitGhost} />}
       {selectedChapter && <HistoryChapter key={selectedChapter.id} chapter={selectedChapter} onClose={() => setSelectedChapter(null)}/>}
     </main>

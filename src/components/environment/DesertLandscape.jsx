@@ -31,7 +31,7 @@ export function FormationInstances({ formations, geometry, material, tones }) {
     mesh.current.computeBoundingSphere();
     invalidate();
   }, [formations, tones, invalidate]);
-  return <instancedMesh ref={mesh} args={[geometry, material, formations.length]} receiveShadow />;
+  return <instancedMesh ref={mesh} args={[geometry, material, formations.length]} matrixAutoUpdate={false} />;
 }
 
 function DesertLandscape() {
@@ -51,8 +51,8 @@ function DesertLandscape() {
     for (const [key, resource] of Object.entries(assets)) if (key !== 'mesas') resource.dispose();
   }, [assets]);
   return <group name="mojave-basin-landscape">
-    <mesh geometry={assets.basin} material={assets.terrainMaterial} receiveShadow />
-    {mesaGroups.map((formations, shape) => <FormationInstances key={shape} formations={formations} geometry={assets.mesas[shape]} material={assets.stoneMaterial} tones={mesaTones} />)}
+    <mesh geometry={assets.basin} material={assets.terrainMaterial} matrixAutoUpdate={false} />
+    {mesaGroups.map((formations, shape) => <SpatialFormations key={shape} formations={formations} geometry={assets.mesas[shape]} material={assets.stoneMaterial} tones={mesaTones} />)}
     <SpatialFormations formations={desertRocks} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
     <SpatialFormations formations={desertPebbles} geometry={assets.rocks} material={assets.stoneMaterial} tones={rockTones} />
     <SpatialFormations formations={desertScrub} geometry={assets.scrub} material={assets.plantMaterial} tones={scrubTones} />

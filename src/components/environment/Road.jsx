@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { BufferGeometry, CanvasTexture, RepeatWrapping, SRGBColorSpace, Color, Float32BufferAttribute, MeshStandardMaterial } from 'three';
 import { roadX } from '../../data/journey';
@@ -71,8 +71,11 @@ export default function Road({ distance, ghostActive = false }) {
   palette.ground.material.map=desertTexture;
   palette.ground.material.bumpMap=desertTexture;palette.ground.material.bumpScale=.035;palette.ground.material.polygonOffset=true;palette.ground.material.polygonOffsetFactor=2;palette.ground.material.polygonOffsetUnits=2;
   useEffect(() => () => paletteItems.forEach(item=>item.material.dispose()), [paletteItems]);
+  const lastMix = useRef(-1);
   useFrame(({ camera }) => {
     const mix = infernoMix(ghostActive ? -camera.position.z : distance.current);
+    if (mix === lastMix.current) return;
+    lastMix.current = mix;
     paletteItems.forEach(item=>item.material.color.lerpColors(item.normal,item.final,mix));
     shoulderMaterial.color.setRGB(1 - mix * .65, 1 - mix * .73, 1 - mix * .69);
   });

@@ -10,12 +10,12 @@ import HellsBell from './HellsBell';
 const darkMetal = '#211c1a';
 function Box({ position, scale, color = darkMetal, metalness = .25, roughness = .55 }) {
   const resources = useSceneryResources();
-  return <mesh position={position} scale={scale} castShadow receiveShadow dispose={null}
+  return <mesh position={position} scale={scale} dispose={null}
     geometry={resources.box()} material={resources.material(color, metalness, roughness)} />;
 }
 function Cylinder({ position, rotation, args, color = darkMetal, metalness = .35 }) {
   const resources = useSceneryResources();
-  return <mesh position={position} rotation={rotation} castShadow dispose={null}
+  return <mesh position={position} rotation={rotation} dispose={null}
     geometry={resources.cylinder(args)} material={resources.material(color, metalness, .48)} />;
 }
 
@@ -45,7 +45,7 @@ export function AmpStack() {
 }
 function Bolt() {
   const shape = useMemo(() => { const s = new Shape(); [[.25,3.3],[-.9,.1],[-.1,.1],[-.8,-2.7],[1.1,.7],[.2,.7],[.9,3.3]].forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y)); s.closePath(); return s; }, []);
-  return <mesh castShadow><extrudeGeometry args={[shape, { depth: .25, bevelEnabled: true, bevelSize: .06, bevelThickness: .04, bevelSegments: 2 }]} /><meshStandardMaterial color="#f6b643" emissive="#ff6012" emissiveIntensity={.65} metalness={.6} roughness={.25} /></mesh>;
+  return <mesh><extrudeGeometry args={[shape, { depth: .25, bevelEnabled: true, bevelSize: .06, bevelThickness: .04, bevelSegments: 2 }]} /><meshStandardMaterial color="#f6b643" emissive="#ff6012" emissiveIntensity={.65} metalness={.6} roughness={.25} /></mesh>;
 }
 export function MicrophoneStand() {
   return <group>
@@ -53,7 +53,7 @@ export function MicrophoneStand() {
     {[-1, 1].map(side => <group key={side} rotation={[0, 0, side * .45]}><Cylinder position={[side * .43, .06, 0]} args={[.026, .026, .9, 8]} color="#938674" /></group>)}
     <Cylinder position={[.52, 3.76, 0]} rotation={[0, 0, -Math.PI / 4]} args={[.028, .028, 1.5, 8]} color="#b7aa95" metalness={.82} />
     <Cylinder position={[1.08, 4.3, 0]} rotation={[0, 0, Math.PI / 2]} args={[.12, .12, .5, 16]} color="#251f1d" metalness={.6} />
-    <mesh position={[1.34, 4.3, 0]} rotation={[0, 0, Math.PI / 2]} castShadow><sphereGeometry args={[.15, 16, 12]} /><meshStandardMaterial color="#a99c86" metalness={.8} roughness={.3} /></mesh>
+    <mesh position={[1.34, 4.3, 0]} rotation={[0, 0, Math.PI / 2]}><sphereGeometry args={[.15, 16, 12]} /><meshStandardMaterial color="#a99c86" metalness={.8} roughness={.3} /></mesh>
     <Cylinder position={[0, .16, 0]} args={[.1, .12, .18, 12]} color="#26211e" />
   </group>;
 }

@@ -1,7 +1,6 @@
-import { useMemo, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Instance, Instances } from '@react-three/drei';
-import { BufferGeometry, CatmullRomCurve3, Float32BufferAttribute, Shape, Vector3 } from 'three';
+import { BufferGeometry, CatmullRomCurve3, Color, Float32BufferAttribute, Object3D, Shape, Vector3 } from 'three';
 import HellLandscape from './HellLandscape';
 import { lavaSurfaceHeight } from './lavaGeometry';
 import { roadX } from '../../data/journey';
@@ -25,12 +24,12 @@ function Monument({ molten }) {
     const s=new Shape(); [[.4,2],[-.8,.1],[0,.1],[-.5,-1.7],[1,.6],[.2,.6],[.7,2]].forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y)); s.closePath(); return s;
   }, []);
   return <group position={[gateX, -.05, -FINAL_GATE_DISTANCE]} rotation={[0,gateAngle,0]}>
-    <mesh castShadow receiveShadow>
+    <mesh>
       <extrudeGeometry args={[arch, { depth: 5, bevelEnabled: true, bevelSize: .45, bevelThickness: .5, bevelSegments: 2, steps: 1 }]} />
       <meshStandardMaterial color="#211b1c" roughness={.94} metalness={.12} />
     </mesh>
     <mesh><tubeGeometry args={[seam, 64, .12, 5, false]} /><meshStandardMaterial ref={molten} color="#ffb15a" emissive="#ff4c0c" emissiveIntensity={2} toneMapped={false} /></mesh>
-    {[-1,1].flatMap(side => Array.from({length:5},(_,i) => <mesh key={`${side}-${i}`} position={[side*(11.6 + hash(i+side)*.5),2+i*4.2,2.8]} rotation={[.08*side,.15*side,side*(.06+hash(i)*.1)]} castShadow>
+    {[-1,1].flatMap(side => Array.from({length:5},(_,i) => <mesh key={`${side}-${i}`} position={[side*(11.6 + hash(i+side)*.5),2+i*4.2,2.8]} rotation={[.08*side,.15*side,side*(.06+hash(i)*.1)]}>
       <dodecahedronGeometry args={[1,0]} /><meshStandardMaterial color={i%2 ? '#302322' : '#1b191b'} roughness={1} />
     </mesh>))}
     <mesh position={[0,23.5,5.65]} rotation={[0,0,-.12]}>
@@ -41,6 +40,7 @@ function Monument({ molten }) {
 }
 
 function BasaltCliffs() {
+  const mesh = useRef();
   const rocks = useMemo(() => Array.from({length:52},(_,i) => {
     const s=552+hash(i+6)*275, side=i%2?1:-1;
     const height=4+hash(i+30)*11;
@@ -48,13 +48,26 @@ function BasaltCliffs() {
       rotation:[hash(i)*.3,hash(i+1)*Math.PI,side*(hash(i+2)-.5)*.5],
       scale:[4+hash(i+3)*5,height,4+hash(i+4)*7], color:i%3?'#272127':'#3b2829'};
   }), []);
-  return <Instances limit={52} frames={1} receiveShadow>
+  useLayoutEffect(() => {
+    const dummy = new Object3D(), color = new Color();
+    rocks.forEach((rock, i) => {
+      dummy.position.set(...rock.position);
+      dummy.rotation.set(...rock.rotation);
+      dummy.scale.set(...rock.scale);
+      dummy.updateMatrix();
+      mesh.current.setMatrixAt(i, dummy.matrix);
+      mesh.current.setColorAt(i, color.set(rock.color));
+    });
+    mesh.current.instanceMatrix.needsUpdate = true;
+    mesh.current.instanceColor.needsUpdate = true;
+    mesh.current.computeBoundingSphere();
+  }, [rocks]);
+  return <instancedMesh ref={mesh} args={[null, null, rocks.length]} matrixAutoUpdate={false}>
     <icosahedronGeometry args={[1,1]} /><meshStandardMaterial roughness={.98} metalness={.07} />
-    {rocks.map((rock,i) => <Instance key={i} {...rock} />)}
-  </Instances>;
+  </instancedMesh>;
 }
 
-function LavaChannels({ material }) {
+function LavaChannels({ material, groupRef }) {
   const channels = useMemo(() => {
     const points=[], indices=[];
     // Incandescent fissures stay outside the asphalt and follow the curved road.
@@ -69,12 +82,12 @@ function LavaChannels({ material }) {
     }
     const geometry=new BufferGeometry(); geometry.setAttribute('position',new Float32BufferAttribute(points,3)); geometry.setIndex(indices); geometry.computeVertexNormals(); return geometry;
   }, []);
-  return <>
+  return <group ref={groupRef}>
     <mesh geometry={channels}><meshStandardMaterial ref={material} color="#fa7d24" emissive="#ee3908" emissiveIntensity={1.7} roughness={.7} toneMapped={false} /></mesh>
     {[3,5,7].map(offset => <mesh key={offset} position={[roadX(FINAL_STOP_DISTANCE+offset),.027,-FINAL_STOP_DISTANCE-offset]}>
       <boxGeometry args={[10.5,.015,.06]} /><meshBasicMaterial color="#ff963b" toneMapped={false} />
     </mesh>)}
-  </>;
+  </group>;
 }
 
 const smokeVertex = 'varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
@@ -93,13 +106,17 @@ function Atmospherics({ distance, quality, reduced, ghostActive }) {
   },[quality]);
   useFrame(({camera})=>{
     const strength=infernoMix(ghostActive ? -camera.position.z : distance.current);
+    const active=strength>.001;
+    clouds.current.visible=active;
+    particles.current.visible=active;
+    if(!active) return;
     const travel=reduced?0:distance.current*.07;
-    particles.current.material.uniforms.strength.value=strength;
-    particles.current.material.uniforms.travel.value=travel;
+    emberUniforms.strength.value=strength;
+    emberUniforms.travel.value=travel;
+    smokeUniforms.strength.value=strength;
+    smokeUniforms.travel.value=travel;
     clouds.current.children.forEach(cloud=>{
       cloud.quaternion.copy(camera.quaternion);
-      cloud.material.uniforms.strength.value=strength;
-      cloud.material.uniforms.travel.value=travel;
     });
   });
   return <>
@@ -121,15 +138,20 @@ function Atmospherics({ distance, quality, reduced, ghostActive }) {
 // Fixed world geometry; the existing vehicle/camera traversal supplies the parallax.
 // No extra lights, shadow maps, textures, bloom passes or perpetual animation loop.
 export default function InfernoFinale({ distance, quality, reduced, ghostActive = false }) {
-  const world=useRef(), molten=useRef(), lava=useRef();
+  const world=useRef(), molten=useRef(), lava=useRef(), lavaGroup=useRef(), lastMix=useRef(-1);
   useFrame(({ camera })=>{
-    const mix=infernoMix(ghostActive ? -camera.position.z : distance.current);
+    const s=ghostActive ? -camera.position.z : distance.current;
+    const mix=infernoMix(s);
     world.current.visible=true;
-    molten.current.emissiveIntensity=.8+mix*1.7;
-    lava.current.emissiveIntensity=.45+mix*1.35;
+    if (lavaGroup.current) lavaGroup.current.visible=ghostActive || s > 220;
+    if (mix !== lastMix.current) {
+      lastMix.current = mix;
+      molten.current.emissiveIntensity=.8+mix*1.7;
+      lava.current.emissiveIntensity=.45+mix*1.35;
+    }
   });
   return <group name="inferno-finale" ref={world}>
-    <HellLandscape distance={distance} reduced={reduced} ghostActive={ghostActive}/><BasaltCliffs /><LavaChannels material={lava} /><Monument molten={molten} />
+    <HellLandscape distance={distance} reduced={reduced} ghostActive={ghostActive}/><BasaltCliffs /><LavaChannels material={lava} groupRef={lavaGroup} /><Monument molten={molten} />
     <Atmospherics distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />
   </group>;
 }

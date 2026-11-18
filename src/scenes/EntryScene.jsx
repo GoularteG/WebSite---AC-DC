@@ -55,16 +55,20 @@ function Showcase({onReady}) {
         void main(){
           vec3 d=normalize(p);float h=d.y;
           vec3 c=mix(vec3(.95,.26,.045),vec3(.025,.018,.025),smoothstep(-.06,.48,h));
-          vec2 uv=vec2(atan(d.x,d.z)*2.,h*24.);
-          float cloud=noise(uv)*.65+noise(uv*2.1)*.25+noise(uv*4.2)*.1;
-          c*=1.-smoothstep(.38,.72,cloud)*.78*smoothstep(-.04,.12,h);
+          if(h>-.04){
+            vec2 uv=vec2(atan(d.x,d.z)*2.,h*24.);
+            float cloud=noise(uv)*.65+noise(uv*2.1)*.25+noise(uv*4.2)*.1;
+            c*=1.-smoothstep(.38,.72,cloud)*.78*smoothstep(-.04,.12,h);
+          }
           c+=horizonMusic(h,musicPulse);
-          float angle=atan(d.x,d.z);
-          float bankOffset=(angle-musicStrike)*2.;
-          float bank=exp(-bankOffset*bankOffset);
-          float bolt=1.-smoothstep(.002,.008,abs(angle-musicStrike-sin(h*75.)*.015));
-          c+=musicFlash*(vec3(.45,.28,.23)*bank+vec3(.7,.65,.55)*bolt*smoothstep(.01,.08,h)*(1.-smoothstep(.28,.45,h)));
-          gl_FragColor=vec4(c,1.);
+          if(musicFlash>.001){
+            float angle=atan(d.x,d.z);
+            float bankOffset=(angle-musicStrike)*2.;
+            float bank=exp(-bankOffset*bankOffset);
+            float bolt=1.-smoothstep(.002,.008,abs(angle-musicStrike-sin(h*75.)*.015));
+            c+=musicFlash*(vec3(.45,.28,.23)*bank+vec3(.7,.65,.55)*bolt*smoothstep(.01,.08,h)*(1.-smoothstep(.28,.45,h)));
+          }
+          gl_FragColor=vec4(c*1.1,1.);
         }` }/></mesh>
     <EntryLighting/>
     <Environment resolution={64} environmentIntensity={.6}>
@@ -88,7 +92,7 @@ function Showcase({onReady}) {
   </>;
 }
 export default function EntryScene({onReady}) {
-  return <EntryBoundary><Canvas frameloop="demand" dpr={[1,1.3]} camera={{position:[5,2.1,-10.5],fov:36,near:.1,far:200}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({camera})=>camera.lookAt(0,1.7,0)} fallback={<div className="scene-fallback">Escolha seu caminho abaixo.</div>}>
+  return <EntryBoundary><Canvas frameloop="demand" dpr={[1,1.3]} camera={{position:[5,2.1,-10.5],fov:36,near:.1,far:200}} gl={{antialias:true,powerPreference:'high-performance',toneMappingExposure:1.1}} onCreated={({camera})=>camera.lookAt(0,1.7,0)} fallback={<div className="scene-fallback">Escolha seu caminho abaixo.</div>}>
     <SceneLoading><EntryCamera/><Suspense fallback={<ScenePending/>}><SceneryResources><Showcase onReady={onReady}/></SceneryResources></Suspense></SceneLoading>
   </Canvas></EntryBoundary>;
 }

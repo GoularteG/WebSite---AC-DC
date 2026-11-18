@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Instance, Instances } from '@react-three/drei';
 import { Object3D } from 'three';
@@ -9,35 +9,32 @@ const metal = <meshStandardMaterial color="#343537" metalness={.78} roughness={.
 const trim = <meshStandardMaterial color="#746f66" metalness={.72} roughness={.36} />;
 
 function RoadLighting({ distance, ghostActive }) {
-  const lights = useRef([]);
-  const targets = useMemo(() => Array.from({ length: 3 }, () => new Object3D()), []);
+  const light = useRef(null);
+  const target = useMemo(() => new Object3D(), []);
   const invalidate = useThree(state => state.invalidate);
-  useEffect(() => {
-    lights.current.forEach((light, index) => { if (light) light.target = targets[index]; });
+  useLayoutEffect(() => {
+    if (light.current) {
+      light.current.target = target;
+      target.updateMatrixWorld(true);
+      light.current.updateMatrixWorld(true);
+    }
     invalidate();
-  }, [targets, invalidate]);
+  }, [target, invalidate]);
   useFrame(({ camera }) => {
+    if (!light.current) return;
     const s = ghostActive ? -camera.position.z : distance.current;
-    // The lamp list is fixed; a three-slot search avoids a sort and array copy per frame.
-    const near = [null, null, null];
-    const ranges = [Infinity, Infinity, Infinity];
+    let nearest = roadsideLamps[0];
+    let minRange = Infinity;
     for (const lamp of roadsideLamps) {
       const range = Math.abs(lamp.distance - s);
-      for (let i = 0; i < 3; i++) {
-        if (range >= ranges[i]) continue;
-        for (let j = 2; j > i; j--) { ranges[j] = ranges[j-1]; near[j] = near[j-1]; }
-        ranges[i] = range; near[i] = lamp; break;
+      if (range < minRange) {
+        minRange = range;
+        nearest = lamp;
       }
     }
-    lights.current.forEach((light, index) => {
-      if (!light) return;
-      const lamp = near[index];
-      const range = ranges[index];
-      light.position.set(...lamp.head);
-      targets[index].position.set(lamp.head[0] - lamp.side * 2.2, .1, lamp.head[2]);
-      // Three actual lamps illuminate the asphalt and the vehicle as they pass.
-      light.intensity = Math.max(0, Math.min(1, (28 - range) / 11)) * 245 * (1 - infernoMix(s) * .6);
-    });
+    light.current.position.set(...nearest.head);
+    target.position.set(nearest.head[0] - nearest.side * 2.2, .1, nearest.head[2]);
+    light.current.intensity = Math.max(0, Math.min(1, (28 - minRange) / 11)) * 245 * (1 - infernoMix(s) * .6);
   }, -1);
   return <group name="desert-road-lighting">
     <Instances limit={roadsideLamps.length} frames={1}><cylinderGeometry args={[.095, .17, 6.45, 10]} />{metal}
@@ -58,8 +55,8 @@ function RoadLighting({ distance, ghostActive }) {
     <Instances limit={roadsideLamps.length} frames={1}><cylinderGeometry args={[.15, .15, .07, 12]} />{trim}
       {roadsideLamps.map(lamp => <Instance key={lamp.distance} position={[lamp.position[0], 5.84, lamp.position[2]]} />)}
     </Instances>
-    {targets.map((target, index) => <primitive key={index} object={target} />)}
-    {targets.map((_, index) => <spotLight key={index} ref={node => { lights.current[index] = node; }} color="#ffd69c" intensity={0} distance={21} angle={.70} penumbra={.72} decay={2} />)}
+    <primitive object={target} />
+    <spotLight ref={light} target={target} color="#ffd69c" intensity={0} distance={21} angle={.70} penumbra={.72} decay={2} />
   </group>;
 }
 

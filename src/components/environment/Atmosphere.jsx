@@ -33,29 +33,34 @@ varying vec3 vDirection;
     color += vec3(.72,.22,.012) * exp(-abs(h-.006)*70.);
 
     // Horizontally stretched noise creates layered clouds without more draw calls.
-    vec2 cloudUv = vec2(atan(dir.x, -dir.z) * 2.6 + drift, h * 25.);
-    float cloud = noise(cloudUv) * .57 + noise(cloudUv * 2.03) * .29 + noise(cloudUv * 4.1) * .14;
+    // Skip cloud noise and lightning math below the horizon (band == 0) and when no thunder flash is active.
     float band = smoothstep(.008, .055, h) * (1. - smoothstep(.78, .97, h));
-    float mass = smoothstep(.30, .60, cloud) * band;
-    color = mix(color, vec3(.012,.013,.018), mass * .94);
-    float rim = exp(-abs(cloud-.40)*38.) * band * exp(-max(h,0.)*9.);
-    color += vec3(.30,.036,.009) * rim * (.65 + inferno*.35);
+    if (band > .001) {
+      vec2 cloudUv = vec2(atan(dir.x, -dir.z) * 2.6 + drift, h * 25.);
+      float cloud = noise(cloudUv) * .57 + noise(cloudUv * 2.03) * .29 + noise(cloudUv * 4.1) * .14;
+      float mass = smoothstep(.30, .60, cloud) * band;
+      color = mix(color, vec3(.012,.013,.018), mass * .94);
+      float rim = exp(-abs(cloud-.40)*38.) * band * exp(-max(h,0.)*9.);
+      color += vec3(.30,.036,.009) * rim * (.65 + inferno*.35);
 
-    // Angular forked lightning and a local glow inside the cloud bank.
-    float boltX = strike + .028 * sin(h * 37.) + .014 * sin(h * 91.);
-    float trunk = 1. - smoothstep(.0015, .005, abs(dir.x - boltX));
-    float branchX = boltX + (.37 - h) * .39;
-    float branch = (1. - smoothstep(.001, .003, abs(dir.x - branchX)))
-      * smoothstep(.13,.18,h) * (1. - smoothstep(.34,.38,h));
-    float bolt = max(trunk, branch * .65) * smoothstep(.08,.12,h)
-      * (1. - smoothstep(.56,.62,h)) * step(dir.z,-.4);
-    float glow = exp(-pow((dir.x-strike)*4.,2.) - pow((h-.38)*5.,2.)) * band;
-    color += mix(vec3(.50,.60,.82),vec3(.85,.32,.18),inferno*.55)
-      * (bolt * 1.25 + glow * .16) * thunder;
+      if (thunder > .001) {
+        // Angular forked lightning and a local glow inside the cloud bank.
+        float boltX = strike + .028 * sin(h * 37.) + .014 * sin(h * 91.);
+        float trunk = 1. - smoothstep(.0015, .005, abs(dir.x - boltX));
+        float branchX = boltX + (.37 - h) * .39;
+        float branch = (1. - smoothstep(.001, .003, abs(dir.x - branchX)))
+          * smoothstep(.13,.18,h) * (1. - smoothstep(.34,.38,h));
+        float bolt = max(trunk, branch * .65) * smoothstep(.08,.12,h)
+          * (1. - smoothstep(.56,.62,h)) * step(dir.z,-.4);
+        float glow = exp(-pow((dir.x-strike)*4.,2.) - pow((h-.38)*5.,2.)) * band;
+        color += mix(vec3(.50,.60,.82),vec3(.85,.32,.18),inferno*.55)
+          * (bolt * 1.25 + glow * .16) * thunder;
+      }
+    }
 
     // Bass expands the ember bank upward; high storm clouds stay dark.
     color += horizonMusic(h, pulse);
-    gl_FragColor = vec4(color, 1.);
+    gl_FragColor = vec4(color * 1.1, 1.);
   }`;
 
 export default function Atmosphere({ distance, ghostActive = false, reduced = false }) {
@@ -75,7 +80,9 @@ export default function Atmosphere({ distance, ghostActive = false, reduced = fa
   useEffect(() => {
     const update = event => {
       if (event.detail > 0) musicActive.current = true;
-      pulse.current = reduced ? 0 : (Number.isFinite(event.detail) ? event.detail : 0);
+      const next = reduced ? 0 : (Number.isFinite(event.detail) ? event.detail : 0);
+      if (next === pulse.current && Math.abs(storm.current.energy - next) <= .005) return;
+      pulse.current = next;
       invalidate();
     };
     const audioState = event => { musicActive.current = Boolean(event.detail); };

@@ -18,8 +18,6 @@ function getCachedModel(scene, asset) {
   const materials = new Map();
   root.traverse(child => {
     if (!child.isMesh) return;
-    child.castShadow = true;
-    child.receiveShadow = true;
     const source = child.material;
     if (!source) return;
     if (!materials.has(source.uuid)) {

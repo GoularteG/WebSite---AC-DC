@@ -1,6 +1,4 @@
-/* Scene brightness approved at 110%; interface contrast stays unchanged. */
-.stage canvas,
-.trunk-canvas canvas,
+/* Scene brightness approved at 110%; applied natively in WebGL (toneMappingExposure: 1.1) to avoid full-screen 2D CSS filter compositing overhead. */
 .guitar-viewport canvas {
   filter: brightness(1.1);
 }

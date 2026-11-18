@@ -33,7 +33,11 @@ export class SceneBoundary extends Component {
 function JourneyRig({ started, phase, onZoomed, onReturned, distance, progress, targetProgress, reduced, onModelError, onModelReady, onArrival, quality, ghostActive }) {
   const invalidate = useThree(state => state.invalidate);
   const width = useThree(state => state.size.width);
-  useEffect(() => { invalidate(); }, [started, phase, targetProgress, reduced, quality, width, ghostActive, invalidate]);
+  useEffect(() => {
+    progress.invalidate = invalidate;
+    invalidate();
+    return () => { if (progress.invalidate === invalidate) progress.invalidate = null; };
+  }, [started, phase, targetProgress, reduced, quality, width, ghostActive, progress, invalidate]);
   const introMix = useRef(1);
   const introPosition = useRef(new Vector3()), introLook = useRef(new Vector3());
   const car = useRef(), fill = useRef(), arrived = useRef(false);
@@ -92,12 +96,13 @@ function QualitySampler({ onSample }) {
   const sample = useRef({ count: 0, elapsed: 0, lastReport: 0 });
   useFrame((_, delta) => {
     const state = sample.current;
-    if (delta > .15) return; // Ignore tab suspension and asset compilation pauses.
+    if (delta > .35) return; // Ignore tab suspension and idle demand gaps, but count real low-FPS frames.
     state.count++;
     state.elapsed += delta;
-    if (state.count < 90 || state.elapsed < 3) return;
+    const firstSample = state.lastReport === 0;
+    if (state.count < (firstSample ? 24 : 45) || state.elapsed < (firstSample ? .8 : 1.5)) return;
     const now = performance.now();
-    if (now - state.lastReport > 12000) {
+    if (firstSample || now - state.lastReport > 4000) {
       onSample(state.count / state.elapsed);
       state.lastReport = now;
     }
@@ -108,7 +113,7 @@ function QualitySampler({ onSample }) {
 }
 export default function HighwayScene({ phase, started, onZoomed, onReturned, progress, targetProgress, reduced, quality, onQualitySample, onModelError, onModelReady, onArrival, onSelectChapter, ghostActive, ghostControls, onGhostExit }) {
   const distance = useRef(0);
-  return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={ghostActive ? 1 : quality === 'high' ? [1, 1.5] : quality === 'balanced' ? [1, 1.2] : 1} camera={cameraConfig} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
+  return <SceneBoundary><Canvas frameloop={phase === 'trunk' ? 'never' : 'demand'} shadows={quality === 'high'} dpr={ghostActive ? 1 : quality === 'high' ? [1, 1.5] : quality === 'balanced' ? [1, 1.2] : 1} camera={cameraConfig} gl={{ antialias: true, powerPreference: 'high-performance', toneMappingExposure: 1.1 }} fallback={<div className="scene-fallback">WebGL indisponível. The Making Of continua acessível.</div>}>
     <SceneLoading><Suspense fallback={<ScenePending/>}>
     <Atmosphere distance={distance} ghostActive={ghostActive} reduced={reduced} /><Road distance={distance} ghostActive={ghostActive} /><Scenery started={started} targetProgress={targetProgress} /><RoadLighting distance={distance} ghostActive={ghostActive} />{started && <HistoryBillboards targetProgress={targetProgress} onSelect={ghostActive ? null : onSelectChapter} />}
     <InfernoFinale distance={distance} quality={quality} reduced={reduced} ghostActive={ghostActive} />

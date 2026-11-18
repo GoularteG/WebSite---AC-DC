@@ -6,13 +6,16 @@ export function useAudio() {
   const player = useRef(null);
   const graph = useRef(null);
   const meter = useRef(null);
+  const lastPulse = useRef(-1);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolumeState] = useState(0.5);
-  const [position, setPosition] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [error, setError] = useState('');
 
-  const emitPulse = value => dispatchEvent(new CustomEvent('highway:audio-pulse', { detail: value }));
+  const emitPulse = value => {
+    if (lastPulse.current === value) return;
+    lastPulse.current = value;
+    dispatchEvent(new CustomEvent('highway:audio-pulse', { detail: value }));
+  };
   const stopMeter = () => { clearInterval(meter.current); meter.current = null; emitPulse(0); dispatchEvent(new CustomEvent('highway:audio-state', { detail: false })); };
 
   useEffect(() => {
@@ -25,9 +28,6 @@ export function useAudio() {
 
     const quiet = () => emitPulse(0);
     const failed = () => { stopMeter(); setPlaying(false); setError('Áudio indisponível.'); };
-    const update = () => { setPosition(audio.currentTime); setDuration(Number.isFinite(audio.duration) ? audio.duration : 0); };
-    audio.addEventListener('timeupdate', update);
-    audio.addEventListener('loadedmetadata', update);
     audio.addEventListener('error', failed);
     audio.addEventListener('pause', stopMeter);
     audio.addEventListener('waiting', quiet);
@@ -38,8 +38,6 @@ export function useAudio() {
       audio.removeEventListener('error', failed);
       audio.removeEventListener('pause', stopMeter);
       audio.removeEventListener('waiting', quiet);
-      audio.removeEventListener('timeupdate', update);
-      audio.removeEventListener('loadedmetadata', update);
       graph.current?.context.close();
       graph.current = null;
       audio.removeAttribute('src');
@@ -93,6 +91,5 @@ export function useAudio() {
     }
   };
 
-  const seek = value => { if (player.current && duration > 0) { player.current.currentTime = Math.max(0, Math.min(duration, Number(value))); if (graph.current) graph.current.analysis = createAudioAnalysis(); emitPulse(0); setPosition(player.current.currentTime); } };
-  return { position, duration, seek, playing, toggle, volume, setVolume, error, available: Boolean(audioAsset.url) };
+  return { playing, toggle, volume, setVolume, error, available: Boolean(audioAsset.url) };
 }

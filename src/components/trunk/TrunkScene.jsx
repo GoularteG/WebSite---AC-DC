@@ -322,7 +322,7 @@ function ProjectBook() {
   </group>;
 }
 export default function TrunkScene({reduced,onSelect,active,paused,onReady}) {
-  return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance'}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
+  return <Canvas shadows frameloop={paused?'never':'demand'} dpr={[1,1.35]} camera={{position:[0,6.8,9.5],fov:42,near:.1,far:60}} gl={{antialias:true,powerPreference:'high-performance',toneMappingExposure:1.1}} aria-hidden="true" fallback={<div className="trunk-webgl-fallback">Explore os objetos pelos botões abaixo.</div>}>
     <SceneLoading><Suspense fallback={<ScenePending/>}>
     <color attach="background" args={['#090a0c']}/><fog attach="fog" args={['#090a0c',13,23]}/>
     <hemisphereLight args={['#e2e8ef','#171316',1.3]}/>

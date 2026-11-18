@@ -17,7 +17,7 @@ export default function HellsBell() {
   },[]);
   useEffect(()=>()=>badge.dispose(),[badge]);
   return <group name="cast-bronze-hells-bell">
-    <mesh castShadow receiveShadow><latheGeometry args={[profile,64]}/><meshStandardMaterial color="#66573f" metalness={.72} roughness={.48}/></mesh>
+    <mesh><latheGeometry args={[profile,64]}/><meshStandardMaterial color="#66573f" metalness={.72} roughness={.48}/></mesh>
     {[{r:1.35,y:.13,t:.035},{r:1.25,y:.26,t:.022},{r:.94,y:1.16,t:.018},{r:.72,y:1.76,t:.022}].map(({r,y,t})=><mesh key={y} position={[0,y,0]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[r,t,6,64]}/><meshStandardMaterial color="#8b7854" metalness={.78} roughness={.4}/></mesh>)}
     <mesh position={[0,.95,0]}><cylinderGeometry args={[.959,1.004,.5,32,1,true,-.72,1.44]}/><meshStandardMaterial map={badge} transparent depthWrite={false} roughness={.65} metalness={.5} polygonOffset polygonOffsetFactor={-1}/></mesh>
     <mesh position={[0,2.14,0]}><boxGeometry args={[.43,.26,.29]}/><meshStandardMaterial color="#4e4333" metalness={.8} roughness={.5}/></mesh>

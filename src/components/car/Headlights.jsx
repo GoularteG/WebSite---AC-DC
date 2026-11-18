@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
   AdditiveBlending,
@@ -9,10 +9,7 @@ import {
   Object3D,
   SRGBColorSpace,
 } from 'three';
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { infernoMix } from '../../data/finale';
-
-RectAreaLightUniformsLib.init();
 
 // Exact headlight coordinates measured from charger-1970-original.glb (Mesh 12 lenses & Mesh 10 reflectors):
 // Outer-Left:  x = -0.6863, y = 0.5738, z = -2.472
@@ -196,10 +193,8 @@ function createTaillightGlowTexture() {
 }
 
 export default function Headlights({ distance, groundProjection = true }) {
-  const leftSpot = useRef();
-  const rightSpot = useRef();
-  const leftTarget = useMemo(() => new Object3D(), []);
-  const rightTarget = useMemo(() => new Object3D(), []);
+  const frontSpot = useRef();
+  const frontTarget = useMemo(() => new Object3D(), []);
   const baseColor = useMemo(() => new Color('#ffe9bf'), []);
   const hellColor = useMemo(() => new Color('#ffb870'), []);
 
@@ -222,10 +217,13 @@ export default function Headlights({ distance, groundProjection = true }) {
     []
   );
 
-  useEffect(() => {
-    if (leftSpot.current) leftSpot.current.target = leftTarget;
-    if (rightSpot.current) rightSpot.current.target = rightTarget;
-  }, [leftTarget, rightTarget]);
+  useLayoutEffect(() => {
+    if (frontSpot.current) {
+      frontSpot.current.target = frontTarget;
+      frontTarget.updateMatrixWorld(true);
+      frontSpot.current.updateMatrixWorld(true);
+    }
+  }, [frontTarget]);
 
   useEffect(
     () => () => {
@@ -236,12 +234,13 @@ export default function Headlights({ distance, groundProjection = true }) {
     [groundTexture, taillightGlowTexture, beamConeGeo]
   );
 
+  const lastMix = useRef(-1);
   useFrame(() => {
     const s = distance?.current ?? 0;
     const mix = infernoMix(s);
-    if (leftSpot.current && rightSpot.current) {
-      leftSpot.current.color.lerpColors(baseColor, hellColor, mix * 0.6);
-      rightSpot.current.color.lerpColors(baseColor, hellColor, mix * 0.6);
+    if (frontSpot.current && mix !== lastMix.current) {
+      lastMix.current = mix;
+      frontSpot.current.color.lerpColors(baseColor, hellColor, mix * 0.6);
     }
   });
 
@@ -250,27 +249,15 @@ export default function Headlights({ distance, groundProjection = true }) {
 
   return (
     <group name="charger-headlights">
-      {/* Targets aligned straight ahead of each headlight pair */}
-      <primitive object={leftTarget} position={[LEFT_PAIR_X - 0.35, -0.35, -36]} />
-      <primitive object={rightTarget} position={[RIGHT_PAIR_X + 0.35, -0.35, -36]} />
-
-      {/* Left & Right SpotLights positioned at the exact headlight grille coordinates */}
+      {/* Central target and unified SpotLight (visual dual-beam separation comes from the 4 bulbs, 2 volumetric cones, and dual ground projection) */}
+      <primitive object={frontTarget} position={[0, -0.35, -36]} />
       <spotLight
-        ref={leftSpot}
-        position={[LEFT_PAIR_X, HEADLIGHT_Y, BEAM_ORIGIN_Z]}
-        intensity={95}
+        ref={frontSpot}
+        target={frontTarget}
+        position={[0, HEADLIGHT_Y, BEAM_ORIGIN_Z]}
+        intensity={165}
         distance={72}
-        angle={0.68}
-        penumbra={1}
-        decay={1.55}
-        color="#ffe9bf"
-      />
-      <spotLight
-        ref={rightSpot}
-        position={[RIGHT_PAIR_X, HEADLIGHT_Y, BEAM_ORIGIN_Z]}
-        intensity={95}
-        distance={72}
-        angle={0.68}
+        angle={0.74}
         penumbra={1}
         decay={1.55}
         color="#ffe9bf"
@@ -355,15 +342,6 @@ export default function Headlights({ distance, groundProjection = true }) {
                 toneMapped={false}
               />
             </mesh>
-            {/* Outward-only (+Z) low-intensity rectangular area light so light never bleeds forward into the side panels */}
-            <rectAreaLight
-              position={[0, 0, 0.015]}
-              rotation={[0.38, Math.PI, 0]}
-              width={0.6}
-              height={0.045}
-              intensity={2.2}
-              color="#ff1a0a"
-            />
           </group>
         ))}
       </group>

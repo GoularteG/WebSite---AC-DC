@@ -50,8 +50,13 @@ export default function Charger({ distance, onReady }) {
     return root;
   }, [gltf.scene]);
   useEffect(() => () => model.userData.ownedMaterials.forEach(material => material.dispose()), [model]);
+  const lastDistance = useRef(NaN);
   useEffect(() => { wheels.current = carAsset.wheelNames.map(name => model.getObjectByName(name)).filter(Boolean).map(object => ({ object, initial: object.rotation[carAsset.wheelAxis] })); }, [model]);
-  useFrame(() => { wheels.current.forEach(({ object, initial }) => { object.rotation[carAsset.wheelAxis] = initial - distance.current / carAsset.wheelRadius; }); });
+  useFrame(() => {
+    if (distance.current === lastDistance.current) return;
+    lastDistance.current = distance.current;
+    wheels.current.forEach(({ object, initial }) => { object.rotation[carAsset.wheelAxis] = initial - distance.current / carAsset.wheelRadius; });
+  });
   useEffect(() => { onReady?.(); }, [onReady]);
   return <primitive object={model} dispose={null} />;
 }
