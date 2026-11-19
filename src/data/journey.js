@@ -34,3 +34,23 @@ export function upcomingBillboardAt(progress, mobile = false) {
   const distance = distanceAtProgress(progress);
   return chapters.slice(0, 8).find(chapter => distance < billboardDistance(chapter, mobile)) ?? null;
 }
+
+// Round target scroll up to the next device pixel so jumps never land short of a chapter boundary.
+export function scrollTopForProgress(progress, maxScroll) {
+  const max = Math.max(0, maxScroll);
+  const p = clamp(progress);
+  if (p === 0) return 0;
+  if (p === 1) return max;
+  return Math.min(max, Math.ceil(p * max));
+}
+
+// Commit React UI state immediately on chapter/billboard boundary crossings while throttling mid-segment scroll.
+export function shouldCommitProgress(previous, next, mobile = false) {
+  if (previous === next) return false;
+  if (chapterAt(previous).id !== chapterAt(next).id) return true;
+  if (upcomingBillboardAt(previous, mobile)?.id !== upcomingBillboardAt(next, mobile)?.id) return true;
+  if (next === 0 || next === 1 || next > .95 || (previous < .02) !== (next < .02)) {
+    return Math.abs(previous - next) > .0005;
+  }
+  return Math.abs(previous - next) >= .004;
+}

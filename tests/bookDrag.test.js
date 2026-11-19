@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bindBookDrag } from '../src/components/book/bookDrag.js';
+import { readFileSync } from 'node:fs';
+import { bindBookDrag, createBookResizeGuard } from '../src/components/book/bookDrag.js';
 
 function setup({ page = 0, portrait = false, reduced = false } = {}) {
   const handlers = new Map(), captured = new Set(), actions = [];
@@ -60,4 +61,38 @@ test('vertical motion preserves reading while reduced motion still supports swip
   const s = setup({portrait:true,reduced:true,page:1});
   s.send('pointerdown', 200); s.send('pointermove', 203, 220); s.send('pointerup', 203, 220); assert.deepEqual(s.actions, []);
   s.send('pointerdown', 150); s.send('pointermove', 230); s.send('pointerup', 230); assert.deepEqual(s.actions, ['previous-instant']);
+});
+
+test('resize guard defers width changes during a page turn and ignores transient fluctuations', () => {
+  const applied = [];
+  const guard = createBookResizeGuard(w => applied.push(w));
+  guard.observe(808);
+  assert.deepEqual(applied, [808]);
+
+  guard.setTurning(true);
+  guard.observe(791);
+  guard.observe(808);
+  assert.deepEqual(applied, [808]);
+  guard.setTurning(false);
+  assert.deepEqual(applied, [808]);
+
+  guard.setTurning(true);
+  guard.observe(640);
+  assert.deepEqual(applied, [808]);
+  guard.setTurning(false);
+  assert.deepEqual(applied, [808, 640]);
+
+  guard.observe(0);
+  assert.deepEqual(applied, [808, 640]);
+});
+
+test('book reader clips flip shadows without breaking sticky navigation or dialog scrollbar gutter', () => {
+  const css = readFileSync(new URL('../src/styles/book-reader.css', import.meta.url), 'utf8');
+  const roomMatch = css.match(/\.reader-room\.archive-room,\.reader-room\.archive-room\.embedded\{([^}]+)\}/);
+  const dialogMatch = css.match(/\.trunk-dialog\.trunk-book-dialog\{([^}]+)\}/);
+  assert.ok(roomMatch && roomMatch[1].includes('overflow:clip'));
+  assert.ok(roomMatch && !roomMatch[1].includes('overflow:visible'));
+  assert.ok(dialogMatch && dialogMatch[1].includes('overflow-x:hidden'));
+  assert.ok(dialogMatch && dialogMatch[1].includes('overflow-y:auto'));
+  assert.ok(dialogMatch && dialogMatch[1].includes('scrollbar-gutter:stable'));
 });

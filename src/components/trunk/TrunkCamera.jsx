@@ -35,12 +35,12 @@ export function InteriorCamera({ reduced }) {
   const size=useThree(s=>s.size), invalidate=useThree(s=>s.invalidate);
   const distance=useRef(null);
   useFrame(({camera},dt)=>{
-    const fit=Math.max(8.8,4.3/(Math.tan(Math.PI*22/180)*(size.width/size.height)));
-    if(distance.current===null) distance.current=fit*1.12;
+    const fit=Math.max(12.2,5.1/(Math.tan(Math.PI*22/180)*(size.width/size.height)));
+    if(distance.current===null) distance.current=fit*1.1;
     distance.current=reduced?fit:MathUtils.damp(distance.current,fit,5,Math.min(dt,.1));
     if(Math.abs(distance.current-fit)>.001) invalidate();
-    camera.position.set(0,.3+distance.current*.65,distance.current*.76);
-    camera.lookAt(0,1.03,0);
+    camera.position.set(0,.3+distance.current*.54,distance.current*.88);
+    camera.lookAt(0,1.35,-.25);
   });
   return null;
 }

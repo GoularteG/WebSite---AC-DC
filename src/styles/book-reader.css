@@ -1,8 +1,8 @@
 /* A touring notebook on a dark backstage workbench. */
-.trunk-dialog.trunk-book-dialog{max-width:none;width:min(1200px,calc(100vw - 32px));max-height:calc(100svh - 28px);border:1px solid #71523b70;border-radius:12px;background:#131213;scrollbar-width:thin;scrollbar-color:#775e47 #171415}
+.trunk-dialog.trunk-book-dialog{max-width:none;width:min(1200px,calc(100vw - 32px));max-height:calc(100svh - 28px);overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable;border:1px solid #71523b70;border-radius:12px;background:#131213;scrollbar-width:thin;scrollbar-color:#775e47 #171415}
 .trunk-dialog.trunk-book-dialog::backdrop{background:#050505df;backdrop-filter:blur(8px)}
 .trunk-book-dialog .trunk-panel-close{background:#141314f5;border-bottom:1px solid #b98b5b20;padding:14px 24px;font-size:9px;letter-spacing:1.4px;color:#bda68b;min-height:46px}
-.reader-room.archive-room,.reader-room.archive-room.embedded{min-height:0;padding:26px 48px 28px;background:radial-gradient(ellipse at 50% 40%,#623c252b,transparent 65%),repeating-linear-gradient(100deg,#ffffff02 0 1px,transparent 1px 5px),#151415;overflow:visible}
+.reader-room.archive-room,.reader-room.archive-room.embedded{min-height:0;padding:26px 48px 28px;background:radial-gradient(ellipse at 50% 40%,#623c252b,transparent 65%),repeating-linear-gradient(100deg,#ffffff02 0 1px,transparent 1px 5px),#151415;overflow:clip}
 .reader-room .book-heading{max-width:960px;margin:0 auto 24px;display:flex;align-items:flex-end;justify-content:space-between;text-align:left;gap:20px}
 .reader-room .book-heading h1{font:400 clamp(28px,3vw,40px)/1.1 var(--rock-title);margin:7px 0 0;color:#ebddc7;text-shadow:none}
 .reader-room .book-heading .eyebrow{font:600 8px/1.5 Arial,sans-serif;letter-spacing:2px;color:#c48e61}
@@ -28,8 +28,8 @@
 .reader-room .paper-label{display:flex;justify-content:space-between;gap:8px;align-items:center;font:700 8px/1.4 Arial,sans-serif;letter-spacing:1.3px;color:#8b3328;border-bottom:1px solid #7c5d3633;padding-bottom:8px}
 .reader-room .paper-edition{font-size:6px;letter-spacing:1px;color:#8b7761;text-align:right;white-space:nowrap}
 .reader-room .paper-content h2{font:400 30px/1.12 var(--rock-title);letter-spacing:-.6px;color:#302621;margin:15px 0 12px;text-shadow:none;max-width:360px}
-.reader-room .paper-sketch{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 0 15px;padding:10px 8px 7px;background:repeating-linear-gradient(0deg,transparent 0 15px,#916d3c0a 15px 16px),#bba07b12;border-block:1px solid #93785829}
-.reader-room .paper-sketch svg{display:block;width:100%;max-width:260px;height:56px;fill:none;stroke:#7e4a34;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.reader-room .paper-sketch{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 0 15px;padding:8px 8px 7px;background:repeating-linear-gradient(0deg,transparent 0 15px,#916d3c0a 15px 16px),#bba07b12;border-block:1px solid #93785829}
+.reader-room .paper-sketch img{display:block;width:100%;max-width:340px;height:86px;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
 .reader-room .paper-sketch figcaption{align-self:flex-start;font:italic 10px/1.5 Georgia,serif;color:#89674b;margin:3px 0 0 6px}
 .reader-room .paper-content p{font:14px/1.6 Georgia,'Times New Roman',serif;color:#43382f;margin:0 0 15px;text-wrap:pretty}
 .reader-room .paper-content p:first-of-type:first-letter{font-size:1.35em;color:#8d3429}
@@ -72,7 +72,7 @@
  .reader-room .book-table,.reader-room.embedded .book-table{padding:0 3px 8px;margin-bottom:26px}
  .reader-room .paper-content{padding:26px 25px 64px}.reader-room .paper-content h2{font-size:28px}.reader-room .paper-content p{font-size:14px;line-height:1.7}
  .reader-room .paper-label{font-size:7px;letter-spacing:1px}.reader-room .paper-edition{font-size:5px;letter-spacing:.6px}
- .reader-room .paper-sketch svg{height:66px}.reader-room .paper-footer{left:25px;right:25px}
+ .reader-room .paper-sketch img{height:92px;max-width:100%}.reader-room .paper-footer{left:25px;right:25px}
  .reader-dock{gap:8px;padding:6px}.reader-dock .reader-index{padding:10px;font-size:10px}.reader-position{min-width:73px}
  .reader-contents{grid-template-columns:1fr}.reader-room .reader-hint{font-size:8px;letter-spacing:0}
 }

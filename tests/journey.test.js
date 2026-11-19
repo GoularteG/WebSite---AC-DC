@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chapters, chapterAt, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH, billboardDistance, upcomingBillboardAt } from '../src/data/journey.js';
+import { chapters, chapterAt, clamp, distanceAtProgress, roadX, JOURNEY_LENGTH, billboardDistance, upcomingBillboardAt, scrollTopForProgress, shouldCommitProgress } from '../src/data/journey.js';
 import { entries } from '../src/data/book.js';
 import { licensedPhotoSources } from '../src/data/historyPhotos.js';
 test('chapter boundaries and end are reachable in both directions', () => {
@@ -65,4 +65,26 @@ test('each book entry is a separate extensible page', () => {
   assert.equal(entries.length, 8);
   assert.equal(new Set(entries.map(entry=>entry.id)).size,entries.length);
   assert.ok(entries.every(entry=>entry.title && entry.label && entry.paragraphs.length));
+});
+test('chapter jumps round scroll targets so every marker lands inside its chapter', () => {
+  for (const max of [3917, 4250, 6123, 7812, 9500]) {
+    for (let index = 0; index < chapters.length; index++) {
+      const chapter = chapters[index];
+      const target = chapter.id === 'hell-gate' ? 1 : chapter.progress;
+      const top = scrollTopForProgress(target, max);
+      const landed = top / max;
+      assert.equal(chapterAt(landed).id, chapter.id);
+      if (index < 8) {
+        assert.equal(upcomingBillboardAt(landed, false)?.id, chapter.id);
+        assert.equal(upcomingBillboardAt(landed, true)?.id, chapter.id);
+      }
+    }
+  }
+});
+test('progress commits immediately across chapter and billboard boundaries during smooth ease-out', () => {
+  assert.equal(shouldCommitProgress(0.3065, 0.31, false), true);
+  assert.equal(shouldCommitProgress(0.31, 0.3065, false), true);
+  assert.equal(shouldCommitProgress(0.25, 0.252, false), true);
+  assert.equal(shouldCommitProgress(0.27, 0.272, false), false);
+  assert.equal(shouldCommitProgress(0.27, 0.2745, false), true);
 });

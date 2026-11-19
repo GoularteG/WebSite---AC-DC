@@ -6,7 +6,7 @@ import HistoryChapter from './components/history/HistoryChapter';
 import MusicPlayer from './components/MusicPlayer';
 import GhostHud from './components/ghost/GhostHud';
 import { useReducedMotion } from './hooks/usePreferences';
-import { chapters, chapterAt, clamp, upcomingBillboardAt } from './data/journey';
+import { chapters, chapterAt, clamp, scrollTopForProgress, shouldCommitProgress, upcomingBillboardAt } from './data/journey';
 import { advanceGhostSequence, initialGhostSequence } from './data/ghostUnlock';
 const EntryScene = lazy(() => import('./scenes/EntryScene'));
 const HighwayScene = lazy(() => import('./scenes/HighwayScene'));
@@ -98,26 +98,41 @@ export default function App() {
     if (phase !== 'road' || !started || ghostActive) return;
     // Reduced motion jumps directly to the sampled world state, but scroll
     // remains available in both directions alongside the chapter controls.
-    let frame = 0;
-    const update = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const max = document.documentElement.scrollHeight - innerHeight;
-        const next = clamp(scrollY / Math.max(1, max));
-        progress.current = next;
-        if (progressBar.current) progressBar.current.style.transform = `scaleX(${next})`;
-        progress.invalidate?.();
-        setValue(previous => {
-          if (next === 0 || next === 1 || next > .95 || (previous < .02) !== (next < .02)) {
-            return Math.abs(previous - next) > .0005 ? next : previous;
-          }
-          return Math.abs(previous - next) >= .004 ? next : previous;
-        });
+    let frame = 0, settle = 0;
+    const sync = (exact = false) => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const next = clamp(scrollY / Math.max(1, max));
+      progress.current = next;
+      if (progressBar.current) progressBar.current.style.transform = `scaleX(${next})`;
+      progress.invalidate?.();
+      setValue(previous => {
+        if (exact) return Math.abs(previous - next) > .00001 ? next : previous;
+        return shouldCommitProgress(previous, next, mobile) ? next : previous;
       });
     };
-    addEventListener('scroll',update,{passive:true}); addEventListener('resize',update); update();
-    return () => { cancelAnimationFrame(frame); removeEventListener('scroll',update); removeEventListener('resize',update); };
-  }, [phase,started,reduced,ghostActive]);
+    const update = () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+      frame = requestAnimationFrame(() => sync(false));
+      settle = setTimeout(() => sync(true), 120);
+    };
+    const onScrollEnd = () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+      sync(true);
+    };
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('scrollend', onScrollEnd, { passive: true });
+    addEventListener('resize', update);
+    sync(true);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+      removeEventListener('scroll', update);
+      removeEventListener('scrollend', onScrollEnd);
+      removeEventListener('resize', update);
+    };
+  }, [phase, started, reduced, ghostActive, mobile]);
   useEffect(() => {
     if (phase === 'road' && !ghostActive) return;
     const old = document.documentElement.style.overflow;
@@ -146,7 +161,10 @@ export default function App() {
   };
   const go = (p) => {
     setStarted(true);
-    requestAnimationFrame(() => scrollTo({top:p*(document.documentElement.scrollHeight-innerHeight),behavior:reduced?'instant':'smooth'}));
+    requestAnimationFrame(() => {
+      const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+      scrollTo({ top: scrollTopForProgress(p, max), behavior: reduced ? 'instant' : 'smooth' });
+    });
   };
   return <>
     <div inert={loading ? true : undefined} aria-busy={loading}>

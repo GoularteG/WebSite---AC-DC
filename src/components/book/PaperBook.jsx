@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ManagedPageFlip } from './ManagedPageFlip';
-import { bindBookDrag } from './bookDrag';
+import { bindBookDrag, createBookResizeGuard } from './bookDrag';
 import { entries } from '../../data/book';
 import { bookArtwork } from '../../data/bookArtwork';
 
@@ -22,14 +22,16 @@ function createPage(entry, index) {
   label.append(element('span', '', entry.label.replace(/^\d+ \/ /, '')), element('span', 'paper-edition', 'CADERNO DE CRIAÇÃO'));
   content.append(label, element('h2', '', entry.title));
   const sketch = element('figure', 'paper-sketch');
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 280 84');
-  svg.setAttribute('aria-hidden', 'true');
-  art.paths.forEach(d => {
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', d); svg.append(path);
-  });
-  sketch.append(svg, element('figcaption', '', art.caption));
+  const img = element('img', 'paper-sketch-art');
+  img.src = art.image;
+  img.alt = '';
+  img.width = 780;
+  img.height = 240;
+  img.draggable = false;
+  img.loading = 'eager';
+  img.decoding = 'async';
+  img.setAttribute('aria-hidden', 'true');
+  sketch.append(img, element('figcaption', '', art.caption));
   content.append(sketch);
   entry.paragraphs.forEach(text => content.append(element('p', '', text)));
   const note = element('aside', 'paper-decision');
@@ -43,7 +45,7 @@ function createPage(entry, index) {
 
 // The engine owns its inner DOM. React owns only the stable surrounding frame.
 const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning, onReady }, ref) {
-  const host = useRef(null), sizing = useRef(null), engine = useRef(null), current = useRef(0);
+  const host = useRef(null), sizing = useRef(null), engine = useRef(null), current = useRef(0), resizeGuard = useRef(null);
   const [availableWidth, setAvailableWidth] = useState(0);
   const [fontsReady, setFontsReady] = useState(false);
   const portrait = availableWidth < 720;
@@ -53,9 +55,11 @@ const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning, on
     return () => { mounted = false; };
   }, []);
   useEffect(() => {
-    const observer = new ResizeObserver(([entry]) => setAvailableWidth(Math.round(entry.contentRect.width)));
+    const guard = createBookResizeGuard(setAvailableWidth);
+    resizeGuard.current = guard;
+    const observer = new ResizeObserver(([entry]) => guard.observe(entry.contentRect.width));
     observer.observe(sizing.current);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); resizeGuard.current = null; };
   }, []);
   useImperativeHandle(ref, () => ({
     next() { if (!engine.current || engine.current.getState() !== 'read') return; reduced ? engine.current.turnToNextPage() : engine.current.flipNext('bottom'); },
@@ -86,11 +90,15 @@ const PaperBook = forwardRef(function PaperBook({ reduced, onPage, onTurning, on
     });
     engine.current = flip;
     flip.on('flip', event => { current.current = event.data; onPage(event.data, flip.getOrientation() === 'portrait'); });
-    flip.on('changeState', event => onTurning(event.data !== 'read'));
+    flip.on('changeState', event => {
+      const active = event.data !== 'read';
+      onTurning(active);
+      resizeGuard.current?.setTurning(active);
+    });
     flip.loadFromHTML(nodes);
     const unbindDrag = bindBookDrag(flip, { reduced });
     onPage(flip.getCurrentPageIndex(), flip.getOrientation() === 'portrait');
-    onTurning(false); onReady(true);
+    onTurning(false); resizeGuard.current?.setTurning(false); onReady(true);
     return () => { engine.current = null; unbindDrag(); flip.destroy(); mount.remove(); };
   }, [portrait, availableWidth, fontsReady, reduced, onPage, onTurning, onReady]);
   return <div className="folio-sizing" ref={sizing}>

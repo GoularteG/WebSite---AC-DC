@@ -1,6 +1,6 @@
 # Livro de bastidores
 
-O leitor tem oito páginas, a partir de `src/data/book.js`. Os textos originais foram preservados. `src/data/bookArtwork.js` fornece diagramas vetoriais originais e notas editoriais sobre as decisões de cada página. O acabamento combina papel claro, títulos de rock, notas em vermelho, couro escuro e marcador de tecido.
+O leitor tem oito páginas, a partir de `src/data/book.js`. Os textos originais foram preservados. `src/data/bookArtwork.js` referencia as ilustrações editoriais minimalistas em `public/images/book/` e fornece as legendas e notas editoriais sobre as decisões de cada página. O acabamento combina papel claro, títulos de rock, notas em vermelho, couro escuro e marcador de tecido.
 
 ## Paginação
 

@@ -86,3 +86,25 @@ export function bindBookDrag(flip, { reduced = false } = {}) {
     surface.removeEventListener('lostpointercapture', cancel);
   };
 }
+
+// Defer width rebuilds while a flip/fold is active so transient resize events never cancel a turn.
+export function createBookResizeGuard(applyWidth) {
+  let turning = false, applied = null, pending = null;
+  return {
+    observe(width) {
+      const rounded = Math.round(width);
+      if (!rounded) return;
+      if (turning) { pending = rounded; return; }
+      pending = null;
+      if (rounded !== applied) { applied = rounded; applyWidth(rounded); }
+    },
+    setTurning(active) {
+      turning = Boolean(active);
+      if (!turning && pending !== null) {
+        const next = pending;
+        pending = null;
+        if (next !== applied) { applied = next; applyWidth(next); }
+      }
+    },
+  };
+}
